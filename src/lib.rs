@@ -86,6 +86,11 @@ mod tests {
     }
 
     #[test]
+    fn decode_u64_bad() {
+        assert!(decode_u64(b"^_^").is_err());
+    }
+
+    #[test]
     fn both_u64_low() {
         for i in 0..ENC_CROCKFORD_UPPER.len() {
             let s = encode_u64(i as u64);
