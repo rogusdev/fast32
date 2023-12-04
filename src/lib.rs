@@ -23,7 +23,7 @@ mod tests {
         let x = "0";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
@@ -32,7 +32,7 @@ mod tests {
         let x = "Z";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
@@ -41,7 +41,7 @@ mod tests {
         let x = "10";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
@@ -50,7 +50,7 @@ mod tests {
         let x = "11";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
@@ -59,7 +59,7 @@ mod tests {
         let x = "100";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
@@ -68,7 +68,7 @@ mod tests {
         let x = "10000";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
@@ -77,7 +77,7 @@ mod tests {
         let x = "ZZZZ";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
@@ -86,14 +86,32 @@ mod tests {
         let x = "9ZZ";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(decode_u64(s).unwrap(), n);
+    }
+
+    #[test]
+    fn both_u64_5111() {
+        let n = 5111;
+        let x = "4ZQ";
+        let s = encode_u64(n);
+        assert_eq!(s, x);
+        assert_eq!(decode_u64(s).unwrap(), n);
+    }
+
+    #[test]
+    fn both_u64_1066193093600() {
+        let n = 1066193093600;
+        let x = "Z0Z0Z0Z0";
+        let s = encode_u64(n);
+        assert_eq!(s, x);
+        assert_eq!(decode_u64(s).unwrap(), n);
     }
 
     #[test]
     fn decode_u64_bad() {
-        let res = decode_u64(b"^_^");
+        let res = decode_u64("^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^' });
-        let res = decode_u64(b"0123456789abcd");
+        let res = decode_u64("0123456789abcd");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
     }
 

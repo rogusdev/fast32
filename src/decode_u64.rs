@@ -1,6 +1,8 @@
 use crate::decode_base::{bits_or_err, DecodeError, DEC_CROCKFORD_UPPER};
 
-pub fn decode_u64(a: &[u8]) -> Result<u64, DecodeError> {
+#[inline]
+pub fn decode_u64(a: impl AsRef<str>) -> Result<u64, DecodeError> {
+    let a = a.as_ref().as_bytes();
     #[rustfmt::skip]
     let n = match a.len() {
         13 => {
