@@ -1,4 +1,4 @@
-use crate::INVALID_BYTE;
+use crate::alphabet::INVALID_BYTE;
 
 #[inline]
 pub fn bits_or_err(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, DecodeError> {

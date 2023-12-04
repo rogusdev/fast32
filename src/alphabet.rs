@@ -1,4 +1,5 @@
-use crate::{INVALID_BYTE, INVALID_CHAR};
+pub const INVALID_CHAR: char = '.';
+pub const INVALID_BYTE: u8 = u8::MAX;
 
 pub const ENC_CROCKFORD_UPPER: &'static [u8; 32] = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 pub const DEC_CROCKFORD_UPPER: [u8; 256] = decoder_map("Crockford upper", ENC_CROCKFORD_UPPER, b"................................................0123456789.......ABCDEFGH1JK1MN0PQRST.VWXYZ......ABCDEFGH1JK1MN0PQRST.VWXYZ.....");
