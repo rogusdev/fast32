@@ -108,6 +108,25 @@ mod tests {
     }
 
     #[test]
+    fn both_u64_big() {
+        let n = u64::from_be_bytes([0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF]);
+        //println!("big: {}", n); // 1311768467294899695
+        let x = "14D2PF28AQKFF";
+        let s = encode_u64(n);
+        assert_eq!(s, x);
+        assert_eq!(decode_u64(s).unwrap(), n);
+    }
+
+    #[test]
+    fn both_u64_max() {
+        let n = u64::MAX;
+        let x = "FZZZZZZZZZZZZ";
+        let s = encode_u64(n);
+        assert_eq!(s, x);
+        assert_eq!(decode_u64(s).unwrap(), n);
+    }
+
+    #[test]
     fn decode_u64_bad() {
         let res = decode_u64("^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^' });

@@ -1,176 +1,154 @@
 use crate::ENC_CROCKFORD_UPPER;
 
-const B32_U64_C12_MSK: u64 = 0b1111000000000000000000000000000000000000000000000000000000000000;
-const B32_U64_C12_MIN: u64 = 0b0001000000000000000000000000000000000000000000000000000000000000;
-const B32_U64_C11_MSK: u64 = 0b0000111110000000000000000000000000000000000000000000000000000000;
-const B32_U64_C11_MIN: u64 = 0b0000000010000000000000000000000000000000000000000000000000000000;
-const B32_U64_C10_MSK: u64 = 0b0000000001111100000000000000000000000000000000000000000000000000;
-const B32_U64_C10_MIN: u64 = 0b0000000000000100000000000000000000000000000000000000000000000000;
-const B32_U64_C09_MSK: u64 = 0b0000000000000011111000000000000000000000000000000000000000000000;
-const B32_U64_C09_MIN: u64 = 0b0000000000000000001000000000000000000000000000000000000000000000;
-const B32_U64_C08_MSK: u64 = 0b0000000000000000000111110000000000000000000000000000000000000000;
-const B32_U64_C08_MIN: u64 = 0b0000000000000000000000010000000000000000000000000000000000000000;
-const B32_U64_C07_MSK: u64 = 0b0000000000000000000000001111100000000000000000000000000000000000;
-const B32_U64_C07_MIN: u64 = 0b0000000000000000000000000000100000000000000000000000000000000000;
-const B32_U64_C06_MSK: u64 = 0b0000000000000000000000000000011111000000000000000000000000000000;
-const B32_U64_C06_MIN: u64 = 0b0000000000000000000000000000000001000000000000000000000000000000;
-const B32_U64_C05_MSK: u64 = 0b0000000000000000000000000000000000111110000000000000000000000000;
-const B32_U64_C05_MIN: u64 = 0b0000000000000000000000000000000000000010000000000000000000000000;
-const B32_U64_C04_MSK: u64 = 0b0000000000000000000000000000000000000001111100000000000000000000;
-const B32_U64_C04_MIN: u64 = 0b0000000000000000000000000000000000000000000100000000000000000000;
-const B32_U64_C03_MSK: u64 = 0b0000000000000000000000000000000000000000000011111000000000000000;
-const B32_U64_C03_MIN: u64 = 0b0000000000000000000000000000000000000000000000001000000000000000;
-const B32_U64_C02_MSK: u64 = 0b0000000000000000000000000000000000000000000000000111110000000000;
-const B32_U64_C02_MIN: u64 = 0b0000000000000000000000000000000000000000000000000000010000000000;
-const B32_U64_C01_MSK: u64 = 0b0000000000000000000000000000000000000000000000000000001111100000;
-const B32_U64_C01_MIN: u64 = 0b0000000000000000000000000000000000000000000000000000000000100000;
-const B32_U64_C00_MSK: u64 = 0b0000000000000000000000000000000000000000000000000000000000011111;
+// either zeroes then ones, or else zeroes on each side of ones
+const B32_MASK_3_5: u8 = 0b00011111;
+const B32_MASK_4_4: u8 = 0b00001111;
 
 #[rustfmt::skip]
 #[inline]
 pub fn encode_u64(n: u64) -> String {
     let b = {
-        if n >= B32_U64_C12_MIN {
+        if n >= 1u64 << 60 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C12_MSK) >> 60) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C11_MSK) >> 55) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C10_MSK) >> 50) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C09_MSK) >> 45) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C08_MSK) >> 40) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C07_MSK) >> 35) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C06_MSK) >> 30) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 60) as u8 & B32_MASK_4_4) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 55) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 50) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 45) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 40) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 35) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 30) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C11_MIN {
+        } else if n >= 1u64 << 55 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C11_MSK) >> 55) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C10_MSK) >> 50) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C09_MSK) >> 45) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C08_MSK) >> 40) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C07_MSK) >> 35) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C06_MSK) >> 30) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 55) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 50) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 45) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 40) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 35) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 30) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C10_MIN {
+        } else if n >= 1u64 << 50 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C10_MSK) >> 50) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C09_MSK) >> 45) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C08_MSK) >> 40) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C07_MSK) >> 35) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C06_MSK) >> 30) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 50) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 45) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 40) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 35) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 30) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C09_MIN {
+        } else if n >= 1u64 << 45 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C09_MSK) >> 45) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C08_MSK) >> 40) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C07_MSK) >> 35) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C06_MSK) >> 30) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 45) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 40) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 35) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 30) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C08_MIN {
+        } else if n >= 1u64 << 40 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C08_MSK) >> 40) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C07_MSK) >> 35) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C06_MSK) >> 30) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 40) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 35) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 30) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C07_MIN {
+        } else if n >= 1u64 << 35 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C07_MSK) >> 35) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C06_MSK) >> 30) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 35) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 30) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C06_MIN {
+        } else if n >= 1u64 << 30 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C06_MSK) >> 30) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 30) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C05_MIN {
+        } else if n >= 1u64 << 25 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C05_MSK) >> 25) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 25) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C04_MIN {
+        } else if n >= 1u64 << 20 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C04_MSK) >> 20) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 20) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C03_MIN {
+        } else if n >= 1u64 << 15 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C03_MSK) >> 15) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 15) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C02_MIN {
+        } else if n >= 1u64 << 10 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C02_MSK) >> 10) as usize],
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >> 10) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
-        } else if n >= B32_U64_C01_MIN {
+        } else if n >= 1u64 << 5 {
             [
-                ENC_CROCKFORD_UPPER[((n & B32_U64_C01_MSK) >>  5) as usize],
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[((n >>  5) as u8 & B32_MASK_3_5) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
         } else {
             [
-                ENC_CROCKFORD_UPPER[( n & B32_U64_C00_MSK       ) as usize],
+                ENC_CROCKFORD_UPPER[( n        as u8 & B32_MASK_3_5) as usize],
             ]
             .to_vec()
         }
