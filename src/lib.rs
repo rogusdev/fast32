@@ -158,6 +158,84 @@ mod tests {
     }
 
     #[test]
+    fn both_u64_ones() {
+        // first is: Z, F, 7, 3, 1
+        // and fill remainder w Z
+        let x = [
+            "FZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZ",
+            "ZZZZZZZZZZZ",
+            "FZZZZZZZZZZ",
+            "7ZZZZZZZZZZ",
+            "3ZZZZZZZZZZ",
+            "1ZZZZZZZZZZ",
+            "ZZZZZZZZZZ",
+            "FZZZZZZZZZ",
+            "7ZZZZZZZZZ",
+            "3ZZZZZZZZZ",
+            "1ZZZZZZZZZ",
+            "ZZZZZZZZZ",
+            "FZZZZZZZZ",
+            "7ZZZZZZZZ",
+            "3ZZZZZZZZ",
+            "1ZZZZZZZZ",
+            "ZZZZZZZZ",
+            "FZZZZZZZ",
+            "7ZZZZZZZ",
+            "3ZZZZZZZ",
+            "1ZZZZZZZ",
+            "ZZZZZZZ",
+            "FZZZZZZ",
+            "7ZZZZZZ",
+            "3ZZZZZZ",
+            "1ZZZZZZ",
+            "ZZZZZZ",
+            "FZZZZZ",
+            "7ZZZZZ",
+            "3ZZZZZ",
+            "1ZZZZZ",
+            "ZZZZZ",
+            "FZZZZ",
+            "7ZZZZ",
+            "3ZZZZ",
+            "1ZZZZ",
+            "ZZZZ",
+            "FZZZ",
+            "7ZZZ",
+            "3ZZZ",
+            "1ZZZ",
+            "ZZZ",
+            "FZZ",
+            "7ZZ",
+            "3ZZ",
+            "1ZZ",
+            "ZZ",
+            "FZ",
+            "7Z",
+            "3Z",
+            "1Z",
+            "Z",
+            "F",
+            "7",
+            "3",
+            "1",
+        ];
+        for i in 0..u64::BITS as usize {
+            let n = u64::MAX >> i;
+            let s = encode_u64(n);
+            assert_eq!(s, x[i]);
+            assert_eq!(decode_u64(s).unwrap(), n);
+        }
+    }
+
+    #[test]
     fn gen_crockford_upper_decode() {
         let mut s = String::new();
         for i in 0..=255u8 {

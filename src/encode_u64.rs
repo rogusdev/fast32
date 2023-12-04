@@ -1,3 +1,5 @@
+use core::ptr::write;
+
 use crate::alphabet::ENC_CROCKFORD_UPPER;
 use crate::encode_base::{B32_MASK_BOT_4, B32_MASK_BOT_5};
 
@@ -11,150 +13,192 @@ pub fn encode_u64(n: u64) -> String {
         return "0".to_owned()
     }
 
-    let b = match n.ilog2() / 5 {
-        12 => [
-            enc[((n >> 60) as u8 & B32_MASK_BOT_4) as usize],
-            enc[((n >> 55) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 50) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+    let cap = 1 + (n.ilog2() / 5) as usize;
+    let mut b = Vec::<u8>::with_capacity(cap);
 
-        11 => [
-            enc[((n >> 55) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 50) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+    match cap {
+        13 => unsafe {
+            let end = b.as_mut_ptr();
 
-        10 => [
-            enc[((n >> 50) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+            write(end        , enc[((n >> 60) as u8 & B32_MASK_BOT_4) as usize]);
+            write(end.add( 1), enc[((n >> 55) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 50) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 6), enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 7), enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 8), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 9), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add(10), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add(11), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add(12), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
 
-        9 => [
-            enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+            b.set_len(cap);
+        }
 
-        8 => [
-            enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+        12 => unsafe {
+            let end = b.as_mut_ptr();
 
-        7 => [
-            enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+            write(end        , enc[((n >> 55) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 50) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 6), enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 7), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 8), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 9), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add(10), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add(11), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
 
-        6 => [
-            enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+            b.set_len(cap);
+        }
 
-        5 => [
-            enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+        11 => unsafe {
+            let end = b.as_mut_ptr();
 
-        4 => [
-            enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+            write(end        , enc[((n >> 50) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 6), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 7), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 8), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 9), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add(10), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
 
-        3 => [
-            enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+            b.set_len(cap);
+        }
 
-        2 => [
-            enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize],
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+        10 => unsafe {
+            let end = b.as_mut_ptr();
 
-        1 => [
-            enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize],
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
+            write(end        , enc[((n >> 45) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 6), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 7), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 8), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 9), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
 
-        _ => [
-            enc[( n        as u8 & B32_MASK_BOT_5) as usize],
-        ]
-        .to_vec(),
-    };
+            b.set_len(cap);
+        }
+
+        9 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >> 40) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 6), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 7), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 8), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        8 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >> 35) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 6), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 7), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        7 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >> 30) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 6), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        6 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >> 25) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 5), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        5 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >> 20) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 4), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        4 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >> 15) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 3), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        3 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >> 10) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 2), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        2 => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[((n >>  5) as u8 & B32_MASK_BOT_5) as usize]);
+            write(end.add( 1), enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(cap);
+        }
+
+        _ => unsafe {
+            let end = b.as_mut_ptr();
+
+            write(end        , enc[( n        as u8 & B32_MASK_BOT_5) as usize]);
+
+            b.set_len(1);
+        }
+    }
 
     unsafe { String::from_utf8_unchecked(b) }
 }
