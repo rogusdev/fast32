@@ -1,17 +1,21 @@
-mod decode;
-mod encode;
+mod decode_base;
+mod decode_u64;
+mod encode_u64;
 
-pub use crate::decode::decode_u64;
-pub use crate::encode::encode_u64;
+pub use crate::decode_base::DecodeError;
+pub use crate::decode_u64::decode_u64;
+pub use crate::encode_u64::encode_u64;
 
 const INVALID_CHAR: char = '.';
 const INVALID_BYTE: u8 = u8::MAX;
 
+pub const ENC_CROCKFORD_UPPER: &'static [u8; 32] = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::decode::DEC_CROCKFORD_UPPER;
-    use crate::encode::ENC_CROCKFORD_UPPER;
+    use crate::decode_base::DEC_CROCKFORD_UPPER;
+    use crate::ENC_CROCKFORD_UPPER;
 
     #[test]
     fn both_u64_0() {
@@ -87,7 +91,10 @@ mod tests {
 
     #[test]
     fn decode_u64_bad() {
-        assert!(decode_u64(b"^_^").is_err());
+        let res = decode_u64(b"^_^");
+        assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^' });
+        let res = decode_u64(b"0123456789abcd");
+        assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
     }
 
     #[test]
