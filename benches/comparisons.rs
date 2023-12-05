@@ -359,6 +359,30 @@ fn bench_crate_decode_fox_1(c: &mut Criterion) {
     });
 }
 
+fn bench_crate_encode_u128_big(c: &mut Criterion) {
+    c.bench_function("crate encode u128_big", |b| {
+        b.iter(|| easy32::encode_u128(black_box(24197857200151252728969465429440056815)))
+    });
+}
+
+fn bench_crate_encode_u128_max(c: &mut Criterion) {
+    c.bench_function("crate encode u128_max", |b| {
+        b.iter(|| easy32::encode_u128(black_box(u128::MAX)))
+    });
+}
+
+fn bench_crate_decode_u128_big(c: &mut Criterion) {
+    c.bench_function("crate decode u128_big", |b| {
+        b.iter(|| easy32::decode_u128(black_box("J6HB7H45BSQQH4D2PF28AQKFF")))
+    });
+}
+
+fn bench_crate_decode_u128_max(c: &mut Criterion) {
+    c.bench_function("crate decode u128_max", |b| {
+        b.iter(|| easy32::decode_u128(black_box("7ZZZZZZZZZZZZZZZZZZZZZZZZZ")))
+    });
+}
+
 criterion_group!(
     benches,
 
@@ -406,6 +430,11 @@ criterion_group!(
     bench_crockford_decode_u64_max,
     bench_base32_decode_u64_max,
     bench_crate_decode_u64_max,
+
+    bench_crate_encode_u128_big,
+    bench_crate_encode_u128_max,
+    bench_crate_decode_u128_big,
+    bench_crate_decode_u128_max,
 
     bench_base32_decode_fox_4,
     bench_dataenc_decode_fox_4,

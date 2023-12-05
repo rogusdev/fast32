@@ -21,7 +21,7 @@ pub fn encode_u128(n: u128) -> String {
             let end = b.as_mut_ptr();
 
             // this top char is why u128 is diff output from normal bytes based base32
-            // (other than exactly 5 or 10 byte numbers):
+            // (other than exactly 5, 10, or 15 byte numbers):
             // for integer values (identifiers) we use remainder at the high bits, rather than low
             write(end        , enc[((n >> 125) as u8 & B32_MASK_BOT_3) as usize]);
             write(end.add( 1), enc[((n >> 120) as u8 & B32_MASK_BOT_5) as usize]);

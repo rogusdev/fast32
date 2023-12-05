@@ -2,6 +2,7 @@ mod alphabet;
 mod decode_base;
 mod decode_bytes;
 mod decode_u64;
+mod decode_u128;
 mod encode_base;
 mod encode_bytes;
 mod encode_u64;
@@ -9,6 +10,7 @@ mod encode_u128;
 
 pub use crate::decode_base::DecodeError;
 pub use crate::decode_u64::decode_u64;
+pub use crate::decode_u128::decode_u128;
 pub use crate::encode_u64::encode_u64;
 pub use crate::encode_u128::encode_u128;
 pub use crate::decode_bytes::decode_bytes;
@@ -226,7 +228,7 @@ mod tests {
     }
 
     #[test]
-    fn both_bytes_big() {
+    fn both_bytes_u64_big() {
         let n = &[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF];
         let x = "28T5CY4GNF6YY";
         let s = encode_bytes(n);
@@ -253,11 +255,60 @@ mod tests {
     }
 
     #[test]
+    fn both_u128_big() {
+        let n = u128::from_be_bytes([0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF]);
+        // println!("big: {}", n); // 24197857200151252728969465429440056815
+        let x = "J6HB7H45BSQQH4D2PF28AQKFF";
+        let s = encode_u128(n);
+        assert_eq!(s, x);
+        assert_eq!(decode_u128(s).unwrap(), n);
+    }
+
+    #[test]
+    fn both_u128_max() {
+        let n = u128::MAX;
+        let x = "7ZZZZZZZZZZZZZZZZZZZZZZZZZ";
+        let s = encode_u128(n);
+        assert_eq!(s, x);
+        assert_eq!(decode_u128(s).unwrap(), n);
+    }
+
+    #[test]
+    fn both_u128_med() {
+        let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+        println!("med: {}", n); // 94522879688090830972536974333750221
+        let x = "28T5CY4GNF6YY4HMASW91AYD";
+        let s = encode_u128(n);
+        assert_eq!(s, x);
+        assert_eq!(decode_u128(s).unwrap(), n);
+    }
+
+    // cargo test tests::compare_bytes_u128 -- --exact
+    #[test]
+    fn compare_bytes_u128() {
+        let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+        let x = "28T5CY4GNF6YY4HMASW91AYD";
+        let e = encode_u128(n);
+        assert_eq!(e, x);
+        let d = decode_u128(e.clone()).unwrap();
+        assert_eq!(d, n);
+        let eb = encode_bytes(&[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+        assert_eq!(eb, e);
+        let db = decode_bytes(eb).unwrap();
+        assert_eq!(db, d.to_be_bytes()[1..]);
+        // TODO: find a way to convert a not 5 bit matchup such that both will give the same outcomes
+    }
+
+    #[test]
     fn decode_bad() {
         let res = decode_u64("1^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
         let res = decode_u64("0123456789ABCD");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
+        let res = decode_u128("1^_^");
+        assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+        let res = decode_u128("0123456789ABCD0123456789ABCD");
+        assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 28 });
         let res = decode_bytes("111");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 3 });
         let res = decode_bytes("11");
@@ -275,7 +326,7 @@ mod tests {
     }
 
     #[test]
-    fn both_edges() {
+    fn both_edges_u128() {
         let rs = [
             (u128::MAX - 100000)..=u128::MAX,
             ((1 << 120) - 10000)..=((1 << 120) + 10000),
@@ -305,9 +356,152 @@ mod tests {
         for r in rs {
             for n in r {
                 let e = crate::encode_u128(n);
-                // let d = crate::decode_u128(e).unwrap();
-                // assert_eq!(n, d, "mismatch decode for {n}: {e} vs {d}");
+                let d = crate::decode_u128(e.clone()).unwrap();
+                assert_eq!(n, d, "mismatch decode for {n}: {e} vs {d}");
             }
+        }
+    }
+
+    #[test]
+    fn both_u128_ones() {
+        // first is: Z, F, 7, 3, 1
+        // and fill remainder w Z
+        let x = [
+            "7ZZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZZ",
+            "ZZZZZZZZZZZZ",
+            "FZZZZZZZZZZZ",
+            "7ZZZZZZZZZZZ",
+            "3ZZZZZZZZZZZ",
+            "1ZZZZZZZZZZZ",
+            "ZZZZZZZZZZZ",
+            "FZZZZZZZZZZ",
+            "7ZZZZZZZZZZ",
+            "3ZZZZZZZZZZ",
+            "1ZZZZZZZZZZ",
+            "ZZZZZZZZZZ",
+            "FZZZZZZZZZ",
+            "7ZZZZZZZZZ",
+            "3ZZZZZZZZZ",
+            "1ZZZZZZZZZ",
+            "ZZZZZZZZZ",
+            "FZZZZZZZZ",
+            "7ZZZZZZZZ",
+            "3ZZZZZZZZ",
+            "1ZZZZZZZZ",
+            "ZZZZZZZZ",
+            "FZZZZZZZ",
+            "7ZZZZZZZ",
+            "3ZZZZZZZ",
+            "1ZZZZZZZ",
+            "ZZZZZZZ",
+            "FZZZZZZ",
+            "7ZZZZZZ",
+            "3ZZZZZZ",
+            "1ZZZZZZ",
+            "ZZZZZZ",
+            "FZZZZZ",
+            "7ZZZZZ",
+            "3ZZZZZ",
+            "1ZZZZZ",
+            "ZZZZZ",
+            "FZZZZ",
+            "7ZZZZ",
+            "3ZZZZ",
+            "1ZZZZ",
+            "ZZZZ",
+            "FZZZ",
+            "7ZZZ",
+            "3ZZZ",
+            "1ZZZ",
+            "ZZZ",
+            "FZZ",
+            "7ZZ",
+            "3ZZ",
+            "1ZZ",
+            "ZZ",
+            "FZ",
+            "7Z",
+            "3Z",
+            "1Z",
+            "Z",
+            "F",
+            "7",
+            "3",
+            "1",
+        ];
+        for i in 0..u128::BITS as usize {
+            let n = u128::MAX >> i;
+            let s = encode_u128(n);
+            assert_eq!(s, x[i], "mismatch ones encode at {i}: {s} vs {}", x[i]);
+            let d = decode_u128(s).unwrap();
+            assert_eq!(d, n, "mismatch ones decode at {i}: {d} vs {n}");
         }
     }
 
@@ -384,8 +578,9 @@ mod tests {
         for i in 0..u64::BITS as usize {
             let n = u64::MAX >> i;
             let s = encode_u64(n);
-            assert_eq!(s, x[i]);
-            assert_eq!(decode_u64(s).unwrap(), n);
+            assert_eq!(s, x[i], "mismatch ones encode at {i}: {s} vs {}", x[i]);
+            let d = decode_u64(s).unwrap();
+            assert_eq!(d, n, "mismatch ones decode at {i}: {d} vs {n}");
         }
     }
 

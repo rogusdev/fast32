@@ -22,6 +22,17 @@ pub fn bits_or_err_u64(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, Decod
     }
 }
 
+#[inline]
+pub fn bits_or_err_u128(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u128, DecodeError> {
+    let c = a[i];
+    let o = dec[c as usize];
+    if o == INVALID_BYTE {
+        Err(DecodeError::InvalidChar { char: c as char, index: i })
+    } else {
+        Ok(o as u128)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum DecodeError {
     InvalidChar { char: char, index: usize },

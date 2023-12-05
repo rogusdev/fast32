@@ -122,7 +122,6 @@ pub fn decode_u64(a: impl AsRef<str>) -> Result<u64, DecodeError> {
             bits_or_err_u64(dec, a,  1)?
         }
         1 => {
-            #[allow(unused_parens)]
             bits_or_err_u64(dec, a,  0)?
         }
         0 => 0,
