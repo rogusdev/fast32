@@ -213,17 +213,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "easy32"
-version = "0.1.0"
-dependencies = [
- "base32",
- "criterion",
- "crockford",
- "data-encoding",
- "data-encoding-macro",
-]
-
-[[package]]
 name = "either"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -237,6 +226,17 @@ checksum = "a258e46cdc063eb8519c00b9fc845fc47bcfca4130e2f08e88665ceda8474245"
 dependencies = [
  "libc",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "fast32"
+version = "0.1.0"
+dependencies = [
+ "base32",
+ "criterion",
+ "crockford",
+ "data-encoding",
+ "data-encoding-macro",
 ]
 
 [[package]]
