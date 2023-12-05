@@ -11,7 +11,7 @@ pub fn encode_bytes(a: &[u8]) -> String {
     // https://stackoverflow.com/questions/23636240/how-do-i-predict-the-required-size-of-a-base32-decode-output
     let cap = (len * 8 + 4) / 5;
     let mut b = Vec::<u8>::with_capacity(cap);
-    let max_5s = cap / 8;
+    let max = cap / 8;
 
     // 5 bytes is 8 chars exactly
     // 4 bytes is 7 chars
@@ -46,7 +46,7 @@ pub fn encode_bytes(a: &[u8]) -> String {
     // (13 * 5) / 8 == 8
     // (15 * 5) / 8 == 9
 
-    for i in 0..max_5s {
+    for i in 0..max {
         // adapted from https://doc.rust-lang.org/src/alloc/vec/mod.rs.html#1878
         unsafe {
             let c = i * 5;
@@ -68,8 +68,8 @@ pub fn encode_bytes(a: &[u8]) -> String {
 
     match rem {
         4 => unsafe {
-            let c = max_5s * 5;
-            let p = max_5s * 8;
+            let c = max * 5;
+            let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
             write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
@@ -83,8 +83,8 @@ pub fn encode_bytes(a: &[u8]) -> String {
             b.set_len(p + 7);
         }
         3 => unsafe {
-            let c = max_5s * 5;
-            let p = max_5s * 8;
+            let c = max * 5;
+            let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
             write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
@@ -96,8 +96,8 @@ pub fn encode_bytes(a: &[u8]) -> String {
             b.set_len(p + 5);
         }
         2 => unsafe {
-            let c = max_5s * 5;
-            let p = max_5s * 8;
+            let c = max * 5;
+            let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
             write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
@@ -108,8 +108,8 @@ pub fn encode_bytes(a: &[u8]) -> String {
             b.set_len(p + 4);
         }
         1 => unsafe {
-            let c = max_5s * 5;
-            let p = max_5s * 8;
+            let c = max * 5;
+            let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
             write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);

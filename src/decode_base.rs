@@ -1,7 +1,18 @@
 use crate::alphabet::INVALID_BYTE;
 
 #[inline]
-pub fn bits_or_err(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, DecodeError> {
+pub fn bits_or_err_u8(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u8, DecodeError> {
+    let c = a[i];
+    let o = dec[c as usize];
+    if o == INVALID_BYTE {
+        Err(DecodeError::InvalidChar { char: c as char, index: i })
+    } else {
+        Ok(o)
+    }
+}
+
+#[inline]
+pub fn bits_or_err_u64(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, DecodeError> {
     let c = a[i];
     let o = dec[c as usize];
     if o == INVALID_BYTE {
@@ -15,6 +26,8 @@ pub fn bits_or_err(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, DecodeErr
 pub enum DecodeError {
     InvalidChar { char: char, index: usize },
     InvalidLength { length: usize },
+    // FIXME: adding this decreases decode_u64 performance by >50%!
+    // InvalidBits { byte: u8, index: usize },
 }
 
 impl std::fmt::Display for DecodeError {
@@ -26,6 +39,9 @@ impl std::fmt::Display for DecodeError {
             DecodeError::InvalidLength { length } => {
                 write!(f, "Invalid length of {length}")
             }
+            // DecodeError::InvalidBits { byte, index } => {
+            //     write!(f, "Invalid bits in {byte} at position {index}")
+            // }
         }
     }
 }

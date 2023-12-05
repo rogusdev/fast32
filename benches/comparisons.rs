@@ -275,8 +275,93 @@ fn bench_crate_decode_u64_max(c: &mut Criterion) {
     });
 }
 
+fn bench_base32_decode_fox_4(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
+    c.bench_function("base32 decode fox 4", |b| {
+        b.iter(|| base32::decode(base32::Alphabet::Crockford, black_box(a)))
+    });
+}
+
+fn bench_dataenc_decode_fox_4(c: &mut Criterion) {
+    let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
+    c.bench_function("dataenc decode fox 4", |b| {
+        b.iter(|| CROCKFORD32.decode(black_box(a)))
+    });
+}
+
+fn bench_crate_decode_fox_4(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
+    c.bench_function("crate decode fox 4", |b| {
+        b.iter(|| easy32::decode_bytes(black_box(a)))
+    });
+}
+
+fn bench_base32_decode_fox_3(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPE";
+    c.bench_function("base32 decode fox 3", |b| {
+        b.iter(|| base32::decode(base32::Alphabet::Crockford, black_box(a)))
+    });
+}
+
+fn bench_dataenc_decode_fox_3(c: &mut Criterion) {
+    let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPE";
+    c.bench_function("dataenc decode fox 3", |b| {
+        b.iter(|| CROCKFORD32.decode(black_box(a)))
+    });
+}
+
+fn bench_crate_decode_fox_3(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPE";
+    c.bench_function("crate decode fox 3", |b| {
+        b.iter(|| easy32::decode_bytes(black_box(a)))
+    });
+}
+
+fn bench_base32_decode_fox_2(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQG";
+    c.bench_function("base32 decode fox 2", |b| {
+        b.iter(|| base32::decode(base32::Alphabet::Crockford, black_box(a)))
+    });
+}
+
+fn bench_dataenc_decode_fox_2(c: &mut Criterion) {
+    let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQG";
+    c.bench_function("dataenc decode fox 2", |b| {
+        b.iter(|| CROCKFORD32.decode(black_box(a)))
+    });
+}
+
+fn bench_crate_decode_fox_2(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQG";
+    c.bench_function("crate decode fox 2", |b| {
+        b.iter(|| easy32::decode_bytes(black_box(a)))
+    });
+}
+
+fn bench_base32_decode_fox_1(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CG";
+    c.bench_function("base32 decode fox 1", |b| {
+        b.iter(|| base32::decode(base32::Alphabet::Crockford, black_box(a)))
+    });
+}
+
+fn bench_dataenc_decode_fox_1(c: &mut Criterion) {
+    let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CG";
+    c.bench_function("dataenc decode fox 1", |b| {
+        b.iter(|| CROCKFORD32.decode(black_box(a)))
+    });
+}
+
+fn bench_crate_decode_fox_1(c: &mut Criterion) {
+    let a = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CG";
+    c.bench_function("crate decode fox 1", |b| {
+        b.iter(|| easy32::decode_bytes(black_box(a)))
+    });
+}
+
 criterion_group!(
     benches,
+
     bench_crockford_encode_5111,
     bench_base32_encode_5111,
     bench_crate_encode_5111,
@@ -292,6 +377,7 @@ criterion_group!(
     bench_crockford_encode_u64_max,
     bench_base32_encode_u64_max,
     bench_crate_encode_u64_max,
+
     bench_base32_encode_fox_4,
     bench_dataenc_encode_fox_4,
     bench_crate_encode_fox_4,
@@ -304,6 +390,7 @@ criterion_group!(
     bench_base32_encode_fox_1,
     bench_dataenc_encode_fox_1,
     bench_crate_encode_fox_1,
+
     bench_crockford_decode_5111,
     bench_base32_decode_5111,
     bench_crate_decode_5111,
@@ -319,5 +406,18 @@ criterion_group!(
     bench_crockford_decode_u64_max,
     bench_base32_decode_u64_max,
     bench_crate_decode_u64_max,
+
+    bench_base32_decode_fox_4,
+    bench_dataenc_decode_fox_4,
+    bench_crate_decode_fox_4,
+    bench_base32_decode_fox_3,
+    bench_dataenc_decode_fox_3,
+    bench_crate_decode_fox_3,
+    bench_base32_decode_fox_2,
+    bench_dataenc_decode_fox_2,
+    bench_crate_decode_fox_2,
+    bench_base32_decode_fox_1,
+    bench_dataenc_decode_fox_1,
+    bench_crate_decode_fox_1,
 );
 criterion_main!(benches);
