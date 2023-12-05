@@ -4,8 +4,12 @@ use crate::alphabet::DEC_CROCKFORD_UPPER;
 use crate::decode_base::{bits_or_err_u8, DecodeError};
 
 #[inline]
-pub fn decode_bytes(a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
-    let a = a.as_ref().as_bytes();
+pub fn decode_bytes_str(a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
+    decode_bytes(a.as_ref().as_bytes())
+}
+
+#[inline]
+pub fn decode_bytes(a: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let dec = &DEC_CROCKFORD_UPPER;
 
     let len = a.len();

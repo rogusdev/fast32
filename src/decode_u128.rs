@@ -1,9 +1,20 @@
 use crate::alphabet::DEC_CROCKFORD_UPPER;
 use crate::decode_base::{bits_or_err_u128, DecodeError};
 
+// _str version is basically identical perf to byte array,
+// maybe 3-5% slower, beyond noise threshold, but not surprising
+// modify comparisons like so:
+//let a = "(\S+)";
+//let a = "$1".to_owned();
+//fast32::decode_([^(]+)\(black_box\(a
+//fast32::decode_$1_str(black_box(&a
 #[inline]
-pub fn decode_u128(a: impl AsRef<str>) -> Result<u128, DecodeError> {
-    let a = a.as_ref().as_bytes();
+pub fn decode_u128_str(a: impl AsRef<str>) -> Result<u128, DecodeError> {
+    decode_u128(a.as_ref().as_bytes())
+}
+
+#[inline]
+pub fn decode_u128(a: &[u8]) -> Result<u128, DecodeError> {
     let dec = &DEC_CROCKFORD_UPPER;
     #[rustfmt::skip]
     let n = match a.len() {

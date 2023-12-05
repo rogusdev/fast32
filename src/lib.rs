@@ -11,9 +11,12 @@ mod encode_u128;
 pub use crate::decode_base::DecodeError;
 pub use crate::decode_u64::decode_u64;
 pub use crate::decode_u128::decode_u128;
+pub use crate::decode_u64::decode_u64_str;
+pub use crate::decode_u128::decode_u128_str;
 pub use crate::encode_u64::encode_u64;
 pub use crate::encode_u128::encode_u128;
 pub use crate::decode_bytes::decode_bytes;
+pub use crate::decode_bytes::decode_bytes_str;
 pub use crate::encode_bytes::encode_bytes;
 
 #[cfg(test)]
@@ -27,7 +30,7 @@ mod tests {
         let x = "0";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -36,7 +39,7 @@ mod tests {
         let x = "00";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -45,7 +48,7 @@ mod tests {
         let x = "Z";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -54,7 +57,7 @@ mod tests {
         let x = "3W";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -63,7 +66,7 @@ mod tests {
         let x = "10";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -72,7 +75,7 @@ mod tests {
         let x = "40";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -81,7 +84,7 @@ mod tests {
         let x = "11";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -90,7 +93,7 @@ mod tests {
         let x = "44";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -99,7 +102,7 @@ mod tests {
         let x = "100";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -108,7 +111,7 @@ mod tests {
         let x = "0G00";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -117,7 +120,7 @@ mod tests {
         let x = "10000";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -126,7 +129,7 @@ mod tests {
         let x = "20000";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -135,7 +138,7 @@ mod tests {
         let x = "ZZZZ";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -144,7 +147,7 @@ mod tests {
         let x = "1ZZZY";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -153,7 +156,7 @@ mod tests {
         let x = "9ZZ";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -162,7 +165,7 @@ mod tests {
         let x = "4ZZG";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -179,7 +182,7 @@ mod tests {
         let x = "4ZQ";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -188,7 +191,7 @@ mod tests {
         let x = "2FVG";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -197,7 +200,7 @@ mod tests {
         let x = "Z0Z0Z0Z0";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -208,7 +211,7 @@ mod tests {
         let x = "Z0Z0Z0Z0";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -218,7 +221,7 @@ mod tests {
         let x = "14D2PF28AQKFF";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -227,7 +230,7 @@ mod tests {
         let x = "28T5CY4GNF6YY";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -236,7 +239,7 @@ mod tests {
         let x = "FZZZZZZZZZZZZ";
         let s = encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s).unwrap(), n);
+        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -245,7 +248,7 @@ mod tests {
         let x = "ZZZZZZZZZZZZY";
         let s = encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s).unwrap(), n);
+        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -255,7 +258,7 @@ mod tests {
         let x = "J6HB7H45BSQQH4D2PF28AQKFF";
         let s = encode_u128(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u128(s).unwrap(), n);
+        assert_eq!(decode_u128(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -264,7 +267,7 @@ mod tests {
         let x = "7ZZZZZZZZZZZZZZZZZZZZZZZZZ";
         let s = encode_u128(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u128(s).unwrap(), n);
+        assert_eq!(decode_u128(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -274,7 +277,7 @@ mod tests {
         let x = "28T5CY4GNF6YY4HMASW91AYD";
         let s = encode_u128(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u128(s).unwrap(), n);
+        assert_eq!(decode_u128(s.as_bytes()).unwrap(), n);
     }
 
     // cargo test tests::compare_bytes_u128 -- --exact
@@ -284,28 +287,28 @@ mod tests {
         let x = "28T5CY4GNF6YY4HMASW91AYD";
         let e = encode_u128(n);
         assert_eq!(e, x);
-        let d = decode_u128(e.clone()).unwrap();
+        let d = decode_u128(e.as_bytes()).unwrap();
         assert_eq!(d, n);
         let eb = encode_bytes(&[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
         assert_eq!(eb, e);
-        let db = decode_bytes(eb).unwrap();
+        let db = decode_bytes(eb.as_bytes()).unwrap();
         assert_eq!(db, d.to_be_bytes()[1..]);
         // TODO: find a way to convert a not 5 bit matchup such that both will give the same outcomes
     }
 
     #[test]
     fn decode_bad() {
-        let res = decode_u64("1^_^");
+        let res = decode_u64(b"1^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
-        let res = decode_u64("0123456789ABCD");
+        let res = decode_u64(b"0123456789ABCD");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
-        let res = decode_u128("1^_^");
+        let res = decode_u128(b"1^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
-        let res = decode_u128("0123456789ABCD0123456789ABCD");
+        let res = decode_u128(b"0123456789ABCD0123456789ABCD");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 28 });
-        let res = decode_bytes("111");
+        let res = decode_bytes(b"111");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 3 });
-        let res = decode_bytes("11");
+        let res = decode_bytes(b"11");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '1', index: 1 });
     }
 
@@ -315,7 +318,7 @@ mod tests {
             let s = encode_u64(i as u64);
             // println!("{} vs {} vs {} vs {}", s, i, ENC_CROCKFORD_UPPER[i], ENC_CROCKFORD_UPPER[i] as char);
             assert_eq!(s, (ENC_CROCKFORD_UPPER[i] as char).to_string());
-            assert_eq!(i as u64, decode_u64(s).unwrap());
+            assert_eq!(i as u64, decode_u64(s.as_bytes()).unwrap());
         }
     }
 
@@ -350,7 +353,7 @@ mod tests {
         for r in rs {
             for n in r {
                 let e = crate::encode_u128(n);
-                let d = crate::decode_u128(e.clone()).unwrap();
+                let d = crate::decode_u128(e.as_bytes()).unwrap();
                 assert_eq!(n, d, "mismatch decode for {n}: {e} vs {d}");
             }
         }
@@ -494,7 +497,7 @@ mod tests {
             let n = u128::MAX >> i;
             let s = encode_u128(n);
             assert_eq!(s, x[i], "mismatch ones encode at {i}: {s} vs {}", x[i]);
-            let d = decode_u128(s).unwrap();
+            let d = decode_u128(s.as_bytes()).unwrap();
             assert_eq!(d, n, "mismatch ones decode at {i}: {d} vs {n}");
         }
     }
@@ -573,7 +576,7 @@ mod tests {
             let n = u64::MAX >> i;
             let s = encode_u64(n);
             assert_eq!(s, x[i], "mismatch ones encode at {i}: {s} vs {}", x[i]);
-            let d = decode_u64(s).unwrap();
+            let d = decode_u64(s.as_bytes()).unwrap();
             assert_eq!(d, n, "mismatch ones decode at {i}: {d} vs {n}");
         }
     }

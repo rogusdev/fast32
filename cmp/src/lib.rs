@@ -29,7 +29,7 @@ mod tests {
                 assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
 
                 let c = crockford::decode(c).unwrap();
-                let e = fast32::decode_u64(e).unwrap();
+                let e = fast32::decode_u64(e.as_bytes()).unwrap();
                 assert_eq!(c, e, "mismatch decode for {n}: {c} vs {e}");
             }
         }
@@ -47,7 +47,7 @@ mod tests {
 
             let s = fast32::encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::decode_bytes(s).unwrap(), n);
+            assert_eq!(fast32::decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -64,7 +64,7 @@ mod tests {
 
             let s = fast32::encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::decode_bytes(s).unwrap(), n);
+            assert_eq!(fast32::decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -81,7 +81,7 @@ mod tests {
 
             let s = fast32::encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::decode_bytes(s).unwrap(), n);
+            assert_eq!(fast32::decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -98,7 +98,7 @@ mod tests {
 
             let s = fast32::encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::decode_bytes(s).unwrap(), n);
+            assert_eq!(fast32::decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -119,7 +119,7 @@ mod tests {
                 assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
                 let c = CROCKFORD32.encode(b);
                 assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
-                let d = fast32::decode_bytes(e).unwrap();
+                let d = fast32::decode_bytes(e.as_bytes()).unwrap();
                 assert_eq!(b.to_vec(), d, "mismatch decode for {n}: {b:?} vs {d:?}");
             }
         }
