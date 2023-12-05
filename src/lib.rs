@@ -5,10 +5,12 @@ mod decode_u64;
 mod encode_base;
 mod encode_bytes;
 mod encode_u64;
+mod encode_u128;
 
 pub use crate::decode_base::DecodeError;
 pub use crate::decode_u64::decode_u64;
 pub use crate::encode_u64::encode_u64;
+pub use crate::encode_u128::encode_u128;
 pub use crate::decode_bytes::decode_bytes;
 pub use crate::encode_bytes::encode_bytes;
 
@@ -205,7 +207,8 @@ mod tests {
     #[test]
     fn both_bytes_1066193093600() {
         let n = &[0xF8, 0x3E, 0x0F, 0x83, 0xE0];
-        // don't how this one matches the u64 encoding -- only one seen so far
+        // same as u64 encoding because this is exactly 5 bytes,
+        // which means they both use exactly 5 bits for each char
         let x = "Z0Z0Z0Z0";
         let s = encode_bytes(n);
         assert_eq!(s, x);
@@ -250,10 +253,10 @@ mod tests {
     }
 
     #[test]
-    fn decode_u64_bad() {
+    fn decode_bad() {
         let res = decode_u64("1^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
-        let res = decode_u64("0123456789abcd");
+        let res = decode_u64("0123456789ABCD");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
         let res = decode_bytes("111");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 3 });
@@ -267,6 +270,44 @@ mod tests {
             let s = encode_u64(i as u64);
             // println!("{} vs {} vs {} vs {}", s, i, ENC_CROCKFORD_UPPER[i], ENC_CROCKFORD_UPPER[i] as char);
             assert_eq!(s, (ENC_CROCKFORD_UPPER[i] as char).to_string());
+            assert_eq!(i as u64, decode_u64(s).unwrap());
+        }
+    }
+
+    #[test]
+    fn both_edges() {
+        let rs = [
+            (u128::MAX - 100000)..=u128::MAX,
+            ((1 << 120) - 10000)..=((1 << 120) + 10000),
+            ((1 << 115) - 10000)..=((1 << 115) + 10000),
+            ((1 << 110) - 10000)..=((1 << 110) + 10000),
+            ((1 << 105) - 10000)..=((1 << 105) + 10000),
+            ((1 << 100) - 10000)..=((1 << 100) + 10000),
+            ((1 << 95) - 10000)..=((1 << 95) + 10000),
+            ((1 << 90) - 10000)..=((1 << 90) + 10000),
+            ((1 << 85) - 10000)..=((1 << 85) + 10000),
+            ((1 << 80) - 10000)..=((1 << 80) + 10000),
+            ((1 << 75) - 10000)..=((1 << 75) + 10000),
+            ((1 << 70) - 10000)..=((1 << 70) + 10000),
+            ((1 << 65) - 10000)..=((1 << 65) + 10000),
+            ((1 << 60) - 10000)..=((1 << 60) + 10000),
+            ((1 << 55) - 10000)..=((1 << 55) + 10000),
+            ((1 << 50) - 10000)..=((1 << 50) + 10000),
+            ((1 << 45) - 10000)..=((1 << 45) + 10000),
+            ((1 << 40) - 10000)..=((1 << 40) + 10000),
+            ((1 << 35) - 10000)..=((1 << 35) + 10000),
+            ((1 << 30) - 10000)..=((1 << 30) + 10000),
+            ((1 << 25) - 10000)..=((1 << 25) + 10000),
+            ((1 << 20) - 10000)..=((1 << 20) + 10000),
+            0..=((1 << 16) + 10000),  // first 4 chars
+        ];
+
+        for r in rs {
+            for n in r {
+                let e = crate::encode_u128(n);
+                // let d = crate::decode_u128(e).unwrap();
+                // assert_eq!(n, d, "mismatch decode for {n}: {e} vs {d}");
+            }
         }
     }
 
@@ -384,8 +425,16 @@ mod tests {
     fn compare_crockford_crate() {
         let rs = [
             (u64::MAX - 100000)..=u64::MAX,
-            ((u64::MAX >> 32) - 100000)..=(u64::MAX >> 32),
-            0..=100000,
+            ((1 << 60) - 10000)..=((1 << 60) + 10000),
+            ((1 << 55) - 10000)..=((1 << 55) + 10000),
+            ((1 << 50) - 10000)..=((1 << 50) + 10000),
+            ((1 << 45) - 10000)..=((1 << 45) + 10000),
+            ((1 << 40) - 10000)..=((1 << 40) + 10000),
+            ((1 << 35) - 10000)..=((1 << 35) + 10000),
+            ((1 << 30) - 10000)..=((1 << 30) + 10000),
+            ((1 << 25) - 10000)..=((1 << 25) + 10000),
+            ((1 << 20) - 10000)..=((1 << 20) + 10000),
+            0..=((1 << 16) + 10000),  // first 4 chars
         ];
 
         for r in rs {

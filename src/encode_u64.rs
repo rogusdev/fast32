@@ -20,6 +20,9 @@ pub fn encode_u64(n: u64) -> String {
         13 => unsafe {
             let end = b.as_mut_ptr();
 
+            // this top char is why u64 is diff output from normal bytes based base32
+            // (other than exactly 5 byte numbers):
+            // for integer values (identifiers) we use remainder at the high bits, rather than low
             write(end        , enc[((n >> 60) as u8 & B32_MASK_BOT_4) as usize]);
             write(end.add( 1), enc[((n >> 55) as u8 & B32_MASK_BOT_5) as usize]);
             write(end.add( 2), enc[((n >> 50) as u8 & B32_MASK_BOT_5) as usize]);
