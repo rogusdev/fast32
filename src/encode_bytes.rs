@@ -1,11 +1,12 @@
 use core::ptr::write;
 
-use crate::alphabet::ENC_CROCKFORD_UPPER;
 use crate::encode_base::*;
 
-pub fn encode_bytes(a: &[u8]) -> String {
-    let enc = ENC_CROCKFORD_UPPER;
+pub fn encode_bytes_str(enc: &'static [u8; 32], a: impl AsRef<str>) -> String {
+    encode_bytes(enc, a.as_ref().as_bytes())
+}
 
+pub fn encode_bytes(enc: &'static [u8; 32], a: &[u8]) -> String {
     let len = a.len();
     let rem = len % 5;
     // https://stackoverflow.com/questions/23636240/how-do-i-predict-the-required-size-of-a-base32-decode-output

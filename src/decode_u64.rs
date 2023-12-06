@@ -1,4 +1,3 @@
-use crate::alphabet::DEC_CROCKFORD_UPPER;
 use crate::decode_base::{bits_or_err_u64, DecodeError};
 
 // _str version is basically identical perf to byte array,
@@ -8,14 +7,11 @@ use crate::decode_base::{bits_or_err_u64, DecodeError};
 //let a = "$1".to_owned();
 //fast32::decode_([^(]+)\(black_box\(a
 //fast32::decode_$1_str(black_box(&a
-    #[inline]
-pub fn decode_u64_str(a: impl AsRef<str>) -> Result<u64, DecodeError> {
-    decode_u64(a.as_ref().as_bytes())
+pub fn decode_u64_str(dec: &'static [u8; 256], a: impl AsRef<str>) -> Result<u64, DecodeError> {
+    decode_u64(dec, a.as_ref().as_bytes())
 }
 
-#[inline]
-pub fn decode_u64(a: &[u8]) -> Result<u64, DecodeError> {
-    let dec = &DEC_CROCKFORD_UPPER;
+pub fn decode_u64(dec: &'static [u8; 256], a: &[u8]) -> Result<u64, DecodeError> {
     #[rustfmt::skip]
     let n = match a.len() {
         13 => {

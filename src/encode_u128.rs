@@ -1,13 +1,9 @@
 use core::ptr::write;
 
-use crate::alphabet::ENC_CROCKFORD_UPPER;
 use crate::encode_base::{B32_MASK_BOT_3, B32_MASK_BOT_5};
 
 #[rustfmt::skip]
-#[inline]
-pub fn encode_u128(n: u128) -> String {
-    let enc = ENC_CROCKFORD_UPPER;
-
+pub fn encode_u128(enc: &'static [u8; 32], n: u128) -> String {
     // need this to not panic on ilog2
     if n == 0 {
         return "0".to_owned()

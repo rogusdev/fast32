@@ -18,161 +18,166 @@ pub use crate::encode_u128::encode_u128;
 pub use crate::decode_bytes::decode_bytes;
 pub use crate::decode_bytes::decode_bytes_str;
 pub use crate::encode_bytes::encode_bytes;
+pub use crate::encode_bytes::encode_bytes_str;
+
+pub use crate::alphabet::Alphabet32;
+pub use crate::alphabet::CROCKFORD;
+pub use crate::alphabet::RFC4648;
+pub use crate::alphabet::RFC4648_HEX;
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::alphabet::{DEC_CROCKFORD_UPPER, ENC_CROCKFORD_UPPER, INVALID_BYTE, INVALID_CHAR};
 
     #[test]
     fn both_u64_0() {
         let n = 0;
         let x = "0";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_0() {
         let n = &[0x00];
         let x = "00";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_31() {
         let n = 31;
         let x = "Z";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_31() {
         let n = &[0x1F];
         let x = "3W";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_32() {
         let n = 32;
         let x = "10";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_32() {
         let n = &[0x20];
         let x = "40";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_33() {
         let n = 33;
         let x = "11";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_33() {
         let n = &[0x21];
         let x = "44";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_32_32() {
         let n = 32 * 32;
         let x = "100";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_32_32() {
         let n = &[0x04, 0x00];
         let x = "0G00";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_32_32_32_32() {
         let n = 32 * 32 * 32 * 32;
         let x = "10000";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_32_32_32_32() {
         let n = &[0x10, 0x00, 0x00];
         let x = "20000";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_32_32_32_32_1() {
         let n = (32 * 32 * 32 * 32) - 1;
         let x = "ZZZZ";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_32_32_32_32_1() {
         let n = &[0x0F, 0xFF, 0xFF];
         let x = "1ZZZY";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_10239() {
         let n = 10239;
         let x = "9ZZ";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_10239() {
         let n = &[0x27, 0xFF];
         let x = "4ZZG";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_fox() {
         let n = "The quick brown fox jumps over the lazy dog.";
         let x = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
-        let s = encode_bytes(n.as_bytes());
+        let s = CROCKFORD.encode_bytes(n.as_bytes());
         assert_eq!(s, x);
     }
 
@@ -180,27 +185,27 @@ mod tests {
     fn both_u64_5111() {
         let n = 5111;
         let x = "4ZQ";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_5111() {
         let n = &[0x13, 0xF7];
         let x = "2FVG";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_1066193093600() {
         let n = 1066193093600;
         let x = "Z0Z0Z0Z0";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -209,9 +214,9 @@ mod tests {
         // same as u64 encoding because this is exactly 5 bytes,
         // which means they both use exactly 5 bits for each char
         let x = "Z0Z0Z0Z0";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -219,36 +224,36 @@ mod tests {
         let n = u64::from_be_bytes([0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF]);
         //println!("big: {}", n); // 1311768467294899695
         let x = "14D2PF28AQKFF";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_u64_big() {
         let n = &[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF];
         let x = "28T5CY4GNF6YY";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u64_max() {
         let n = u64::MAX;
         let x = "FZZZZZZZZZZZZ";
-        let s = encode_u64(n);
+        let s = CROCKFORD.encode_u64(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u64(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_bytes_max() {
         let n = &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
         let x = "ZZZZZZZZZZZZY";
-        let s = encode_bytes(n);
+        let s = CROCKFORD.encode_bytes(n);
         assert_eq!(s, x);
-        assert_eq!(decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -256,18 +261,18 @@ mod tests {
         let n = u128::from_be_bytes([0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF]);
         // println!("big: {}", n); // 24197857200151252728969465429440056815
         let x = "J6HB7H45BSQQH4D2PF28AQKFF";
-        let s = encode_u128(n);
+        let s = CROCKFORD.encode_u128(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u128(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u128(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
     fn both_u128_max() {
         let n = u128::MAX;
         let x = "7ZZZZZZZZZZZZZZZZZZZZZZZZZ";
-        let s = encode_u128(n);
+        let s = CROCKFORD.encode_u128(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u128(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u128(s.as_bytes()).unwrap(), n);
     }
 
     #[test]
@@ -275,9 +280,9 @@ mod tests {
         let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
         println!("med: {}", n); // 94522879688090830972536974333750221
         let x = "28T5CY4GNF6YY4HMASW91AYD";
-        let s = encode_u128(n);
+        let s = CROCKFORD.encode_u128(n);
         assert_eq!(s, x);
-        assert_eq!(decode_u128(s.as_bytes()).unwrap(), n);
+        assert_eq!(CROCKFORD.decode_u128(s.as_bytes()).unwrap(), n);
     }
 
     // cargo test tests::compare_bytes_u128 -- --exact
@@ -285,40 +290,69 @@ mod tests {
     fn compare_bytes_u128() {
         let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
         let x = "28T5CY4GNF6YY4HMASW91AYD";
-        let e = encode_u128(n);
+        let e = CROCKFORD.encode_u128(n);
         assert_eq!(e, x);
-        let d = decode_u128(e.as_bytes()).unwrap();
+        let d = CROCKFORD.decode_u128(e.as_bytes()).unwrap();
         assert_eq!(d, n);
-        let eb = encode_bytes(&[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+        let eb = CROCKFORD.encode_bytes(&[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
         assert_eq!(eb, e);
-        let db = decode_bytes(eb.as_bytes()).unwrap();
+        let db = CROCKFORD.decode_bytes(eb.as_bytes()).unwrap();
         assert_eq!(db, d.to_be_bytes()[1..]);
         // TODO: find a way to convert a not 5 bit matchup such that both will give the same outcomes
     }
 
     #[test]
     fn decode_bad() {
-        let res = decode_u64(b"1^_^");
+        let res = CROCKFORD.decode_u64(b"1^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
-        let res = decode_u64(b"0123456789ABCD");
+        let res = CROCKFORD.decode_u64(b"0123456789ABCD");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
-        let res = decode_u128(b"1^_^");
+        let res = CROCKFORD.decode_u128(b"1^_^");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
-        let res = decode_u128(b"0123456789ABCD0123456789ABCD");
+        let res = CROCKFORD.decode_u128(b"0123456789ABCD0123456789ABCD");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 28 });
-        let res = decode_bytes(b"111");
+        let res = CROCKFORD.decode_bytes(b"111");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 3 });
-        let res = decode_bytes(b"11");
+        let res = CROCKFORD.decode_bytes(b"11");
         assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '1', index: 1 });
     }
 
     #[test]
+    fn rfc4648() {
+        // https://datatracker.ietf.org/doc/html/rfc4648#section-10
+        assert_eq!(RFC4648.encode_bytes_str(""), "");
+        assert_eq!(RFC4648.encode_bytes_str("f"), "MY");
+        assert_eq!(RFC4648.encode_bytes_str("fo"), "MZXQ");
+        assert_eq!(RFC4648.encode_bytes_str("foo"), "MZXW6");
+        assert_eq!(RFC4648.encode_bytes_str("foob"), "MZXW6YQ");
+        assert_eq!(RFC4648.encode_bytes_str("fooba"), "MZXW6YTB");
+        assert_eq!(RFC4648.encode_bytes_str("foobar"), "MZXW6YTBOI");
+
+        assert_eq!(RFC4648_HEX.encode_bytes_str(""), "");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("f"), "CO");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("fo"), "CPNG");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("foo"), "CPNMU");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("foob"), "CPNMUOG");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("fooba"), "CPNMUOJ1");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("foobar"), "CPNMUOJ1E8");
+
+        assert_eq!(CROCKFORD.encode_bytes_str(""), "");
+        assert_eq!(CROCKFORD.encode_bytes_str("f"), "CR");
+        assert_eq!(CROCKFORD.encode_bytes_str("fo"), "CSQG");
+        assert_eq!(CROCKFORD.encode_bytes_str("foo"), "CSQPY");
+        assert_eq!(CROCKFORD.encode_bytes_str("foob"), "CSQPYRG");
+        assert_eq!(CROCKFORD.encode_bytes_str("fooba"), "CSQPYRK1");
+        assert_eq!(CROCKFORD.encode_bytes_str("foobar"), "CSQPYRK1E8");
+    }
+
+    #[test]
     fn both_u64_low() {
-        for i in 0..ENC_CROCKFORD_UPPER.len() {
-            let s = encode_u64(i as u64);
-            // println!("{} vs {} vs {} vs {}", s, i, ENC_CROCKFORD_UPPER[i], ENC_CROCKFORD_UPPER[i] as char);
-            assert_eq!(s, (ENC_CROCKFORD_UPPER[i] as char).to_string());
-            assert_eq!(i as u64, decode_u64(s.as_bytes()).unwrap());
+        let enc = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+        for i in 0..enc.len() {
+            let s = CROCKFORD.encode_u64(i as u64);
+            // println!("{} vs {} vs {} vs {}", s, i, enc[i], enc[i] as char);
+            assert_eq!(s, (enc[i] as char).to_string());
+            assert_eq!(i as u64, CROCKFORD.decode_u64(s.as_bytes()).unwrap());
         }
     }
 
@@ -352,8 +386,8 @@ mod tests {
 
         for r in rs {
             for n in r {
-                let e = crate::encode_u128(n);
-                let d = crate::decode_u128(e.as_bytes()).unwrap();
+                let e = crate::CROCKFORD.encode_u128(n);
+                let d = crate::CROCKFORD.decode_u128(e.as_bytes()).unwrap();
                 assert_eq!(n, d, "mismatch decode for {n}: {e} vs {d}");
             }
         }
@@ -495,9 +529,9 @@ mod tests {
         ];
         for i in 0..u128::BITS as usize {
             let n = u128::MAX >> i;
-            let s = encode_u128(n);
+            let s = CROCKFORD.encode_u128(n);
             assert_eq!(s, x[i], "mismatch ones encode at {i}: {s} vs {}", x[i]);
-            let d = decode_u128(s.as_bytes()).unwrap();
+            let d = CROCKFORD.decode_u128(s.as_bytes()).unwrap();
             assert_eq!(d, n, "mismatch ones decode at {i}: {d} vs {n}");
         }
     }
@@ -574,42 +608,10 @@ mod tests {
         ];
         for i in 0..u64::BITS as usize {
             let n = u64::MAX >> i;
-            let s = encode_u64(n);
+            let s = CROCKFORD.encode_u64(n);
             assert_eq!(s, x[i], "mismatch ones encode at {i}: {s} vs {}", x[i]);
-            let d = decode_u64(s.as_bytes()).unwrap();
+            let d = CROCKFORD.decode_u64(s.as_bytes()).unwrap();
             assert_eq!(d, n, "mismatch ones decode at {i}: {d} vs {n}");
         }
-    }
-
-    #[test]
-    fn gen_crockford_upper_decode() {
-        let mut s = String::new();
-        for i in 0..=255u8 {
-            let c = i as char;
-            #[rustfmt::skip]
-            let c = match c {
-                '0' | 'o' | 'O' => '0',
-                '1' | 'i' | 'I' | 'l' | 'L' => '1',
-                '2' ..= '9' => c,
-                'u' | 'U' => INVALID_CHAR,
-                'A' ..= 'Z' => c,
-                'a' ..= 'z' => c.to_ascii_uppercase(),
-                _ => INVALID_CHAR,
-            };
-            s.push(c);
-        }
-
-        let dec_chars = DEC_CROCKFORD_UPPER
-            .map(|b| {
-                if b == INVALID_BYTE {
-                    INVALID_CHAR
-                } else {
-                    ENC_CROCKFORD_UPPER[b as usize] as char
-                }
-            })
-            .iter()
-            .collect::<String>();
-
-        assert_eq!(dec_chars, s);
     }
 }

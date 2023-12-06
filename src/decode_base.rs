@@ -1,6 +1,5 @@
 use crate::alphabet::INVALID_BYTE;
 
-#[inline]
 pub fn bits_or_err_u8(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u8, DecodeError> {
     let c = a[i];
     let o = dec[c as usize];
@@ -11,7 +10,6 @@ pub fn bits_or_err_u8(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u8, DecodeE
     }
 }
 
-#[inline]
 pub fn bits_or_err_u64(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, DecodeError> {
     let c = a[i];
     let o = dec[c as usize];
@@ -22,7 +20,6 @@ pub fn bits_or_err_u64(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, Decod
     }
 }
 
-#[inline]
 pub fn bits_or_err_u128(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u128, DecodeError> {
     let c = a[i];
     let o = dec[c as usize];
