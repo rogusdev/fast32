@@ -64,6 +64,15 @@ fn both_bytes_32() {
 }
 
 #[test]
+fn both_bytes_32_rfc4648() {
+    let n = &[0x20];
+    let x = "EA";
+    let s = RFC4648_NOPAD.encode_bytes(n);
+    assert_eq!(s, x);
+    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+}
+
+#[test]
 fn both_u64_33() {
     let n = 33;
     let x = "11";
