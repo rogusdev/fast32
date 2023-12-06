@@ -8,7 +8,6 @@ pub fn decode_bytes_str(dec: &'static [u8; 256], a: impl AsRef<str>) -> Result<V
 
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let len = a.len();
-    // TODO? optionally count padding as rem (it's the same thing)
     let rem = len % 8;
     let cap = (len * 5) / 8;
     let mut b = Vec::<u8>::with_capacity(cap);

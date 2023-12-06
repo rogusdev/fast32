@@ -21,7 +21,14 @@ macro_rules! make_base32_alpha_simple {
         paste! {
 const [<ENC_ $n>]: &'static [u8; 32] = $e;
 const [<DEC_ $n>]: [u8; 256] = decoder_map_simple([<ENC_ $n>]);
-pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>]);
+pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], None);
+        }
+    };
+    ( $n:ident, $e:literal, $p:literal ) => {
+        paste! {
+const [<ENC_ $n>]: &'static [u8; 32] = $e;
+const [<DEC_ $n>]: [u8; 256] = decoder_map_simple([<ENC_ $n>]);
+pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], Some($p));
         }
     };
 }
@@ -32,31 +39,40 @@ macro_rules! make_base32_alpha_mapped {
         paste! {
 const [<ENC_ $n>]: &'static [u8; 32] = $e;
 const [<DEC_ $n>]: [u8; 256] = decoder_map([<ENC_ $n>], $d);
-pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>]);
+pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], None);
+        }
+    };
+    ( $n:ident, $e:literal, $d:literal, $p:literal ) => {
+        paste! {
+const [<ENC_ $n>]: &'static [u8; 32] = $e;
+const [<DEC_ $n>]: [u8; 256] = decoder_map([<ENC_ $n>], $d);
+pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], Some($p));
         }
     };
 }
 
 make_base32_alpha_mapped!(CROCKFORD, b"0123456789ABCDEFGHJKMNPQRSTVWXYZ", b"................................................0123456789.......ABCDEFGH1JK1MN0PQRST.VWXYZ......ABCDEFGH1JK1MN0PQRST.VWXYZ.....");
-make_base32_alpha_simple!(RFC4648, b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567");
-make_base32_alpha_simple!(RFC4648_HEX, b"0123456789ABCDEFGHIJKLMNOPQRSTUV");
+make_base32_alpha_simple!(RFC4648, b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", '=');
+make_base32_alpha_simple!(RFC4648_HEX, b"0123456789ABCDEFGHIJKLMNOPQRSTUV", '=');
+make_base32_alpha_simple!(RFC4648_NOPAD, b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567");
+make_base32_alpha_simple!(RFC4648_HEX_NOPAD, b"0123456789ABCDEFGHIJKLMNOPQRSTUV");
 
 pub struct Alphabet32 {
     enc: &'static [u8; 32],
     dec: &'static [u8; 256],
-    // pad: Option<char>,
+    pad: Option<char>,
 }
 
 impl Alphabet32 {
     pub const fn new(
         enc: &'static [u8; 32],
         dec: &'static [u8; 256],
-        // pad: Option<char>,
+        pad: Option<char>,
     ) -> Self {
         Self {
             enc,
             dec,
-            // pad,
+            pad,
         }
     }
 
@@ -72,12 +88,34 @@ impl Alphabet32 {
 
     #[inline]
     pub fn encode_bytes(&self, a: &[u8]) -> String {
-        encode_bytes(self.enc, a)
+        if let Some(pad) = self.pad {
+            let s = encode_bytes(self.enc, a);
+            match s.len() % 8 {
+                2 => format!("{s}{pad}{pad}{pad}{pad}{pad}{pad}"),
+                4 => format!("{s}{pad}{pad}{pad}{pad}"),
+                5 => format!("{s}{pad}{pad}{pad}"),
+                7 => format!("{s}{pad}"),
+                _ => s
+            }
+        } else {
+            encode_bytes(self.enc, a)
+        }
     }
 
     #[inline]
     pub fn encode_bytes_str(&self, a: impl AsRef<str>) -> String {
-        encode_bytes_str(self.enc, a)
+        if let Some(pad) = self.pad {
+            let s = encode_bytes_str(self.enc, a);
+            match s.len() % 8 {
+                2 => format!("{s}{pad}{pad}{pad}{pad}{pad}{pad}"),
+                4 => format!("{s}{pad}{pad}{pad}{pad}"),
+                5 => format!("{s}{pad}{pad}{pad}"),
+                7 => format!("{s}{pad}"),
+                _ => s
+            }
+        } else {
+            encode_bytes_str(self.enc, a)
+        }
     }
 
     #[inline]
@@ -92,7 +130,25 @@ impl Alphabet32 {
 
     #[inline]
     pub fn decode_bytes(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-        decode_bytes(self.dec, a)
+        if let Some(pad) = self.pad {
+            let len = a.len();
+            let pad = pad as u8;
+            if len == 0 {
+                decode_bytes(self.dec, a)
+            } else if a[len-6] == pad {
+                decode_bytes(self.dec, &a[..len-6])
+            } else if a[len-4] == pad {
+                decode_bytes(self.dec, &a[..len-4])
+            } else if a[len-3] == pad {
+                decode_bytes(self.dec, &a[..len-3])
+            } else if a[len-1] == pad {
+                decode_bytes(self.dec, &a[..len-1])
+            } else {
+                decode_bytes(self.dec, a)
+            }
+        } else {
+            decode_bytes(self.dec, a)
+        }
     }
 
     #[inline]
@@ -107,7 +163,27 @@ impl Alphabet32 {
 
     #[inline]
     pub fn decode_bytes_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
-        decode_bytes_str(self.dec, a)
+        if let Some(pad) = self.pad {
+            // note that with pad this skips _str version and goes direct
+            let a = a.as_ref().as_bytes();
+            let len = a.len();
+            let pad = pad as u8;
+            if len == 0 {
+                decode_bytes(self.dec, a)
+            } else if a[len-6] == pad {
+                decode_bytes(self.dec, &a[..len-6])
+            } else if a[len-4] == pad {
+                decode_bytes(self.dec, &a[..len-4])
+            } else if a[len-3] == pad {
+                decode_bytes(self.dec, &a[..len-3])
+            } else if a[len-1] == pad {
+                decode_bytes(self.dec, &a[..len-1])
+            } else {
+                decode_bytes(self.dec, a)
+            }
+        } else {
+            decode_bytes_str(self.dec, a)
+        }
     }
 }
 

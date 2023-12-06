@@ -24,6 +24,8 @@ pub use crate::alphabet::Alphabet32;
 pub use crate::alphabet::CROCKFORD;
 pub use crate::alphabet::RFC4648;
 pub use crate::alphabet::RFC4648_HEX;
+pub use crate::alphabet::RFC4648_NOPAD;
+pub use crate::alphabet::RFC4648_HEX_NOPAD;
 
 #[cfg(test)]
 mod tests {
@@ -278,7 +280,7 @@ mod tests {
     #[test]
     fn both_u128_med() {
         let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
-        println!("med: {}", n); // 94522879688090830972536974333750221
+        // println!("med: {}", n); // 94522879688090830972536974333750221
         let x = "28T5CY4GNF6YY4HMASW91AYD";
         let s = CROCKFORD.encode_u128(n);
         assert_eq!(s, x);
@@ -320,21 +322,69 @@ mod tests {
     #[test]
     fn rfc4648() {
         // https://datatracker.ietf.org/doc/html/rfc4648#section-10
+        assert_eq!(RFC4648_NOPAD.encode_bytes_str(""), "");
+        assert_eq!(RFC4648_NOPAD.encode_bytes_str("f"), "MY");
+        assert_eq!(RFC4648_NOPAD.encode_bytes_str("fo"), "MZXQ");
+        assert_eq!(RFC4648_NOPAD.encode_bytes_str("foo"), "MZXW6");
+        assert_eq!(RFC4648_NOPAD.encode_bytes_str("foob"), "MZXW6YQ");
+        assert_eq!(RFC4648_NOPAD.encode_bytes_str("fooba"), "MZXW6YTB");
+        assert_eq!(RFC4648_NOPAD.encode_bytes_str("foobar"), "MZXW6YTBOI");
+
+        assert_eq!(RFC4648_NOPAD.decode_bytes_str(""), Ok(b"".to_vec()));
+        assert_eq!(RFC4648_NOPAD.decode_bytes_str("MY"), Ok(b"f".to_vec()));
+        assert_eq!(RFC4648_NOPAD.decode_bytes_str("MZXQ"), Ok(b"fo".to_vec()));
+        assert_eq!(RFC4648_NOPAD.decode_bytes_str("MZXW6"), Ok(b"foo".to_vec()));
+        assert_eq!(RFC4648_NOPAD.decode_bytes_str("MZXW6YQ"), Ok(b"foob".to_vec()));
+        assert_eq!(RFC4648_NOPAD.decode_bytes_str("MZXW6YTB"), Ok(b"fooba".to_vec()));
+        assert_eq!(RFC4648_NOPAD.decode_bytes_str("MZXW6YTBOI"), Ok(b"foobar".to_vec()));
+
+        assert_eq!(RFC4648_HEX_NOPAD.encode_bytes_str(""), "");
+        assert_eq!(RFC4648_HEX_NOPAD.encode_bytes_str("f"), "CO");
+        assert_eq!(RFC4648_HEX_NOPAD.encode_bytes_str("fo"), "CPNG");
+        assert_eq!(RFC4648_HEX_NOPAD.encode_bytes_str("foo"), "CPNMU");
+        assert_eq!(RFC4648_HEX_NOPAD.encode_bytes_str("foob"), "CPNMUOG");
+        assert_eq!(RFC4648_HEX_NOPAD.encode_bytes_str("fooba"), "CPNMUOJ1");
+        assert_eq!(RFC4648_HEX_NOPAD.encode_bytes_str("foobar"), "CPNMUOJ1E8");
+
+        assert_eq!(RFC4648_HEX_NOPAD.decode_bytes_str(""), Ok(b"".to_vec()));
+        assert_eq!(RFC4648_HEX_NOPAD.decode_bytes_str("CO"), Ok(b"f".to_vec()));
+        assert_eq!(RFC4648_HEX_NOPAD.decode_bytes_str("CPNG"), Ok(b"fo".to_vec()));
+        assert_eq!(RFC4648_HEX_NOPAD.decode_bytes_str("CPNMU"), Ok(b"foo".to_vec()));
+        assert_eq!(RFC4648_HEX_NOPAD.decode_bytes_str("CPNMUOG"), Ok(b"foob".to_vec()));
+        assert_eq!(RFC4648_HEX_NOPAD.decode_bytes_str("CPNMUOJ1"), Ok(b"fooba".to_vec()));
+        assert_eq!(RFC4648_HEX_NOPAD.decode_bytes_str("CPNMUOJ1E8"), Ok(b"foobar".to_vec()));
+
         assert_eq!(RFC4648.encode_bytes_str(""), "");
-        assert_eq!(RFC4648.encode_bytes_str("f"), "MY");
-        assert_eq!(RFC4648.encode_bytes_str("fo"), "MZXQ");
-        assert_eq!(RFC4648.encode_bytes_str("foo"), "MZXW6");
-        assert_eq!(RFC4648.encode_bytes_str("foob"), "MZXW6YQ");
+        assert_eq!(RFC4648.encode_bytes_str("f"), "MY======");
+        assert_eq!(RFC4648.encode_bytes_str("fo"), "MZXQ====");
+        assert_eq!(RFC4648.encode_bytes_str("foo"), "MZXW6===");
+        assert_eq!(RFC4648.encode_bytes_str("foob"), "MZXW6YQ=");
         assert_eq!(RFC4648.encode_bytes_str("fooba"), "MZXW6YTB");
-        assert_eq!(RFC4648.encode_bytes_str("foobar"), "MZXW6YTBOI");
+        assert_eq!(RFC4648.encode_bytes_str("foobar"), "MZXW6YTBOI======");
+
+        assert_eq!(RFC4648.decode_bytes_str(""), Ok(b"".to_vec()));
+        assert_eq!(RFC4648.decode_bytes_str("MY======"), Ok(b"f".to_vec()));
+        assert_eq!(RFC4648.decode_bytes_str("MZXQ===="), Ok(b"fo".to_vec()));
+        assert_eq!(RFC4648.decode_bytes_str("MZXW6==="), Ok(b"foo".to_vec()));
+        assert_eq!(RFC4648.decode_bytes_str("MZXW6YQ="), Ok(b"foob".to_vec()));
+        assert_eq!(RFC4648.decode_bytes_str("MZXW6YTB"), Ok(b"fooba".to_vec()));
+        assert_eq!(RFC4648.decode_bytes_str("MZXW6YTBOI======"), Ok(b"foobar".to_vec()));
 
         assert_eq!(RFC4648_HEX.encode_bytes_str(""), "");
-        assert_eq!(RFC4648_HEX.encode_bytes_str("f"), "CO");
-        assert_eq!(RFC4648_HEX.encode_bytes_str("fo"), "CPNG");
-        assert_eq!(RFC4648_HEX.encode_bytes_str("foo"), "CPNMU");
-        assert_eq!(RFC4648_HEX.encode_bytes_str("foob"), "CPNMUOG");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("f"), "CO======");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("fo"), "CPNG====");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("foo"), "CPNMU===");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("foob"), "CPNMUOG=");
         assert_eq!(RFC4648_HEX.encode_bytes_str("fooba"), "CPNMUOJ1");
-        assert_eq!(RFC4648_HEX.encode_bytes_str("foobar"), "CPNMUOJ1E8");
+        assert_eq!(RFC4648_HEX.encode_bytes_str("foobar"), "CPNMUOJ1E8======");
+
+        assert_eq!(RFC4648_HEX.decode_bytes_str(""), Ok(b"".to_vec()));
+        assert_eq!(RFC4648_HEX.decode_bytes_str("CO======"), Ok(b"f".to_vec()));
+        assert_eq!(RFC4648_HEX.decode_bytes_str("CPNG===="), Ok(b"fo".to_vec()));
+        assert_eq!(RFC4648_HEX.decode_bytes_str("CPNMU==="), Ok(b"foo".to_vec()));
+        assert_eq!(RFC4648_HEX.decode_bytes_str("CPNMUOG="), Ok(b"foob".to_vec()));
+        assert_eq!(RFC4648_HEX.decode_bytes_str("CPNMUOJ1"), Ok(b"fooba".to_vec()));
+        assert_eq!(RFC4648_HEX.decode_bytes_str("CPNMUOJ1E8======"), Ok(b"foobar".to_vec()));
 
         assert_eq!(CROCKFORD.encode_bytes_str(""), "");
         assert_eq!(CROCKFORD.encode_bytes_str("f"), "CR");
@@ -343,6 +393,14 @@ mod tests {
         assert_eq!(CROCKFORD.encode_bytes_str("foob"), "CSQPYRG");
         assert_eq!(CROCKFORD.encode_bytes_str("fooba"), "CSQPYRK1");
         assert_eq!(CROCKFORD.encode_bytes_str("foobar"), "CSQPYRK1E8");
+
+        assert_eq!(CROCKFORD.decode_bytes_str(""), Ok(b"".to_vec()));
+        assert_eq!(CROCKFORD.decode_bytes_str("CR"), Ok(b"f".to_vec()));
+        assert_eq!(CROCKFORD.decode_bytes_str("CSQG"), Ok(b"fo".to_vec()));
+        assert_eq!(CROCKFORD.decode_bytes_str("CSQPY"), Ok(b"foo".to_vec()));
+        assert_eq!(CROCKFORD.decode_bytes_str("CSQPYRG"), Ok(b"foob".to_vec()));
+        assert_eq!(CROCKFORD.decode_bytes_str("CSQPYRK1"), Ok(b"fooba".to_vec()));
+        assert_eq!(CROCKFORD.decode_bytes_str("CSQPYRK1E8"), Ok(b"foobar".to_vec()));
     }
 
     #[test]
