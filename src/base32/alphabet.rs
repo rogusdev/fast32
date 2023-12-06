@@ -1,16 +1,16 @@
 use paste::paste;
 
-use crate::decode_base::DecodeError;
-use crate::decode_u64::decode_u64;
-use crate::decode_u128::decode_u128;
-use crate::decode_u64::decode_u64_str;
-use crate::decode_u128::decode_u128_str;
-use crate::encode_u64::encode_u64;
-use crate::encode_u128::encode_u128;
-use crate::decode_bytes::decode_bytes;
-use crate::decode_bytes::decode_bytes_str;
-use crate::encode_bytes::encode_bytes;
-use crate::encode_bytes::encode_bytes_str;
+use super::decode_base::DecodeError;
+use super::decode_u64::decode_u64;
+use super::decode_u128::decode_u128;
+use super::decode_u64::decode_u64_str;
+use super::decode_u128::decode_u128_str;
+use super::encode_u64::encode_u64;
+use super::encode_u128::encode_u128;
+use super::decode_bytes::decode_bytes;
+use super::decode_bytes::decode_bytes_str;
+use super::encode_bytes::encode_bytes;
+use super::encode_bytes::encode_bytes_str;
 
 const INVALID_CHAR: char = '.';
 pub const INVALID_BYTE: u8 = u8::MAX;

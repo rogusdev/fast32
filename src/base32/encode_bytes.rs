@@ -1,6 +1,6 @@
 use core::ptr::write;
 
-use crate::encode_base::*;
+use super::encode_base::*;
 
 pub fn encode_bytes_str(enc: &'static [u8; 32], a: impl AsRef<str>) -> String {
     encode_bytes(enc, a.as_ref().as_bytes())

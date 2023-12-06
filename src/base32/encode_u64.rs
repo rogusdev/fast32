@@ -1,6 +1,6 @@
 use core::ptr::write;
 
-use crate::encode_base::{B32_MASK_BOT_4, B32_MASK_BOT_5};
+use super::encode_base::{B32_MASK_BOT_4, B32_MASK_BOT_5};
 
 #[rustfmt::skip]
 pub fn encode_u64(enc: &'static [u8; 32], n: u64) -> String {

@@ -1,4 +1,4 @@
-use crate::alphabet::INVALID_BYTE;
+use super::alphabet::INVALID_BYTE;
 
 pub fn bits_or_err_u8(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u8, DecodeError> {
     let c = a[i];

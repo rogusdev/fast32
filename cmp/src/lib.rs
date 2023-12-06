@@ -25,18 +25,18 @@ mod tests {
         for r in rs {
             for n in r {
                 let c = crockford::encode(n);
-                let e = fast32::CROCKFORD.encode_u64(n);
+                let e = fast32::base32::CROCKFORD.encode_u64(n);
                 assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
 
                 let c = crockford::decode(c).unwrap();
-                let e = fast32::CROCKFORD.decode_u64(e.as_bytes()).unwrap();
+                let e = fast32::base32::CROCKFORD.decode_u64(e.as_bytes()).unwrap();
                 assert_eq!(c, e, "mismatch decode for {n}: {c} vs {e}");
             }
         }
     }
 
     #[test]
-    fn compare_bytes() {
+    fn compare_base32_bytes() {
         {
             // rem 4
             let n = b"The quick brown fox jumps over the lazy dog.";
@@ -45,9 +45,9 @@ mod tests {
             let s = base32::encode(base32::Alphabet::Crockford, n);
             assert_eq!(s, x);
 
-            let s = fast32::CROCKFORD.encode_bytes(n);
+            let s = fast32::base32::CROCKFORD.encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+            assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -62,9 +62,9 @@ mod tests {
             let s = base32::encode(base32::Alphabet::Crockford, n);
             assert_eq!(s, x);
 
-            let s = fast32::CROCKFORD.encode_bytes(n);
+            let s = fast32::base32::CROCKFORD.encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+            assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -79,9 +79,9 @@ mod tests {
             let s = base32::encode(base32::Alphabet::Crockford, n);
             assert_eq!(s, x);
 
-            let s = fast32::CROCKFORD.encode_bytes(n);
+            let s = fast32::base32::CROCKFORD.encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+            assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -96,9 +96,9 @@ mod tests {
             let s = base32::encode(base32::Alphabet::Crockford, n);
             assert_eq!(s, x);
 
-            let s = fast32::CROCKFORD.encode_bytes(n);
+            let s = fast32::base32::CROCKFORD.encode_bytes(n);
             assert_eq!(s, x);
-            assert_eq!(fast32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+            assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
 
             let s = CROCKFORD32.encode(n);
             assert_eq!(s, x);
@@ -115,11 +115,11 @@ mod tests {
             for n in r {
                 let b = &n.to_be_bytes();
                 let c = base32::encode(base32::Alphabet::Crockford, b);
-                let e = fast32::CROCKFORD.encode_bytes(b);
+                let e = fast32::base32::CROCKFORD.encode_bytes(b);
                 assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
                 let c = CROCKFORD32.encode(b);
                 assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
-                let d = fast32::CROCKFORD.decode_bytes(e.as_bytes()).unwrap();
+                let d = fast32::base32::CROCKFORD.decode_bytes(e.as_bytes()).unwrap();
                 assert_eq!(b.to_vec(), d, "mismatch decode for {n}: {b:?} vs {d:?}");
             }
         }

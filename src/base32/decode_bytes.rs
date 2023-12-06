@@ -1,6 +1,6 @@
 use core::ptr::write;
 
-use crate::decode_base::{bits_or_err_u8, DecodeError};
+use super::decode_base::{bits_or_err_u8, DecodeError};
 
 pub fn decode_bytes_str(dec: &'static [u8; 256], a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
     decode_bytes(dec, a.as_ref().as_bytes())
