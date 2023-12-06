@@ -37,6 +37,15 @@ fn both_bytes_31() {
 }
 
 #[test]
+fn both_bytes_31_rfc4648() {
+    let n = &[0x1F];
+    let x = "D4";
+    let s = RFC4648_NOPAD.encode_bytes(n);
+    assert_eq!(s, x);
+    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+}
+
+#[test]
 fn both_u64_32() {
     let n = 32;
     let x = "10";
@@ -273,6 +282,17 @@ fn compare_bytes_u128() {
 }
 
 #[test]
+fn both_u64_low() {
+    let enc = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+    for i in 0..enc.len() {
+        let s = CROCKFORD.encode_u64(i as u64);
+        // println!("{} vs {} vs {} vs {}", s, i, enc[i], enc[i] as char);
+        assert_eq!(s, (enc[i] as char).to_string());
+        assert_eq!(i as u64, CROCKFORD.decode_u64(s.as_bytes()).unwrap());
+    }
+}
+
+#[test]
 fn decode_bad() {
     let res = CROCKFORD.decode_u64(b"1^_^");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
@@ -339,6 +359,22 @@ fn rfc4648() {
     assert_eq!(RFC4648.decode_bytes_str("MZXW6YTB"), Ok(b"fooba".to_vec()));
     assert_eq!(RFC4648.decode_bytes_str("MZXW6YTBOI======"), Ok(b"foobar".to_vec()));
 
+    assert_eq!(RFC4648.encode_bytes(b""), "");
+    assert_eq!(RFC4648.encode_bytes(b"f"), "MY======");
+    assert_eq!(RFC4648.encode_bytes(b"fo"), "MZXQ====");
+    assert_eq!(RFC4648.encode_bytes(b"foo"), "MZXW6===");
+    assert_eq!(RFC4648.encode_bytes(b"foob"), "MZXW6YQ=");
+    assert_eq!(RFC4648.encode_bytes(b"fooba"), "MZXW6YTB");
+    assert_eq!(RFC4648.encode_bytes(b"foobar"), "MZXW6YTBOI======");
+
+    assert_eq!(RFC4648.decode_bytes(b""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648.decode_bytes(b"MY======"), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648.decode_bytes(b"MZXQ===="), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648.decode_bytes(b"MZXW6==="), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648.decode_bytes(b"MZXW6YQ="), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648.decode_bytes(b"MZXW6YTB"), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648.decode_bytes(b"MZXW6YTBOI======"), Ok(b"foobar".to_vec()));
+
     assert_eq!(RFC4648_HEX.encode_bytes_str(""), "");
     assert_eq!(RFC4648_HEX.encode_bytes_str("f"), "CO======");
     assert_eq!(RFC4648_HEX.encode_bytes_str("fo"), "CPNG====");
@@ -370,17 +406,6 @@ fn rfc4648() {
     assert_eq!(CROCKFORD.decode_bytes_str("CSQPYRG"), Ok(b"foob".to_vec()));
     assert_eq!(CROCKFORD.decode_bytes_str("CSQPYRK1"), Ok(b"fooba".to_vec()));
     assert_eq!(CROCKFORD.decode_bytes_str("CSQPYRK1E8"), Ok(b"foobar".to_vec()));
-}
-
-#[test]
-fn both_u64_low() {
-    let enc = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-    for i in 0..enc.len() {
-        let s = CROCKFORD.encode_u64(i as u64);
-        // println!("{} vs {} vs {} vs {}", s, i, enc[i], enc[i] as char);
-        assert_eq!(s, (enc[i] as char).to_string());
-        assert_eq!(i as u64, CROCKFORD.decode_u64(s.as_bytes()).unwrap());
-    }
 }
 
 #[test]

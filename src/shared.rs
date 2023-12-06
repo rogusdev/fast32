@@ -1,4 +1,16 @@
-use super::alphabet::INVALID_BYTE;
+pub const INVALID_CHAR: char = '.';
+pub const INVALID_BYTE: u8 = u8::MAX;
+
+pub const U8_MASK_BOT_5: u8 = 0b00011111;
+pub const U8_MASK_BOT_4: u8 = 0b00001111;
+pub const U8_MASK_TOP_4: u8 = 0b11110000;
+pub const U8_MASK_TOP_3: u8 = 0b11100000;
+pub const U8_MASK_BOT_2: u8 = 0b00000011;
+pub const U8_MASK_TOP_1: u8 = 0b10000000;
+pub const U8_MASK_BOT_1: u8 = 0b00000001;
+pub const U8_MASK_TOP_2: u8 = 0b11000000;
+pub const U8_MASK_BOT_3: u8 = 0b00000111;
+pub const U8_MASK_TOP_5: u8 = 0b11111000;
 
 pub fn bits_or_err_u8(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u8, DecodeError> {
     let c = a[i];

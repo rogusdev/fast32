@@ -1,12 +1,17 @@
 use core::ptr::write;
 
-use super::encode_base::*;
+use crate::shared::*;
 
-pub fn encode_bytes_str(enc: &'static [u8; 32], a: impl AsRef<str>) -> String {
+use super::alphabet::BITS;
+
+const U8_MASK_MID_2: u8 = 0b01111100;
+const U8_MASK_MID_1: u8 = 0b00111110;
+
+pub fn encode_bytes_str(enc: &'static [u8; BITS], a: impl AsRef<str>) -> String {
     encode_bytes(enc, a.as_ref().as_bytes())
 }
 
-pub fn encode_bytes(enc: &'static [u8; 32], a: &[u8]) -> String {
+pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
     let len = a.len();
     let rem = len % 5;
     // https://stackoverflow.com/questions/23636240/how-do-i-predict-the-required-size-of-a-base32-decode-output
@@ -54,14 +59,14 @@ pub fn encode_bytes(enc: &'static [u8; 32], a: &[u8]) -> String {
             let p = i * 8;
             let end = b.as_mut_ptr().add(p);
 
-            write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
-            write(end.add(1), enc[(((a[c  ] & B32_MASK_BOT_3) << 2) | ((a[c+1] & B32_MASK_TOP_2) >> 6)) as usize]);
-            write(end.add(2), enc[( (a[c+1] & B32_MASK_MID_1) >> 1                                    ) as usize]);
-            write(end.add(3), enc[(((a[c+1] & B32_MASK_BOT_1) << 4) | ((a[c+2] & B32_MASK_TOP_4) >> 4)) as usize]);
-            write(end.add(4), enc[(((a[c+2] & B32_MASK_BOT_4) << 1) | ((a[c+3] & B32_MASK_TOP_1) >> 7)) as usize]);
-            write(end.add(5), enc[( (a[c+3] & B32_MASK_MID_2) >> 2                                    ) as usize]);
-            write(end.add(6), enc[(((a[c+3] & B32_MASK_BOT_2) << 3) | ((a[c+4] & B32_MASK_TOP_3) >> 5)) as usize]);
-            write(end.add(7), enc[(  a[c+4] & B32_MASK_BOT_5                                          ) as usize]);
+            write(end       , enc[( (a[c  ] & U8_MASK_TOP_5) >> 3                                    ) as usize]);
+            write(end.add(1), enc[(((a[c  ] & U8_MASK_BOT_3) << 2) | ((a[c+1] & U8_MASK_TOP_2) >> 6)) as usize]);
+            write(end.add(2), enc[( (a[c+1] & U8_MASK_MID_1) >> 1                                    ) as usize]);
+            write(end.add(3), enc[(((a[c+1] & U8_MASK_BOT_1) << 4) | ((a[c+2] & U8_MASK_TOP_4) >> 4)) as usize]);
+            write(end.add(4), enc[(((a[c+2] & U8_MASK_BOT_4) << 1) | ((a[c+3] & U8_MASK_TOP_1) >> 7)) as usize]);
+            write(end.add(5), enc[( (a[c+3] & U8_MASK_MID_2) >> 2                                    ) as usize]);
+            write(end.add(6), enc[(((a[c+3] & U8_MASK_BOT_2) << 3) | ((a[c+4] & U8_MASK_TOP_3) >> 5)) as usize]);
+            write(end.add(7), enc[(  a[c+4] & U8_MASK_BOT_5                                          ) as usize]);
 
             b.set_len(p + 8);
         }
@@ -73,13 +78,13 @@ pub fn encode_bytes(enc: &'static [u8; 32], a: &[u8]) -> String {
             let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
-            write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
-            write(end.add(1), enc[(((a[c  ] & B32_MASK_BOT_3) << 2) | ((a[c+1] & B32_MASK_TOP_2) >> 6)) as usize]);
-            write(end.add(2), enc[( (a[c+1] & B32_MASK_MID_1) >> 1                                    ) as usize]);
-            write(end.add(3), enc[(((a[c+1] & B32_MASK_BOT_1) << 4) | ((a[c+2] & B32_MASK_TOP_4) >> 4)) as usize]);
-            write(end.add(4), enc[(((a[c+2] & B32_MASK_BOT_4) << 1) | ((a[c+3] & B32_MASK_TOP_1) >> 7)) as usize]);
-            write(end.add(5), enc[( (a[c+3] & B32_MASK_MID_2) >> 2                                    ) as usize]);
-            write(end.add(6), enc[(((a[c+3] & B32_MASK_BOT_2) << 3)                                   ) as usize]);
+            write(end       , enc[( (a[c  ] & U8_MASK_TOP_5) >> 3                                    ) as usize]);
+            write(end.add(1), enc[(((a[c  ] & U8_MASK_BOT_3) << 2) | ((a[c+1] & U8_MASK_TOP_2) >> 6)) as usize]);
+            write(end.add(2), enc[( (a[c+1] & U8_MASK_MID_1) >> 1                                    ) as usize]);
+            write(end.add(3), enc[(((a[c+1] & U8_MASK_BOT_1) << 4) | ((a[c+2] & U8_MASK_TOP_4) >> 4)) as usize]);
+            write(end.add(4), enc[(((a[c+2] & U8_MASK_BOT_4) << 1) | ((a[c+3] & U8_MASK_TOP_1) >> 7)) as usize]);
+            write(end.add(5), enc[( (a[c+3] & U8_MASK_MID_2) >> 2                                    ) as usize]);
+            write(end.add(6), enc[(((a[c+3] & U8_MASK_BOT_2) << 3)                                   ) as usize]);
 
             b.set_len(p + 7);
         }
@@ -88,11 +93,11 @@ pub fn encode_bytes(enc: &'static [u8; 32], a: &[u8]) -> String {
             let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
-            write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
-            write(end.add(1), enc[(((a[c  ] & B32_MASK_BOT_3) << 2) | ((a[c+1] & B32_MASK_TOP_2) >> 6)) as usize]);
-            write(end.add(2), enc[( (a[c+1] & B32_MASK_MID_1) >> 1                                    ) as usize]);
-            write(end.add(3), enc[(((a[c+1] & B32_MASK_BOT_1) << 4) | ((a[c+2] & B32_MASK_TOP_4) >> 4)) as usize]);
-            write(end.add(4), enc[(((a[c+2] & B32_MASK_BOT_4) << 1)                                   ) as usize]);
+            write(end       , enc[( (a[c  ] & U8_MASK_TOP_5) >> 3                                    ) as usize]);
+            write(end.add(1), enc[(((a[c  ] & U8_MASK_BOT_3) << 2) | ((a[c+1] & U8_MASK_TOP_2) >> 6)) as usize]);
+            write(end.add(2), enc[( (a[c+1] & U8_MASK_MID_1) >> 1                                    ) as usize]);
+            write(end.add(3), enc[(((a[c+1] & U8_MASK_BOT_1) << 4) | ((a[c+2] & U8_MASK_TOP_4) >> 4)) as usize]);
+            write(end.add(4), enc[(((a[c+2] & U8_MASK_BOT_4) << 1)                                   ) as usize]);
 
             b.set_len(p + 5);
         }
@@ -101,10 +106,10 @@ pub fn encode_bytes(enc: &'static [u8; 32], a: &[u8]) -> String {
             let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
-            write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
-            write(end.add(1), enc[(((a[c  ] & B32_MASK_BOT_3) << 2) | ((a[c+1] & B32_MASK_TOP_2) >> 6)) as usize]);
-            write(end.add(2), enc[( (a[c+1] & B32_MASK_MID_1) >> 1                                    ) as usize]);
-            write(end.add(3), enc[(((a[c+1] & B32_MASK_BOT_1) << 4)                                   ) as usize]);
+            write(end       , enc[( (a[c  ] & U8_MASK_TOP_5) >> 3                                    ) as usize]);
+            write(end.add(1), enc[(((a[c  ] & U8_MASK_BOT_3) << 2) | ((a[c+1] & U8_MASK_TOP_2) >> 6)) as usize]);
+            write(end.add(2), enc[( (a[c+1] & U8_MASK_MID_1) >> 1                                    ) as usize]);
+            write(end.add(3), enc[(((a[c+1] & U8_MASK_BOT_1) << 4)                                   ) as usize]);
 
             b.set_len(p + 4);
         }
@@ -113,8 +118,8 @@ pub fn encode_bytes(enc: &'static [u8; 32], a: &[u8]) -> String {
             let p = max * 8;
             let end = b.as_mut_ptr().add(p);
 
-            write(end       , enc[( (a[c  ] & B32_MASK_TOP_5) >> 3                                    ) as usize]);
-            write(end.add(1), enc[(((a[c  ] & B32_MASK_BOT_3) << 2)                                   ) as usize]);
+            write(end       , enc[( (a[c  ] & U8_MASK_TOP_5) >> 3                                    ) as usize]);
+            write(end.add(1), enc[(((a[c  ] & U8_MASK_BOT_3) << 2)                                   ) as usize]);
 
             b.set_len(p + 2);
         }

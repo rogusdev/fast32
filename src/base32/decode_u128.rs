@@ -1,4 +1,4 @@
-use super::decode_base::{bits_or_err_u128, DecodeError};
+use crate::shared::{bits_or_err_u128, DecodeError};
 
 // _str version is basically identical perf to byte array,
 // maybe 3-5% slower, beyond noise threshold, but not surprising

@@ -1,6 +1,8 @@
 use paste::paste;
 
-use super::decode_base::DecodeError;
+use crate::DecodeError;
+use crate::shared::{INVALID_BYTE, INVALID_CHAR};
+
 use super::decode_u64::decode_u64;
 use super::decode_u128::decode_u128;
 use super::decode_u64::decode_u64_str;
@@ -12,23 +14,22 @@ use super::decode_bytes::decode_bytes_str;
 use super::encode_bytes::encode_bytes;
 use super::encode_bytes::encode_bytes_str;
 
-const INVALID_CHAR: char = '.';
-pub const INVALID_BYTE: u8 = u8::MAX;
+pub const BITS: usize = 32;
 
 #[macro_export]
 macro_rules! make_base32_alpha_simple {
     ( $n:ident, $e:literal ) => {
         paste! {
-const [<ENC_ $n>]: &'static [u8; 32] = $e;
+const [<ENC_ $n>]: &'static [u8; BITS] = $e;
 const [<DEC_ $n>]: [u8; 256] = decoder_map_simple([<ENC_ $n>]);
-pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], None);
+pub const $n: Alphabet = Alphabet::new([<ENC_ $n>], &[<DEC_ $n>], None);
         }
     };
     ( $n:ident, $e:literal, $p:literal ) => {
         paste! {
-const [<ENC_ $n>]: &'static [u8; 32] = $e;
+const [<ENC_ $n>]: &'static [u8; BITS] = $e;
 const [<DEC_ $n>]: [u8; 256] = decoder_map_simple([<ENC_ $n>]);
-pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], Some($p));
+pub const $n: Alphabet = Alphabet::new([<ENC_ $n>], &[<DEC_ $n>], Some($p));
         }
     };
 }
@@ -37,16 +38,16 @@ pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], Some($p));
 macro_rules! make_base32_alpha_mapped {
     ( $n:ident, $e:literal, $d:literal ) => {
         paste! {
-const [<ENC_ $n>]: &'static [u8; 32] = $e;
+const [<ENC_ $n>]: &'static [u8; BITS] = $e;
 const [<DEC_ $n>]: [u8; 256] = decoder_map([<ENC_ $n>], $d);
-pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], None);
+pub const $n: Alphabet = Alphabet::new([<ENC_ $n>], &[<DEC_ $n>], None);
         }
     };
     ( $n:ident, $e:literal, $d:literal, $p:literal ) => {
         paste! {
-const [<ENC_ $n>]: &'static [u8; 32] = $e;
+const [<ENC_ $n>]: &'static [u8; BITS] = $e;
 const [<DEC_ $n>]: [u8; 256] = decoder_map([<ENC_ $n>], $d);
-pub const $n: Alphabet32 = Alphabet32::new([<ENC_ $n>], &[<DEC_ $n>], Some($p));
+pub const $n: Alphabet = Alphabet::new([<ENC_ $n>], &[<DEC_ $n>], Some($p));
         }
     };
 }
@@ -57,15 +58,15 @@ make_base32_alpha_simple!(RFC4648_HEX, b"0123456789ABCDEFGHIJKLMNOPQRSTUV", '=')
 make_base32_alpha_simple!(RFC4648_NOPAD, b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567");
 make_base32_alpha_simple!(RFC4648_HEX_NOPAD, b"0123456789ABCDEFGHIJKLMNOPQRSTUV");
 
-pub struct Alphabet32 {
-    enc: &'static [u8; 32],
+pub struct Alphabet {
+    enc: &'static [u8; BITS],
     dec: &'static [u8; 256],
     pad: Option<char>,
 }
 
-impl Alphabet32 {
+impl Alphabet {
     pub const fn new(
-        enc: &'static [u8; 32],
+        enc: &'static [u8; BITS],
         dec: &'static [u8; 256],
         pad: Option<char>,
     ) -> Self {
@@ -187,24 +188,24 @@ impl Alphabet32 {
     }
 }
 
-const fn decoder_map_simple(enc: &[u8; 32]) -> [u8; 256] {
+const fn decoder_map_simple(enc: &[u8; BITS]) -> [u8; 256] {
     let mut dec = [INVALID_BYTE; 256];
     let mut i = 0;
-    while i < 32 {
+    while i < BITS {
         dec[enc[i] as usize] = i as u8;
         i += 1;
     }
     dec
 }
 
-const fn decoder_char_from_enc(enc: &[u8; 32], dec: &[u8; 128], i: usize) -> u8 {
+const fn decoder_char_from_enc(enc: &[u8; BITS], dec: &[u8; 128], i: usize) -> u8 {
     let c = dec[i];
     if c == INVALID_CHAR as u8 {
         return INVALID_BYTE
     }
 
     let mut j = 0;
-    while j < 32 {
+    while j < BITS {
         if enc[j] == c {
             return j as u8
         }
@@ -214,7 +215,7 @@ const fn decoder_char_from_enc(enc: &[u8; 32], dec: &[u8; 128], i: usize) -> u8 
     panic!("Decoder has char not present in encoder!")
 }
 
-const fn decoder_map(enc: &[u8; 32], map: &[u8; 128]) -> [u8; 256] {
+const fn decoder_map(enc: &[u8; BITS], map: &[u8; 128]) -> [u8; 256] {
     let mut dec = [INVALID_BYTE; 256];
     let mut i = 0;
     while i < 128 {
