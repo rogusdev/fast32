@@ -2,7 +2,10 @@ use core::ptr::write;
 
 use crate::shared::U8_MASK_BOT_5;
 
-use super::alphabet::{BITS, WIDTH_1, WIDTH_2, WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9, WIDTH_10, WIDTH_11, WIDTH_12};
+use super::alphabet::{
+    BITS, WIDTH_1, WIDTH_10, WIDTH_11, WIDTH_12, WIDTH_2, WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6,
+    WIDTH_7, WIDTH_8, WIDTH_9,
+};
 
 #[rustfmt::skip]
 pub fn encode_u64(enc: &'static [u8; BITS], n: u64) -> String {

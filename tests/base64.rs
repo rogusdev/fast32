@@ -199,7 +199,10 @@ fn both_bytes_max() {
 
 #[test]
 fn both_u128_big() {
-    let n = u128::from_be_bytes([0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF]);
+    let n = u128::from_be_bytes([
+        0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD,
+        0xEF,
+    ]);
     let x = "SNFZ4kKvN7xI0VniQq83v";
     let s = RFC4648_NOPAD.encode_u128(n);
     assert_eq!(s, x);
@@ -217,7 +220,10 @@ fn both_u128_max() {
 
 #[test]
 fn both_u128_med() {
-    let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+    let n = u128::from_be_bytes([
+        0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB,
+        0xCD,
+    ]);
     let x = "EjRWeJCrze8SNFZ4kKvN";
     let s = RFC4648_NOPAD.encode_u128(n);
     assert_eq!(s, x);
@@ -227,13 +233,18 @@ fn both_u128_med() {
 // cargo test tests::compare_bytes_u128 -- --exact
 #[test]
 fn compare_bytes_u128() {
-    let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+    let n = u128::from_be_bytes([
+        0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB,
+        0xCD,
+    ]);
     let x = "EjRWeJCrze8SNFZ4kKvN";
     let e = RFC4648_NOPAD.encode_u128(n);
     assert_eq!(e, x);
     let d = RFC4648_NOPAD.decode_u128(e.as_bytes()).unwrap();
     assert_eq!(d, n);
-    let eb = RFC4648_NOPAD.encode_bytes(&[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+    let eb = RFC4648_NOPAD.encode_bytes(&[
+        0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD,
+    ]);
     assert_eq!(eb, e);
     let db = RFC4648_NOPAD.decode_bytes(eb.as_bytes()).unwrap();
     assert_eq!(db, d.to_be_bytes()[1..]);
@@ -254,20 +265,38 @@ fn both_u64_low() {
 #[test]
 fn decode_bad() {
     let res = RFC4648_NOPAD.decode_u64(b"1^_^");
-    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+    assert_eq!(
+        res.unwrap_err(),
+        DecodeError::InvalidChar {
+            char: '^',
+            index: 1
+        }
+    );
     let res = RFC4648_NOPAD.decode_u64(b"0123456789AB");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 12 });
     let res = RFC4648_NOPAD.decode_u128(b"1^_^");
-    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+    assert_eq!(
+        res.unwrap_err(),
+        DecodeError::InvalidChar {
+            char: '^',
+            index: 1
+        }
+    );
     let res = RFC4648_NOPAD.decode_u128(b"0123456789ABCD012345678");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 23 });
     let res = RFC4648_NOPAD.decode_bytes(b"1");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 1 });
     let res = RFC4648_NOPAD.decode_bytes(b"11");
-    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '1', index: 1 });
+    assert_eq!(
+        res.unwrap_err(),
+        DecodeError::InvalidChar {
+            char: '1',
+            index: 1
+        }
+    );
 }
 
-
+#[rustfmt::skip]
 #[test]
 fn rfc4648() {
     // https://datatracker.ietf.org/doc/html/rfc4648#section-10
@@ -343,7 +372,7 @@ fn both_edges_u128() {
         ((1 << 30) - 10000)..=((1 << 30) + 10000),
         ((1 << 24) - 10000)..=((1 << 24) + 10000),
         ((1 << 18) - 10000)..=((1 << 18) + 10000),
-        0..=((1 << 16) + 10000),  // first 4 chars
+        0..=((1 << 16) + 10000), // first 4 chars
     ];
 
     for r in rs {

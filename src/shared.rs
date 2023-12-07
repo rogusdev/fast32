@@ -18,7 +18,10 @@ pub fn bits_or_err_u8(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u8, DecodeE
     let c = a[i];
     let o = dec[c as usize];
     if o == INVALID_BYTE {
-        Err(DecodeError::InvalidChar { char: c as char, index: i })
+        Err(DecodeError::InvalidChar {
+            char: c as char,
+            index: i,
+        })
     } else {
         Ok(o)
     }
@@ -28,7 +31,10 @@ pub fn bits_or_err_u64(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u64, Decod
     let c = a[i];
     let o = dec[c as usize];
     if o == INVALID_BYTE {
-        Err(DecodeError::InvalidChar { char: c as char, index: i })
+        Err(DecodeError::InvalidChar {
+            char: c as char,
+            index: i,
+        })
     } else {
         Ok(o as u64)
     }
@@ -38,7 +44,10 @@ pub fn bits_or_err_u128(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u128, Dec
     let c = a[i];
     let o = dec[c as usize];
     if o == INVALID_BYTE {
-        Err(DecodeError::InvalidChar { char: c as char, index: i })
+        Err(DecodeError::InvalidChar {
+            char: c as char,
+            index: i,
+        })
     } else {
         Ok(o as u128)
     }
@@ -60,10 +69,9 @@ impl std::fmt::Display for DecodeError {
             }
             DecodeError::InvalidLength { length } => {
                 write!(f, "Invalid length of {length}")
-            }
-            // DecodeError::InvalidBits { byte, index } => {
-            //     write!(f, "Invalid bits in {byte} at position {index}")
-            // }
+            } // DecodeError::InvalidBits { byte, index } => {
+              //     write!(f, "Invalid bits in {byte} at position {index}")
+              // }
         }
     }
 }

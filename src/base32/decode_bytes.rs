@@ -4,10 +4,14 @@ use crate::shared::{bits_or_err_u8, DecodeError};
 
 use super::alphabet::{WIDTH_IN, WIDTH_OUT};
 
-pub fn decode_bytes_str(dec: &'static [u8; 256], a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
+pub fn decode_bytes_str(
+    dec: &'static [u8; 256],
+    a: impl AsRef<str>,
+) -> Result<Vec<u8>, DecodeError> {
     decode_bytes(dec, a.as_ref().as_bytes())
 }
 
+#[rustfmt::skip]
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let len = a.len();
     let rem = len % WIDTH_OUT;

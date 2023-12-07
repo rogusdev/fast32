@@ -11,6 +11,7 @@ pub fn encode_bytes_str(enc: &'static [u8; BITS], a: impl AsRef<str>) -> String 
     encode_bytes(enc, a.as_ref().as_bytes())
 }
 
+#[rustfmt::skip]
 pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
     let len = a.len();
     let rem = len % WIDTH_IN;

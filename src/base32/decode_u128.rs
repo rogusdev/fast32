@@ -1,6 +1,10 @@
 use crate::shared::{bits_or_err_u128, DecodeError};
 
-use super::alphabet::{WIDTH_1, WIDTH_2, WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9, WIDTH_10, WIDTH_11, WIDTH_12, WIDTH_13, WIDTH_14, WIDTH_15, WIDTH_16, WIDTH_17, WIDTH_18, WIDTH_19, WIDTH_20, WIDTH_21, WIDTH_22, WIDTH_23, WIDTH_24, WIDTH_25};
+use super::alphabet::{
+    WIDTH_1, WIDTH_10, WIDTH_11, WIDTH_12, WIDTH_13, WIDTH_14, WIDTH_15, WIDTH_16, WIDTH_17,
+    WIDTH_18, WIDTH_19, WIDTH_2, WIDTH_20, WIDTH_21, WIDTH_22, WIDTH_23, WIDTH_24, WIDTH_25,
+    WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9,
+};
 
 // _str version is basically identical perf to byte array,
 // maybe 3-5% slower, beyond noise threshold, but not surprising

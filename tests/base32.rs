@@ -1,4 +1,6 @@
-use fast32::base32::{DecodeError, CROCKFORD, RFC4648, RFC4648_HEX, RFC4648_HEX_NOPAD, RFC4648_NOPAD};
+use fast32::base32::{
+    DecodeError, CROCKFORD, RFC4648, RFC4648_HEX, RFC4648_HEX_NOPAD, RFC4648_NOPAD,
+};
 
 #[test]
 fn both_u64_0() {
@@ -256,7 +258,10 @@ fn both_bytes_max() {
 
 #[test]
 fn both_u128_big() {
-    let n = u128::from_be_bytes([0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF]);
+    let n = u128::from_be_bytes([
+        0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD,
+        0xEF,
+    ]);
     // println!("big: {}", n); // 24197857200151252728969465429440056815
     let x = "J6HB7H45BSQQH4D2PF28AQKFF";
     let s = CROCKFORD.encode_u128(n);
@@ -275,7 +280,10 @@ fn both_u128_max() {
 
 #[test]
 fn both_u128_med() {
-    let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+    let n = u128::from_be_bytes([
+        0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB,
+        0xCD,
+    ]);
     // println!("med: {}", n); // 94522879688090830972536974333750221
     let x = "28T5CY4GNF6YY4HMASW91AYD";
     let s = CROCKFORD.encode_u128(n);
@@ -286,13 +294,18 @@ fn both_u128_med() {
 // cargo test tests::compare_bytes_u128 -- --exact
 #[test]
 fn compare_bytes_u128() {
-    let n = u128::from_be_bytes([0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+    let n = u128::from_be_bytes([
+        0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB,
+        0xCD,
+    ]);
     let x = "28T5CY4GNF6YY4HMASW91AYD";
     let e = CROCKFORD.encode_u128(n);
     assert_eq!(e, x);
     let d = CROCKFORD.decode_u128(e.as_bytes()).unwrap();
     assert_eq!(d, n);
-    let eb = CROCKFORD.encode_bytes(&[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD]);
+    let eb = CROCKFORD.encode_bytes(&[
+        0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD,
+    ]);
     assert_eq!(eb, e);
     let db = CROCKFORD.decode_bytes(eb.as_bytes()).unwrap();
     assert_eq!(db, d.to_be_bytes()[1..]);
@@ -313,19 +326,38 @@ fn both_u64_low() {
 #[test]
 fn decode_bad() {
     let res = CROCKFORD.decode_u64(b"1^_^");
-    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+    assert_eq!(
+        res.unwrap_err(),
+        DecodeError::InvalidChar {
+            char: '^',
+            index: 1
+        }
+    );
     let res = CROCKFORD.decode_u64(b"0123456789ABCD");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
     let res = CROCKFORD.decode_u128(b"1^_^");
-    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+    assert_eq!(
+        res.unwrap_err(),
+        DecodeError::InvalidChar {
+            char: '^',
+            index: 1
+        }
+    );
     let res = CROCKFORD.decode_u128(b"0123456789ABCD0123456789ABC");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 27 });
     let res = CROCKFORD.decode_bytes(b"111");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 3 });
     let res = CROCKFORD.decode_bytes(b"11");
-    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '1', index: 1 });
+    assert_eq!(
+        res.unwrap_err(),
+        DecodeError::InvalidChar {
+            char: '1',
+            index: 1
+        }
+    );
 }
 
+#[rustfmt::skip]
 #[test]
 fn rfc4648() {
     // https://datatracker.ietf.org/doc/html/rfc4648#section-10
@@ -451,7 +483,7 @@ fn both_edges_u128() {
         ((1 << 30) - 10000)..=((1 << 30) + 10000),
         ((1 << 25) - 10000)..=((1 << 25) + 10000),
         ((1 << 20) - 10000)..=((1 << 20) + 10000),
-        0..=((1 << 16) + 10000),  // first 4 chars
+        0..=((1 << 16) + 10000), // first 4 chars
     ];
 
     for r in rs {
