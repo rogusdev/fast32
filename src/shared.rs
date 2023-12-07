@@ -11,6 +11,8 @@ pub const U8_MASK_BOT_1: u8 = 0b00000001;
 pub const U8_MASK_TOP_2: u8 = 0b11000000;
 pub const U8_MASK_BOT_3: u8 = 0b00000111;
 pub const U8_MASK_TOP_5: u8 = 0b11111000;
+pub const U8_MASK_BOT_6: u8 = 0b00111111;
+pub const U8_MASK_TOP_6: u8 = 0b11111100;
 
 pub fn bits_or_err_u8(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u8, DecodeError> {
     let c = a[i];

@@ -1,4 +1,4 @@
-use fast32::base32::*;
+use fast32::base32::{DecodeError, CROCKFORD, RFC4648, RFC4648_HEX, RFC4648_HEX_NOPAD, RFC4648_NOPAD};
 
 #[test]
 fn both_u64_0() {
@@ -7,6 +7,15 @@ fn both_u64_0() {
     let s = CROCKFORD.encode_u64(n);
     assert_eq!(s, x);
     assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
+}
+
+#[test]
+fn both_u64_0_rfc4648() {
+    let n = 0;
+    let x = "A";
+    let s = RFC4648_NOPAD.encode_u64(n);
+    assert_eq!(s, x);
+    assert_eq!(RFC4648_NOPAD.decode_u64(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -309,8 +318,8 @@ fn decode_bad() {
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
     let res = CROCKFORD.decode_u128(b"1^_^");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
-    let res = CROCKFORD.decode_u128(b"0123456789ABCD0123456789ABCD");
-    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 28 });
+    let res = CROCKFORD.decode_u128(b"0123456789ABCD0123456789ABC");
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 27 });
     let res = CROCKFORD.decode_bytes(b"111");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 3 });
     let res = CROCKFORD.decode_bytes(b"11");

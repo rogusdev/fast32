@@ -16,6 +16,35 @@ use super::encode_bytes::encode_bytes_str;
 
 pub const BITS: usize = 32;
 
+pub const WIDTH_IN: usize = 5;
+pub const WIDTH_OUT: usize = 8;
+
+pub const WIDTH_1: usize = 5;
+pub const WIDTH_2: usize = 10;
+pub const WIDTH_3: usize = 15;
+pub const WIDTH_4: usize = 20;
+pub const WIDTH_5: usize = 25;
+pub const WIDTH_6: usize = 30;
+pub const WIDTH_7: usize = 35;
+pub const WIDTH_8: usize = 40;
+pub const WIDTH_9: usize = 45;
+pub const WIDTH_10: usize = 50;
+pub const WIDTH_11: usize = 55;
+pub const WIDTH_12: usize = 60;
+pub const WIDTH_13: usize = 65;
+pub const WIDTH_14: usize = 70;
+pub const WIDTH_15: usize = 75;
+pub const WIDTH_16: usize = 80;
+pub const WIDTH_17: usize = 85;
+pub const WIDTH_18: usize = 90;
+pub const WIDTH_19: usize = 95;
+pub const WIDTH_20: usize = 100;
+pub const WIDTH_21: usize = 105;
+pub const WIDTH_22: usize = 110;
+pub const WIDTH_23: usize = 115;
+pub const WIDTH_24: usize = 120;
+pub const WIDTH_25: usize = 125;
+
 #[macro_export]
 macro_rules! make_base32_alpha_simple {
     ( $n:ident, $e:literal ) => {

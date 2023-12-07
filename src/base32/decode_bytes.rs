@@ -2,20 +2,22 @@ use core::ptr::write;
 
 use crate::shared::{bits_or_err_u8, DecodeError};
 
+use super::alphabet::{WIDTH_IN, WIDTH_OUT};
+
 pub fn decode_bytes_str(dec: &'static [u8; 256], a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
     decode_bytes(dec, a.as_ref().as_bytes())
 }
 
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let len = a.len();
-    let rem = len % 8;
-    let cap = (len * 5) / 8;
+    let rem = len % WIDTH_OUT;
+    let cap = (len * WIDTH_IN) / WIDTH_OUT;
     let mut b = Vec::<u8>::with_capacity(cap);
-    let max = cap / 5;
+    let max = cap / WIDTH_IN;
 
     for i in 0..max {
-        let c = i * 5;
-        let p = i * 8;
+        let c = i * WIDTH_IN;
+        let p = i * WIDTH_OUT;
 
         let p1 = bits_or_err_u8(dec, a, p  )?;
         let p2 = bits_or_err_u8(dec, a, p+1)?;
@@ -35,14 +37,14 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
             write(end.add(3), (p5 << 7) | (p6 << 2) | (p7 >> 3));
             write(end.add(4), (p7 << 5) | (p8     )            );
 
-            b.set_len(c + 5);
+            b.set_len(c + WIDTH_IN);
         }
     }
 
     match rem {
         7 => {
-            let c = max * 5;
-            let p = max * 8;
+            let c = max * WIDTH_IN;
+            let p = max * WIDTH_OUT;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
             let p2 = bits_or_err_u8(dec, a, p+1)?;
@@ -68,8 +70,8 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
             }
         }
         5 => {
-            let c = max * 5;
-            let p = max * 8;
+            let c = max * WIDTH_IN;
+            let p = max * WIDTH_OUT;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
             let p2 = bits_or_err_u8(dec, a, p+1)?;
@@ -92,8 +94,8 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
             }
         }
         4 => {
-            let c = max * 5;
-            let p = max * 8;
+            let c = max * WIDTH_IN;
+            let p = max * WIDTH_OUT;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
             let p2 = bits_or_err_u8(dec, a, p+1)?;
@@ -114,8 +116,8 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
             }
         }
         2 => {
-            let c = max * 5;
-            let p = max * 8;
+            let c = max * WIDTH_IN;
+            let p = max * WIDTH_OUT;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
             let p2 = bits_or_err_u8(dec, a, p+1)?;

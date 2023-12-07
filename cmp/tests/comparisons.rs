@@ -229,13 +229,12 @@ fn compare_base32_bytes_rfc4648pad() {
     }
 }
 
-#[ignore]
 #[test]
 fn compare_base64_bytes() {
     {
         // rem 0
         let n = b"The quick brown fox jumps over the lazy dog.";
-        let x = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
+        let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4=";
 
         let s = fast32::base64::RFC4648.encode_bytes(n);
         assert_eq!(s, x);
@@ -244,12 +243,20 @@ fn compare_base64_bytes() {
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
+
+        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+
+        let s = data_encoding::BASE64_NOPAD.encode(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(data_encoding::BASE64_NOPAD.decode(s.as_bytes()).unwrap(), n);
     }
 
     {
         // rem 3
         let n = b"The quick brown fox jumps over the lazy dog";
-        let x = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPE";
+        let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZw==";
 
         let s = fast32::base64::RFC4648.encode_bytes(n);
         assert_eq!(s, x);
@@ -258,12 +265,20 @@ fn compare_base64_bytes() {
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
+
+        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+
+        let s = data_encoding::BASE64_NOPAD.encode(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(data_encoding::BASE64_NOPAD.decode(s.as_bytes()).unwrap(), n);
     }
 
     {
         // rem 2
         let n = b"The quick brown fox jumps over the lazy do";
-        let x = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQG";
+        let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRv";
 
         let s = fast32::base64::RFC4648.encode_bytes(n);
         assert_eq!(s, x);
@@ -272,12 +287,20 @@ fn compare_base64_bytes() {
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
+
+        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+
+        let s = data_encoding::BASE64_NOPAD.encode(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(data_encoding::BASE64_NOPAD.decode(s.as_bytes()).unwrap(), n);
     }
 
     {
         // rem 1
         let n = b"The quick brown fox jumps over the lazy d";
-        let x = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CG";
+        let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGQ=";
 
         let s = fast32::base64::RFC4648.encode_bytes(n);
         assert_eq!(s, x);
@@ -286,6 +309,14 @@ fn compare_base64_bytes() {
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
+
+        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+
+        let s = data_encoding::BASE64_NOPAD.encode(n);
+        assert_eq!(s, x.trim_end_matches('='));
+        assert_eq!(data_encoding::BASE64_NOPAD.decode(s.as_bytes()).unwrap(), n);
     }
 
     let rs = [

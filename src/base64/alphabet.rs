@@ -16,6 +16,32 @@ use super::encode_bytes::encode_bytes_str;
 
 pub const BITS: usize = 64;
 
+pub const WIDTH_IN: usize = 3;
+pub const WIDTH_OUT: usize = 4;
+
+pub const WIDTH_1: usize = 6;
+pub const WIDTH_2: usize = 12;
+pub const WIDTH_3: usize = 18;
+pub const WIDTH_4: usize = 24;
+pub const WIDTH_5: usize = 30;
+pub const WIDTH_6: usize = 36;
+pub const WIDTH_7: usize = 42;
+pub const WIDTH_8: usize = 48;
+pub const WIDTH_9: usize = 54;
+pub const WIDTH_10: usize = 60;
+pub const WIDTH_11: usize = 66;
+pub const WIDTH_12: usize = 72;
+pub const WIDTH_13: usize = 78;
+pub const WIDTH_14: usize = 84;
+pub const WIDTH_15: usize = 90;
+pub const WIDTH_16: usize = 96;
+pub const WIDTH_17: usize = 102;
+pub const WIDTH_18: usize = 108;
+pub const WIDTH_19: usize = 114;
+pub const WIDTH_20: usize = 120;
+pub const WIDTH_21: usize = 126;
+
+
 #[macro_export]
 macro_rules! make_base64_alpha_simple {
     ( $n:ident, $e:literal ) => {
@@ -76,14 +102,17 @@ impl Alphabet {
         }
     }
 
+    #[inline]
     pub fn encode_u64(&self, n: u64) -> String {
         encode_u64(self.enc, n)
     }
 
+    #[inline]
     pub fn encode_u128(&self, n: u128) -> String {
         encode_u128(self.enc, n)
     }
 
+    #[inline]
     pub fn encode_bytes(&self, a: &[u8]) -> String {
         if let Some(pad) = self.pad {
             let s = encode_bytes(self.enc, a);
@@ -97,6 +126,7 @@ impl Alphabet {
         }
     }
 
+    #[inline]
     pub fn encode_bytes_str(&self, a: impl AsRef<str>) -> String {
         if let Some(pad) = self.pad {
             let s = encode_bytes_str(self.enc, a);
@@ -110,24 +140,27 @@ impl Alphabet {
         }
     }
 
+    #[inline]
     pub fn decode_u64(&self, a: &[u8]) -> Result<u64, DecodeError> {
         decode_u64(self.dec, a)
     }
 
+    #[inline]
     pub fn decode_u128(&self, a: &[u8]) -> Result<u128, DecodeError> {
         decode_u128(self.dec, a)
     }
 
+    #[inline]
     pub fn decode_bytes(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
         if let Some(pad) = self.pad {
             let len = a.len();
             let pad = pad as u8;
-            if len < 4 {
+            if len == 0 {
                 decode_bytes(self.dec, a)
-            } else if a[len-3] == pad {
-                decode_bytes(self.dec, &a[..len-3])
             } else if a[len-2] == pad {
                 decode_bytes(self.dec, &a[..len-2])
+            } else if a[len-1] == pad {
+                decode_bytes(self.dec, &a[..len-1])
             } else {
                 decode_bytes(self.dec, a)
             }
@@ -136,26 +169,29 @@ impl Alphabet {
         }
     }
 
+    #[inline]
     pub fn decode_u64_str(&self, a: impl AsRef<str>) -> Result<u64, DecodeError> {
         decode_u64_str(self.dec, a)
     }
 
+    #[inline]
     pub fn decode_u128_str(&self, a: impl AsRef<str>) -> Result<u128, DecodeError> {
         decode_u128_str(self.dec, a)
     }
 
+    #[inline]
     pub fn decode_bytes_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
         if let Some(pad) = self.pad {
             // note that with pad this skips _str version and goes direct
             let a = a.as_ref().as_bytes();
             let len = a.len();
             let pad = pad as u8;
-            if len < 4 {
+            if len == 0 {
                 decode_bytes(self.dec, a)
-            } else if a[len-3] == pad {
-                decode_bytes(self.dec, &a[..len-3])
             } else if a[len-2] == pad {
                 decode_bytes(self.dec, &a[..len-2])
+            } else if a[len-1] == pad {
+                decode_bytes(self.dec, &a[..len-1])
             } else {
                 decode_bytes(self.dec, a)
             }
