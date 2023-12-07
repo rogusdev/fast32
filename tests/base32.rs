@@ -1,6 +1,5 @@
-use fast32::base32::{
-    DecodeError, CROCKFORD, RFC4648, RFC4648_HEX, RFC4648_HEX_NOPAD, RFC4648_NOPAD,
-};
+use fast32::base32::{CROCKFORD, RFC4648, RFC4648_HEX, RFC4648_HEX_NOPAD, RFC4648_NOPAD};
+use fast32::DecodeError;
 
 #[test]
 fn both_u64_0() {

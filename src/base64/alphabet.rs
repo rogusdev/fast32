@@ -1,18 +1,20 @@
 use paste::paste;
 
+#[cfg(feature = "uuid")]
+use uuid::Uuid;
+
 use crate::shared::{INVALID_BYTE, INVALID_CHAR};
 use crate::DecodeError;
 
-use super::decode_bytes::decode_bytes;
-use super::decode_bytes::decode_bytes_str;
-use super::decode_u128::decode_u128;
-use super::decode_u128::decode_u128_str;
-use super::decode_u64::decode_u64;
-use super::decode_u64::decode_u64_str;
-use super::encode_bytes::encode_bytes;
-use super::encode_bytes::encode_bytes_str;
+use super::decode_bytes::{decode_bytes, decode_bytes_str};
+use super::decode_u128::{decode_u128, decode_u128_str};
+use super::decode_u64::{decode_u64, decode_u64_str};
+use super::encode_bytes::{encode_bytes, encode_bytes_str};
 use super::encode_u128::encode_u128;
 use super::encode_u64::encode_u64;
+
+#[cfg(feature = "uuid")]
+use super::uuid::{decode_uuid, decode_uuid_str, encode_uuid};
 
 pub const BITS: usize = 64;
 
@@ -203,6 +205,24 @@ impl Alphabet {
         } else {
             decode_bytes_str(self.dec, a)
         }
+    }
+
+    #[cfg(feature = "uuid")]
+    #[inline]
+    pub fn decode_uuid_str(&self, a: impl AsRef<str>) -> Result<Uuid, DecodeError> {
+        decode_uuid_str(self.dec, a)
+    }
+
+    #[cfg(feature = "uuid")]
+    #[inline]
+    pub fn decode_uuid(&self, a: &[u8]) -> Result<Uuid, DecodeError> {
+        decode_uuid(self.dec, a)
+    }
+
+    #[cfg(feature = "uuid")]
+    #[inline]
+    pub fn encode_uuid(&self, n: Uuid) -> String {
+        encode_uuid(self.enc, n)
     }
 }
 

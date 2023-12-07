@@ -1,4 +1,5 @@
-use fast32::base64::{DecodeError, RFC4648, RFC4648_NOPAD};
+use fast32::base64::{RFC4648, RFC4648_NOPAD};
+use fast32::DecodeError;
 
 #[test]
 fn both_u64_0() {

@@ -5,5 +5,12 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = []
+uuid = ["dep:uuid"]
+
 [dependencies]
 paste = "1.0.14"
+
+# optional
+uuid = { version = "1.6.1", optional = true, default-features = false }

@@ -6,7 +6,8 @@ mod encode_bytes;
 mod encode_u128;
 mod encode_u64;
 
-pub use crate::DecodeError;
+#[cfg(feature = "uuid")]
+mod uuid;
 
 pub use self::decode_bytes::{decode_bytes, decode_bytes_str};
 pub use self::decode_u128::{decode_u128, decode_u128_str};
@@ -20,3 +21,6 @@ pub use self::alphabet::RFC4648;
 pub use self::alphabet::RFC4648_NOPAD;
 pub use self::alphabet::RFC4648_URL;
 pub use self::alphabet::RFC4648_URL_NOPAD;
+
+#[cfg(feature = "uuid")]
+pub use self::uuid::{decode_uuid, decode_uuid_str, encode_uuid};
