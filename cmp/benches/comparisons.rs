@@ -30,15 +30,15 @@ fn bench_crate_encode_1066193093600(c: &mut Criterion) {
     });
 }
 
-fn bench_crockford_encode_10239(c: &mut Criterion) {
-    c.bench_function("crockford encode 10239", |b| {
-        b.iter(|| crockford::encode(black_box(10239)))
+fn bench_crockford_encode_10238(c: &mut Criterion) {
+    c.bench_function("crockford encode 10238", |b| {
+        b.iter(|| crockford::encode(black_box(10238)))
     });
 }
 
-fn bench_crate_encode_10239(c: &mut Criterion) {
-    c.bench_function("crate encode 10239", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.encode_u64(black_box(10239)))
+fn bench_crate_encode_10238(c: &mut Criterion) {
+    c.bench_function("crate encode 10238", |b| {
+        b.iter(|| fast32::base32::CROCKFORD.encode_u64(black_box(10238)))
     });
 }
 
@@ -169,13 +169,6 @@ fn bench_crockford_decode_5111(c: &mut Criterion) {
     });
 }
 
-fn bench_base32_decode_5111(c: &mut Criterion) {
-    let a = "4ZQ";
-    c.bench_function("base32 decode 5111", |b| {
-        b.iter(|| base32::decode(base32::Alphabet::Crockford, black_box(a)))
-    });
-}
-
 fn bench_crate_decode_5111(c: &mut Criterion) {
     let a = b"4ZQ";
     c.bench_function("crate decode 5111", |b| {
@@ -204,23 +197,16 @@ fn bench_crate_decode_1066193093600(c: &mut Criterion) {
     });
 }
 
-fn bench_crockford_decode_10239(c: &mut Criterion) {
-    let a = "9ZZ";
-    c.bench_function("crockford decode 10239", |b| {
+fn bench_crockford_decode_10238(c: &mut Criterion) {
+    let a = "9ZY";
+    c.bench_function("crockford decode 10238", |b| {
         b.iter(|| crockford::decode(black_box(a)))
     });
 }
 
-fn bench_base32_decode_10239(c: &mut Criterion) {
-    let a = "9ZZ";
-    c.bench_function("base32 decode 10239", |b| {
-        b.iter(|| base32::decode(base32::Alphabet::Crockford, black_box(a)))
-    });
-}
-
-fn bench_crate_decode_10239(c: &mut Criterion) {
-    let a = b"9ZZ";
-    c.bench_function("crate decode 10239", |b| {
+fn bench_crate_decode_10238(c: &mut Criterion) {
+    let a = b"9ZY";
+    c.bench_function("crate decode 10238", |b| {
         b.iter(|| fast32::base32::CROCKFORD.decode_u64(black_box(a)))
     });
 }
@@ -384,8 +370,8 @@ criterion_group!(
     bench_crate_encode_5111,
     bench_crockford_encode_1066193093600,
     bench_crate_encode_1066193093600,
-    bench_crockford_encode_10239,
-    bench_crate_encode_10239,
+    bench_crockford_encode_10238,
+    bench_crate_encode_10238,
     bench_crockford_encode_u64_big,
     bench_base32_encode_u64_big,
     bench_crate_encode_u64_big,
@@ -407,14 +393,12 @@ criterion_group!(
     bench_crate_encode_fox_1,
 
     bench_crockford_decode_5111,
-    bench_base32_decode_5111,
     bench_crate_decode_5111,
     bench_crockford_decode_1066193093600,
     bench_base32_decode_1066193093600,
     bench_crate_decode_1066193093600,
-    bench_crockford_decode_10239,
-    bench_base32_decode_10239,
-    bench_crate_decode_10239,
+    bench_crockford_decode_10238,
+    bench_crate_decode_10238,
     bench_crockford_decode_u64_big,
     bench_base32_decode_u64_big,
     bench_crate_decode_u64_big,

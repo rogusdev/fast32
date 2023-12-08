@@ -16,7 +16,7 @@ pub use self::encode_bytes::{encode_bytes, encode_bytes_str};
 pub use self::encode_u128::encode_u128;
 pub use self::encode_u64::encode_u64;
 
-pub use self::alphabet::Alphabet;
+pub use self::alphabet::{decoder_map, decoder_map_simple, Alphabet};
 pub use self::alphabet::CROCKFORD;
 pub use self::alphabet::RFC4648;
 pub use self::alphabet::RFC4648_HEX;

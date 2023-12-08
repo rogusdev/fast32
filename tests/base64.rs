@@ -101,18 +101,18 @@ fn both_u64_64_64() {
 }
 
 #[test]
-fn both_u64_10239() {
-    let n = 10239;
-    let x = "Cf/";
+fn both_u64_10238() {
+    let n = 10238;
+    let x = "Cf+";
     let s = RFC4648_NOPAD.encode_u64(n);
     assert_eq!(s, x);
     assert_eq!(RFC4648_NOPAD.decode_u64(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
-fn both_bytes_10239() {
-    let n = &[0x27, 0xFF];
-    let x = "J/8";
+fn both_bytes_10238() {
+    let n = &[0x27, 0xFE];
+    let x = "J/4";
     let s = RFC4648_NOPAD.encode_bytes(n);
     assert_eq!(s, x);
     assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);

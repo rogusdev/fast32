@@ -3,4 +3,4 @@ pub mod base64;
 
 mod shared;
 
-pub use crate::shared::DecodeError;
+pub use crate::shared::{DecodeError, INVALID_BYTE, INVALID_CHAR};

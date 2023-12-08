@@ -1,4 +1,5 @@
-pub const INVALID_CHAR: char = '.';
+// note that invalid char cannot be used as part of any encoding or decoding char set
+pub const INVALID_CHAR: char = ' ';
 pub const INVALID_BYTE: u8 = u8::MAX;
 
 pub const U8_MASK_BOT_5: u8 = 0b00011111;

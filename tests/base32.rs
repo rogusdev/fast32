@@ -155,18 +155,18 @@ fn both_bytes_32_32_32_32_1() {
 }
 
 #[test]
-fn both_u64_10239() {
-    let n = 10239;
-    let x = "9ZZ";
+fn both_u64_10238() {
+    let n = 10238;
+    let x = "9ZY";
     let s = CROCKFORD.encode_u64(n);
     assert_eq!(s, x);
     assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
-fn both_bytes_10239() {
-    let n = &[0x27, 0xFF];
-    let x = "4ZZG";
+fn both_bytes_10238() {
+    let n = &[0x27, 0xFE];
+    let x = "4ZZ0";
     let s = CROCKFORD.encode_bytes(n);
     assert_eq!(s, x);
     assert_eq!(CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
