@@ -1,13 +1,15 @@
+use core::ptr::write;
+
 #[cfg(feature = "uuid")]
 use uuid::Uuid;
 
 use crate::shared::{INVALID_BYTE, INVALID_CHAR};
 use crate::DecodeError;
 
-use super::decode_bytes::{decode_bytes, decode_bytes_str};
-use super::decode_u128::{decode_u128, decode_u128_str};
-use super::decode_u64::{decode_u64, decode_u64_str};
-use super::encode_bytes::{encode_bytes, encode_bytes_str};
+use super::decode_bytes::{decode_bytes, decode_bytes_into};
+use super::decode_u128::decode_u128;
+use super::decode_u64::decode_u64;
+use super::encode_bytes::{encode_bytes, encode_bytes_into};
 use super::encode_u128::{encode_u128, encode_u128_into};
 use super::encode_u64::{encode_u64, encode_u64_into};
 
@@ -69,6 +71,73 @@ pub struct Alphabet {
     pad: Option<char>,
 }
 
+unsafe fn add_pad(b: &mut Vec<u8>, pad: char) {
+    let len = b.len();
+    match len % WIDTH_ENC {
+        2 => {
+            assert!(b.capacity() >= len + 6, "Missing capacity for padding");
+            let end = b.as_mut_ptr().add(len);
+
+            write(end       , pad as u8);
+            write(end.add(1), pad as u8);
+            write(end.add(2), pad as u8);
+            write(end.add(3), pad as u8);
+            write(end.add(4), pad as u8);
+            write(end.add(5), pad as u8);
+
+            b.set_len(len + 6);
+        }
+        4 => {
+            assert!(b.capacity() >= len + 4, "Missing capacity for padding");
+            let end = b.as_mut_ptr().add(len);
+
+            write(end       , pad as u8);
+            write(end.add(1), pad as u8);
+            write(end.add(2), pad as u8);
+            write(end.add(3), pad as u8);
+
+            b.set_len(len + 4);
+        }
+        5 => {
+            assert!(b.capacity() >= len + 3, "Missing capacity for padding");
+            let end = b.as_mut_ptr().add(len);
+
+            write(end       , pad as u8);
+            write(end.add(1), pad as u8);
+            write(end.add(2), pad as u8);
+
+            b.set_len(len + 3);
+        }
+        7 => {
+            assert!(b.capacity() >= len + 1, "Missing capacity for padding");
+            let end = b.as_mut_ptr().add(len);
+
+            write(end       , pad as u8);
+
+            b.set_len(len + 1);
+        }
+        _ => {}
+    }
+}
+
+fn rem_pad(a: &[u8], pad: char) -> &[u8] {
+    let len = a.len();
+    let pad = pad as u8;
+    if len == 0 {
+        a
+    } else if a[len - 6] == pad {
+        &a[..len - 6]
+    } else if a[len - 4] == pad {
+        &a[..len - 4]
+    } else if a[len - 3] == pad {
+        &a[..len - 3]
+    } else if a[len - 1] == pad {
+        &a[..len - 1]
+    } else {
+        a
+    }
+}
+
 impl Alphabet {
     pub const fn new(enc: &'static [u8; BITS], dec: &'static [u8; 256], pad: Option<char>) -> Self {
         Self { enc, dec, pad }
@@ -97,32 +166,43 @@ impl Alphabet {
     #[inline]
     pub fn encode_bytes(&self, a: &[u8]) -> String {
         if let Some(pad) = self.pad {
-            let s = encode_bytes(self.enc, a);
-            match s.len() % 8 {
-                2 => format!("{s}{pad}{pad}{pad}{pad}{pad}{pad}"),
-                4 => format!("{s}{pad}{pad}{pad}{pad}"),
-                5 => format!("{s}{pad}{pad}{pad}"),
-                7 => format!("{s}{pad}"),
-                _ => s,
+            let mut s = encode_bytes(self.enc, a);
+            unsafe {
+                let b = s.as_mut_vec();
+                // make space for max possible padding
+                b.reserve(6);
+                add_pad(b, pad);
             }
+            s
         } else {
             encode_bytes(self.enc, a)
         }
     }
 
     #[inline]
-    pub fn encode_bytes_str(&self, a: impl AsRef<str>) -> String {
+    pub fn encode_bytes_into(&self, a: &[u8], b: &mut Vec<u8>) {
         if let Some(pad) = self.pad {
-            let s = encode_bytes_str(self.enc, a);
-            match s.len() % 8 {
-                2 => format!("{s}{pad}{pad}{pad}{pad}{pad}{pad}"),
-                4 => format!("{s}{pad}{pad}{pad}{pad}"),
-                5 => format!("{s}{pad}{pad}{pad}"),
-                7 => format!("{s}{pad}"),
-                _ => s,
-            }
+            encode_bytes_into(self.enc, a, b);
+            unsafe { add_pad(b, pad) }
         } else {
-            encode_bytes_str(self.enc, a)
+            encode_bytes_into(self.enc, a, b)
+        }
+    }
+
+    #[inline]
+    pub fn encode_bytes_str(&self, a: impl AsRef<str>) -> String {
+        let a = a.as_ref().as_bytes();
+        if let Some(pad) = self.pad {
+            let mut s = encode_bytes(self.enc, a);
+            unsafe {
+                let b = s.as_mut_vec();
+                // make space for max possible padding
+                b.reserve(6);
+                add_pad(b, pad);
+            }
+            s
+        } else {
+            encode_bytes(self.enc, a)
         }
     }
 
@@ -139,58 +219,40 @@ impl Alphabet {
     #[inline]
     pub fn decode_bytes(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
         if let Some(pad) = self.pad {
-            let len = a.len();
-            let pad = pad as u8;
-            if len == 0 {
-                decode_bytes(self.dec, a)
-            } else if a[len - 6] == pad {
-                decode_bytes(self.dec, &a[..len - 6])
-            } else if a[len - 4] == pad {
-                decode_bytes(self.dec, &a[..len - 4])
-            } else if a[len - 3] == pad {
-                decode_bytes(self.dec, &a[..len - 3])
-            } else if a[len - 1] == pad {
-                decode_bytes(self.dec, &a[..len - 1])
-            } else {
-                decode_bytes(self.dec, a)
-            }
+            decode_bytes(self.dec, rem_pad(a, pad))
         } else {
             decode_bytes(self.dec, a)
         }
     }
 
     #[inline]
+    pub fn decode_bytes_into(&self, a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
+        if let Some(pad) = self.pad {
+            decode_bytes_into(self.dec, rem_pad(a, pad), b)
+        } else {
+            decode_bytes_into(self.dec, a, b)
+        }
+    }
+
+    #[inline]
     pub fn decode_u64_str(&self, a: impl AsRef<str>) -> Result<u64, DecodeError> {
-        decode_u64_str(self.dec, a)
+        let a = a.as_ref().as_bytes();
+        decode_u64(self.dec, a)
     }
 
     #[inline]
     pub fn decode_u128_str(&self, a: impl AsRef<str>) -> Result<u128, DecodeError> {
-        decode_u128_str(self.dec, a)
+        let a = a.as_ref().as_bytes();
+        decode_u128(self.dec, a)
     }
 
     #[inline]
     pub fn decode_bytes_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
+        let a = a.as_ref().as_bytes();
         if let Some(pad) = self.pad {
-            // note that with pad this skips _str version and goes direct
-            let a = a.as_ref().as_bytes();
-            let len = a.len();
-            let pad = pad as u8;
-            if len == 0 {
-                decode_bytes(self.dec, a)
-            } else if a[len - 6] == pad {
-                decode_bytes(self.dec, &a[..len - 6])
-            } else if a[len - 4] == pad {
-                decode_bytes(self.dec, &a[..len - 4])
-            } else if a[len - 3] == pad {
-                decode_bytes(self.dec, &a[..len - 3])
-            } else if a[len - 1] == pad {
-                decode_bytes(self.dec, &a[..len - 1])
-            } else {
-                decode_bytes(self.dec, a)
-            }
+            decode_bytes(self.dec, rem_pad(a, pad))
         } else {
-            decode_bytes_str(self.dec, a)
+            decode_bytes(self.dec, a)
         }
     }
 

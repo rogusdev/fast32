@@ -4,17 +4,6 @@ use super::alphabet::{
     WIDTH_1, WIDTH_10, WIDTH_2, WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9,
 };
 
-// _str version is basically identical perf to byte array,
-// maybe 3-5% slower, beyond noise threshold, but not surprising
-// modify comparisons like so:
-//let a = "(\S+)";
-//let a = "$1".to_owned();
-//fast32::decode_([^(]+)\(black_box\(a
-//fast32::decode_$1_str(black_box(&a
-pub fn decode_u64_str(dec: &'static [u8; 256], a: impl AsRef<str>) -> Result<u64, DecodeError> {
-    decode_u64(dec, a.as_ref().as_bytes())
-}
-
 pub fn decode_u64(dec: &'static [u8; 256], a: &[u8]) -> Result<u64, DecodeError> {
     #[rustfmt::skip]
     let n = match a.len() {

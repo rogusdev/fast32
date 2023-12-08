@@ -5,11 +5,14 @@ use crate::shared::{bits_or_err_u8, DecodeError};
 use super::alphabet::{WIDTH_DEC, WIDTH_ENC};
 
 #[inline]
-pub fn decode_bytes_str(
-    dec: &'static [u8; 256],
-    a: impl AsRef<str>,
-) -> Result<Vec<u8>, DecodeError> {
-    decode_bytes(dec, a.as_ref().as_bytes())
+const fn rem_dec(rem: usize) -> usize {
+    match rem {
+        7 => 4,
+        5 => 3,
+        4 => 2,
+        2 => 1,
+        _ => 0,
+    }
 }
 
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
@@ -24,7 +27,12 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
     let len_enc = a.len();
     let rem = len_enc % WIDTH_ENC;
     let max = len_enc / WIDTH_ENC;
+
     let len_dec = b.len();
+    let c_max = len_dec + max * WIDTH_DEC;
+    let rem_dec = rem_dec(rem);
+
+    assert!(b.capacity() >= c_max + rem_dec, "Missing capacity for decoding");
 
     for i in 0..max {
         let c = len_dec + i * WIDTH_DEC;
@@ -54,7 +62,6 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
 
     match rem {
         7 => {
-            let c = len_dec + max * WIDTH_DEC;
             let p = max * WIDTH_ENC;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
@@ -70,18 +77,17 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
             }
 
             unsafe {
-                let end = b.as_mut_ptr().add(c);
+                let end = b.as_mut_ptr().add(c_max);
 
                 write(end       , (p1 << 3) | (p2 >> 2)            );
                 write(end.add(1), (p2 << 6) | (p3 << 1) | (p4 >> 4));
                 write(end.add(2), (p4 << 4) | (p5 >> 1)            );
                 write(end.add(3), (p5 << 7) | (p6 << 2) | (p7 >> 3));
 
-                b.set_len(c + 4);
+                b.set_len(c_max + rem_dec);
             }
         }
         5 => {
-            let c = len_dec + max * WIDTH_DEC;
             let p = max * WIDTH_ENC;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
@@ -95,17 +101,16 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
             }
 
             unsafe {
-                let end = b.as_mut_ptr().add(c);
+                let end = b.as_mut_ptr().add(c_max);
 
                 write(end       , (p1 << 3) | (p2 >> 2)            );
                 write(end.add(1), (p2 << 6) | (p3 << 1) | (p4 >> 4));
                 write(end.add(2), (p4 << 4) | (p5 >> 1)            );
 
-                b.set_len(c + 3);
+                b.set_len(c_max + rem_dec);
             }
         }
         4 => {
-            let c = len_dec + max * WIDTH_DEC;
             let p = max * WIDTH_ENC;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
@@ -118,16 +123,15 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
             }
 
             unsafe {
-                let end = b.as_mut_ptr().add(c);
+                let end = b.as_mut_ptr().add(c_max);
 
                 write(end       , (p1 << 3) | (p2 >> 2)            );
                 write(end.add(1), (p2 << 6) | (p3 << 1) | (p4 >> 4));
 
-                b.set_len(c + 2);
+                b.set_len(c_max + rem_dec);
             }
         }
         2 => {
-            let c = len_dec + max * WIDTH_DEC;
             let p = max * WIDTH_ENC;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
@@ -138,11 +142,11 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
             }
 
             unsafe {
-                let end = b.as_mut_ptr().add(c);
+                let end = b.as_mut_ptr().add(c_max);
 
                 write(end       , (p1 << 3) | (p2 >> 2));
 
-                b.set_len(c + 1);
+                b.set_len(c_max + rem_dec);
             }
         }
         0 => {}

@@ -317,6 +317,30 @@ fn both_u128_med_into() {
     assert_eq!(CROCKFORD.decode_u128(&b[1..25]).unwrap(), n);
 }
 
+#[test]
+fn both_bytes_into() {
+    let n = &[
+        0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB,
+        0xCD,
+    ];
+    let x = "00938NKRJ2NWVVRJ6HB7H45BSM";
+    let s = CROCKFORD.encode_bytes(n);
+    assert_eq!(s, x);
+
+    let mut b = Vec::<u8>::with_capacity(26);
+    CROCKFORD.encode_bytes_into(n, &mut b);
+    assert_eq!(&b[0..26], x.as_bytes());
+    assert_eq!(CROCKFORD.decode_bytes(&b[0..26]).unwrap(), n);
+
+    let mut b = Vec::<u8>::with_capacity(27);
+    b.push(201);
+    CROCKFORD.encode_bytes_into(n, &mut b);
+    b.push(202);
+    assert_eq!(String::from_utf8(b[1..27].to_vec()).unwrap(), x);
+    assert_eq!(&b[1..27], x.as_bytes());
+    assert_eq!(CROCKFORD.decode_bytes(&b[1..27]).unwrap(), n);
+}
+
 // cargo test tests::compare_bytes_u128 -- --exact
 #[test]
 fn compare_bytes_u128() {
