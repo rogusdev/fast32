@@ -13,8 +13,8 @@ pub use self::decode_bytes::{decode_bytes, decode_bytes_str};
 pub use self::decode_u128::{decode_u128, decode_u128_str};
 pub use self::decode_u64::{decode_u64, decode_u64_str};
 pub use self::encode_bytes::{encode_bytes, encode_bytes_str};
-pub use self::encode_u128::encode_u128;
-pub use self::encode_u64::encode_u64;
+pub use self::encode_u128::{capacity_u128, encode_u128, encode_u128_into};
+pub use self::encode_u64::{capacity_u64, encode_u64, encode_u64_into};
 
 pub use self::alphabet::{decoder_map, decoder_map_simple, Alphabet};
 pub use self::alphabet::RFC4648;

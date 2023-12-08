@@ -29,6 +29,18 @@ fn both_u64_31() {
 }
 
 #[test]
+fn both_u64_31_into() {
+    let n = 31;
+    let x = "f";
+    let mut b = Vec::<u8>::with_capacity(2);
+    b.push(201);
+    RFC4648_NOPAD.encode_u64_into(n, &mut b);
+    b.push(202);
+    assert_eq!(&b[1..2], x.as_bytes());
+    assert_eq!(RFC4648_NOPAD.decode_u64(&b[1..2]).unwrap(), n);
+}
+
+#[test]
 fn both_bytes_31() {
     let n = &[0x1F];
     let x = "Hw";
@@ -229,6 +241,21 @@ fn both_u128_med() {
     let s = RFC4648_NOPAD.encode_u128(n);
     assert_eq!(s, x);
     assert_eq!(RFC4648_NOPAD.decode_u128(s.as_bytes()).unwrap(), n);
+}
+
+#[test]
+fn both_u128_med_into() {
+    let n = u128::from_be_bytes([
+        0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB,
+        0xCD,
+    ]);
+    let x = "EjRWeJCrze8SNFZ4kKvN";
+    let mut b = Vec::<u8>::with_capacity(21);
+    b.push(201);
+    RFC4648_NOPAD.encode_u128_into(n, &mut b);
+    b.push(202);
+    assert_eq!(&b[1..21], x.as_bytes());
+    assert_eq!(RFC4648_NOPAD.decode_u128(&b[1..21]).unwrap(), n);
 }
 
 // cargo test tests::compare_bytes_u128 -- --exact

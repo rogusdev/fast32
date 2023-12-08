@@ -11,16 +11,22 @@ pub fn decode_bytes_str(
     decode_bytes(dec, a.as_ref().as_bytes())
 }
 
-#[rustfmt::skip]
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-    let len = a.len();
-    let rem = len % WIDTH_OUT;
-    let cap = (len * WIDTH_IN) / WIDTH_OUT;
+    let cap = a.len() * WIDTH_IN / WIDTH_OUT;
     let mut b = Vec::<u8>::with_capacity(cap);
-    let max = cap / WIDTH_IN;
+    decode_bytes_into(dec, a, &mut b)?;
+    Ok(b)
+}
+
+#[rustfmt::skip]
+pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
+    let len_enc = a.len();
+    let rem = len_enc % WIDTH_OUT;
+    let max = len_enc / WIDTH_OUT;
+    let len_dec = b.len();
 
     for i in 0..max {
-        let c = i * WIDTH_IN;
+        let c = len_dec + i * WIDTH_IN;
         let p = i * WIDTH_OUT;
 
         let p1 = bits_or_err_u8(dec, a, p  )?;
@@ -41,7 +47,7 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
 
     match rem {
         3 => {
-            let c = max * WIDTH_IN;
+            let c = len_dec + max * WIDTH_IN;
             let p = max * WIDTH_OUT;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
@@ -62,7 +68,7 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
             }
         }
         2 => {
-            let c = max * WIDTH_IN;
+            let c = len_dec + max * WIDTH_IN;
             let p = max * WIDTH_OUT;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
@@ -81,8 +87,8 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
             }
         }
         0 => {}
-        _ => Err(DecodeError::InvalidLength { length: len })?
+        _ => Err(DecodeError::InvalidLength { length: len_enc })?
     }
 
-    Ok(b)
+    Ok(())
 }

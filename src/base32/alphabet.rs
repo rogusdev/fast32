@@ -8,8 +8,8 @@ use super::decode_bytes::{decode_bytes, decode_bytes_str};
 use super::decode_u128::{decode_u128, decode_u128_str};
 use super::decode_u64::{decode_u64, decode_u64_str};
 use super::encode_bytes::{encode_bytes, encode_bytes_str};
-use super::encode_u128::encode_u128;
-use super::encode_u64::encode_u64;
+use super::encode_u128::{encode_u128, encode_u128_into};
+use super::encode_u64::{encode_u64, encode_u64_into};
 
 #[cfg(feature = "uuid")]
 use super::uuid::{decode_uuid, decode_uuid_str, encode_uuid};
@@ -82,6 +82,16 @@ impl Alphabet {
     #[inline]
     pub fn encode_u128(&self, n: u128) -> String {
         encode_u128(self.enc, n)
+    }
+
+    #[inline]
+    pub fn encode_u64_into(&self, n: u64, b: &mut Vec<u8>) {
+        encode_u64_into(self.enc, n, b)
+    }
+
+    #[inline]
+    pub fn encode_u128_into(&self, n: u128, b: &mut Vec<u8>) {
+        encode_u128_into(self.enc, n, b)
     }
 
     #[inline]
