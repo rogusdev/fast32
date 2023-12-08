@@ -2,7 +2,7 @@ use core::ptr::write;
 
 use crate::shared::{bits_or_err_u8, DecodeError};
 
-use super::alphabet::{WIDTH_IN, WIDTH_OUT};
+use super::alphabet::{WIDTH_DEC, WIDTH_ENC};
 
 pub fn decode_bytes_str(
     dec: &'static [u8; 256],
@@ -12,7 +12,7 @@ pub fn decode_bytes_str(
 }
 
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-    let cap = a.len() * WIDTH_IN / WIDTH_OUT;
+    let cap = a.len() * WIDTH_DEC / WIDTH_ENC;
     let mut b = Vec::<u8>::with_capacity(cap);
     decode_bytes_into(dec, a, &mut b)?;
     Ok(b)
@@ -21,13 +21,13 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
 #[rustfmt::skip]
 pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
     let len_enc = a.len();
-    let rem = len_enc % WIDTH_OUT;
-    let max = len_enc / WIDTH_OUT;
+    let rem = len_enc % WIDTH_ENC;
+    let max = len_enc / WIDTH_ENC;
     let len_dec = b.len();
 
     for i in 0..max {
-        let c = len_dec + i * WIDTH_IN;
-        let p = i * WIDTH_OUT;
+        let c = len_dec + i * WIDTH_DEC;
+        let p = i * WIDTH_ENC;
 
         let p1 = bits_or_err_u8(dec, a, p  )?;
         let p2 = bits_or_err_u8(dec, a, p+1)?;
@@ -41,14 +41,14 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
             write(end.add(1), (p2 << 4) | (p3 >> 2));
             write(end.add(2), (p3 << 6) |  p4      );
 
-            b.set_len(c + WIDTH_IN);
+            b.set_len(c + WIDTH_DEC);
         }
     }
 
     match rem {
         3 => {
-            let c = len_dec + max * WIDTH_IN;
-            let p = max * WIDTH_OUT;
+            let c = len_dec + max * WIDTH_DEC;
+            let p = max * WIDTH_ENC;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
             let p2 = bits_or_err_u8(dec, a, p+1)?;
@@ -68,8 +68,8 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
             }
         }
         2 => {
-            let c = len_dec + max * WIDTH_IN;
-            let p = max * WIDTH_OUT;
+            let c = len_dec + max * WIDTH_DEC;
+            let p = max * WIDTH_ENC;
 
             let p1 = bits_or_err_u8(dec, a, p  )?;
             let p2 = bits_or_err_u8(dec, a, p+1)?;

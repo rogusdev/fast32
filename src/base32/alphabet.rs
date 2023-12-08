@@ -34,8 +34,8 @@ pub const RFC4648_HEX_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648_HEX, &DEC_RFC4
 
 pub const BITS: usize = 32;
 
-pub const WIDTH_IN: usize = 5;
-pub const WIDTH_OUT: usize = 8;
+pub const WIDTH_DEC: usize = 5;
+pub const WIDTH_ENC: usize = 8;
 
 pub const WIDTH_1: usize = 5;
 pub const WIDTH_2: usize = 10;

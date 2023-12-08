@@ -28,8 +28,8 @@ pub const RFC4648_URL_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648_URL, &DEC_RFC4
 
 pub const BITS: usize = 64;
 
-pub const WIDTH_IN: usize = 3;
-pub const WIDTH_OUT: usize = 4;
+pub const WIDTH_DEC: usize = 3;
+pub const WIDTH_ENC: usize = 4;
 
 pub const WIDTH_1: usize = 6;
 pub const WIDTH_2: usize = 12;
