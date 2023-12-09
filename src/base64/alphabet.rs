@@ -3,7 +3,7 @@ use core::ptr::write;
 #[cfg(feature = "uuid")]
 use uuid::Uuid;
 
-use crate::shared::{INVALID_BYTE, INVALID_CHAR};
+use crate::shared::decoder_map_simple;
 use crate::DecodeError;
 
 use super::decode_bytes::{decode_bytes, decode_bytes_into};
@@ -16,17 +16,17 @@ use super::encode_u64::{encode_u64, encode_u64_into};
 #[cfg(feature = "uuid")]
 use super::uuid::{decode_uuid, decode_uuid_str, encode_uuid};
 
-
-const ENC_RFC4648: &'static [u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const ENC_RFC4648: &'static [u8; 64] =
+    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const DEC_RFC4648: [u8; 256] = decoder_map_simple(ENC_RFC4648);
 pub const RFC4648: Alphabet = Alphabet::new(ENC_RFC4648, &DEC_RFC4648, Some('='));
 pub const RFC4648_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648, &DEC_RFC4648, None);
 
-const ENC_RFC4648_URL: &'static [u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+const ENC_RFC4648_URL: &'static [u8; 64] =
+    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 const DEC_RFC4648_URL: [u8; 256] = decoder_map_simple(ENC_RFC4648_URL);
 pub const RFC4648_URL: Alphabet = Alphabet::new(ENC_RFC4648_URL, &DEC_RFC4648_URL, Some('='));
 pub const RFC4648_URL_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648_URL, &DEC_RFC4648_URL, None);
-
 
 pub const BITS: usize = 64;
 
@@ -55,12 +55,6 @@ pub const WIDTH_19: usize = 114;
 pub const WIDTH_20: usize = 120;
 pub const WIDTH_21: usize = 126;
 
-pub struct Alphabet {
-    enc: &'static [u8; BITS],
-    dec: &'static [u8; 256],
-    pad: Option<char>,
-}
-
 unsafe fn add_pad(b: &mut Vec<u8>, pad: char) {
     let len = b.len();
     match len % WIDTH_ENC {
@@ -68,7 +62,7 @@ unsafe fn add_pad(b: &mut Vec<u8>, pad: char) {
             assert!(b.capacity() >= len + 2, "Missing capacity for padding");
             let end = b.as_mut_ptr().add(len);
 
-            write(end       , pad as u8);
+            write(end, pad as u8);
             write(end.add(1), pad as u8);
 
             b.set_len(len + 2);
@@ -77,7 +71,7 @@ unsafe fn add_pad(b: &mut Vec<u8>, pad: char) {
             assert!(b.capacity() >= len + 1, "Missing capacity for padding");
             let end = b.as_mut_ptr().add(len);
 
-            write(end       , pad as u8);
+            write(end, pad as u8);
 
             b.set_len(len + 1);
         }
@@ -97,6 +91,12 @@ fn rem_pad(a: &[u8], pad: char) -> &[u8] {
     } else {
         a
     }
+}
+
+pub struct Alphabet {
+    enc: &'static [u8; BITS],
+    dec: &'static [u8; 256],
+    pad: Option<char>,
 }
 
 impl Alphabet {
@@ -234,41 +234,4 @@ impl Alphabet {
     pub fn encode_uuid(&self, n: Uuid) -> String {
         encode_uuid(self.enc, n)
     }
-}
-
-pub const fn decoder_map_simple(enc: &[u8; BITS]) -> [u8; 256] {
-    let mut dec = [INVALID_BYTE; 256];
-    let mut i = 0;
-    while i < BITS {
-        dec[enc[i] as usize] = i as u8;
-        i += 1;
-    }
-    dec
-}
-
-const fn decoder_char_from_enc(enc: &[u8; BITS], map: &[u8; 94], i: usize) -> u8 {
-    let c = map[i];
-    if c == INVALID_CHAR as u8 {
-        return INVALID_BYTE;
-    }
-
-    let mut j = 0;
-    while j < BITS {
-        if enc[j] == c {
-            return j as u8;
-        }
-        j += 1;
-    }
-
-    panic!("Decoder has char not present in encoder!")
-}
-
-pub const fn decoder_map(enc: &[u8; BITS], map: &[u8; 94]) -> [u8; 256] {
-    let mut dec = [INVALID_BYTE; 256];
-    let mut i = 33;
-    while i < 127 {
-        dec[i] = decoder_char_from_enc(enc, &map, i - 33);
-        i += 1;
-    }
-    dec
 }

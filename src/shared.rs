@@ -1,5 +1,3 @@
-// note that invalid char cannot be used as part of any encoding or decoding char set
-pub const INVALID_CHAR: char = ' ';
 pub const INVALID_BYTE: u8 = u8::MAX;
 
 pub const U8_MASK_BOT_5: u8 = 0b00011111;
@@ -75,4 +73,47 @@ impl std::fmt::Display for DecodeError {
               // }
         }
     }
+}
+
+pub const fn decoder_map_simple<const B: usize>(enc: &[u8; B]) -> [u8; 256] {
+    let mut dec = [INVALID_BYTE; 256];
+    let mut i = 0;
+    while i < B {
+        dec[enc[i] as usize] = i as u8;
+        i += 1;
+    }
+    dec
+}
+
+const fn enc_index<const B: usize>(enc: &[u8; B], c: u8) -> u8 {
+    let mut j = 0;
+    while j < B {
+        if enc[j] == c {
+            return j as u8;
+        }
+        j += 1;
+    }
+    INVALID_BYTE
+}
+
+pub const fn decoder_map<const B: usize, const N: usize>(
+    enc: &[u8; B],
+    from: &[u8; N],
+    to: &[u8; N],
+) -> [u8; 256] {
+    let mut dec = decoder_map_simple(enc);
+
+    let mut i = 0;
+    while i < N {
+        if enc_index(enc, from[i]) != INVALID_BYTE {
+            panic!("Re-mapping a char from encoder!")
+        }
+        let j = enc_index(enc, to[i]);
+        if j == INVALID_BYTE {
+            panic!("Missing mapped char in encoder!")
+        }
+        dec[from[i] as usize] = j;
+        i += 1;
+    }
+    dec
 }

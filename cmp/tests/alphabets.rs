@@ -1,12 +1,15 @@
-use fast32::{INVALID_BYTE, INVALID_CHAR};
+use fast32::INVALID_BYTE;
 
 mod base32 {
-    use fast32::base32::{decoder_map, decoder_map_simple, Alphabet};
+    use fast32::base32::Alphabet;
+    use fast32::{decoder_map, decoder_map_simple};
 
     // only pub for the test below
     pub const ENC_CROCKFORD_LOWER: &'static [u8; 32] = b"0123456789abcdefghjkmnpqrstvwxyz";
-    pub const DEC_CROCKFORD_LOWER: [u8; 256] = decoder_map(ENC_CROCKFORD_LOWER,
-        b"               0123456789       abcdefgh1jk1mn0pqrst vwxyz      abcdefgh1jk1mn0pqrst vwxyz    "
+    pub const DEC_CROCKFORD_LOWER: [u8; 256] = decoder_map(
+        ENC_CROCKFORD_LOWER,
+        b"iloABCDEFGHIJKLMNOPQRSTVWXYZ",
+        b"110abcdefgh1jk1mn0pqrstvwxyz",
     );
     pub const CROCKFORD_LOWER: Alphabet = Alphabet::new(ENC_CROCKFORD_LOWER, &DEC_CROCKFORD_LOWER, None);
 
@@ -16,23 +19,24 @@ mod base32 {
 }
 
 mod base64 {
-    use fast32::base64::{decoder_map, decoder_map_simple, Alphabet};
+    use fast32::base64::Alphabet;
+    use fast32::{decoder_map, decoder_map_simple};
 
-    const ENC_BASE64_WEIRD: &'static [u8; 64] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
+    // only pub for the test below
+    pub const ENC_BASE64_WEIRD: &'static [u8; 64] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
     const DEC_BASE64_WEIRD: [u8; 256] = decoder_map_simple(ENC_BASE64_WEIRD);
     pub const BASE64_WEIRD: Alphabet = Alphabet::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD, None);
 
-    // only pub for the test below
-    pub const ENC_BASE64_WEIRD_FLEX: &'static [u8; 64] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
     pub const DEC_BASE64_WEIRD_FLEX: [u8; 256] = decoder_map(
-        ENC_BASE64_WEIRD_FLEX,
-        b"_    A    _._..0123456789     v ABCDEFGHIJKLMNOPQRSTUVWXYZ    _ abcdefghijklmnopqrstuvwxyz 2  ",
+        ENC_BASE64_WEIRD,
+        b"!&+,-/|?",
+        b"_A_._.2v",
     );
-    pub const BASE64_WEIRD_FLEX: Alphabet = Alphabet::new(ENC_BASE64_WEIRD_FLEX, &DEC_BASE64_WEIRD_FLEX, None);
+    pub const BASE64_WEIRD_FLEX: Alphabet = Alphabet::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD_FLEX, None);
 }
 
 use self::base32::{CROCKFORD_LOWER, DEC_CROCKFORD_LOWER, ENC_CROCKFORD_LOWER, RFC4648_LOWER_NOPAD};
-use self::base64::{BASE64_WEIRD, BASE64_WEIRD_FLEX, DEC_BASE64_WEIRD_FLEX, ENC_BASE64_WEIRD_FLEX};
+use self::base64::{BASE64_WEIRD, BASE64_WEIRD_FLEX, DEC_BASE64_WEIRD_FLEX, ENC_BASE64_WEIRD};
 
 #[test]
 fn crockford_10238() {
@@ -86,6 +90,7 @@ fn base64_weird_flex_confirm() {
 // adapted from src/base32/alphabet test
 #[test]
 fn confirm_crockford_lower_decode() {
+    const INVALID_CHAR: char = ' ';
     let mut s = String::new();
     for i in 0..=255u8 {
         let c = i as char;
@@ -118,6 +123,7 @@ fn confirm_crockford_lower_decode() {
 
 #[test]
 fn confirm_b64_weird_flex_decode() {
+    const INVALID_CHAR: char = ' ';
     let mut s = String::new();
     for i in 0..=255u8 {
         let c = i as char;
@@ -141,7 +147,7 @@ fn confirm_b64_weird_flex_decode() {
             if b == INVALID_BYTE {
                 INVALID_CHAR
             } else {
-                ENC_BASE64_WEIRD_FLEX[b as usize] as char
+                ENC_BASE64_WEIRD[b as usize] as char
             }
         })
         .iter()
