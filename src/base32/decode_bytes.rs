@@ -5,6 +5,11 @@ use crate::shared::{bits_or_err_u8, DecodeError};
 use super::alphabet::{WIDTH_DEC, WIDTH_ENC};
 
 #[inline]
+pub const fn capacity_decode(a: &[u8]) -> usize {
+    a.len() * WIDTH_DEC / WIDTH_ENC
+}
+
+#[inline]
 const fn rem_dec(rem: usize) -> usize {
     match rem {
         7 => 4,
@@ -16,7 +21,7 @@ const fn rem_dec(rem: usize) -> usize {
 }
 
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-    let cap = a.len() * WIDTH_DEC / WIDTH_ENC;
+    let cap = capacity_decode(a);
     let mut b = Vec::<u8>::with_capacity(cap);
     decode_bytes_into(dec, a, &mut b)?;
     Ok(b)

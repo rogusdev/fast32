@@ -6,7 +6,7 @@ use crate::shared::*;
 use super::alphabet::{BITS, WIDTH_DEC, WIDTH_ENC};
 
 #[inline]
-pub const fn capacity_bytes(a: &[u8]) -> usize {
+pub const fn capacity_encode(a: &[u8]) -> usize {
     // https://stackoverflow.com/questions/23636240/how-do-i-predict-the-required-size-of-a-base32-decode-output
     (a.len() * WIDTH_ENC + (WIDTH_DEC - 1)) / WIDTH_DEC
 }
@@ -21,7 +21,7 @@ const fn rem_enc(rem: usize) -> usize {
 }
 
 pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
-    let cap = capacity_bytes(a);
+    let cap = capacity_encode(a);
     let mut b = Vec::<u8>::with_capacity(cap);
     encode_bytes_into(enc, a, &mut b);
     unsafe { String::from_utf8_unchecked(b) }

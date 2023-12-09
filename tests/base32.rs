@@ -113,6 +113,24 @@ fn both_bytes_33() {
 }
 
 #[test]
+fn both_u64_111() {
+    let n = 111;
+    let x = "3F";
+    let s = CROCKFORD.encode_u64(n);
+    assert_eq!(s, x);
+    assert_eq!(CROCKFORD.decode_u64(s.as_bytes()).unwrap(), n);
+}
+
+#[test]
+fn both_u128_111() {
+    let n = 111;
+    let x = "3F";
+    let s = CROCKFORD.encode_u128(n);
+    assert_eq!(s, x);
+    assert_eq!(CROCKFORD.decode_u128(s.as_bytes()).unwrap(), n);
+}
+
+#[test]
 fn both_u64_32_32() {
     let n = 32 * 32;
     let x = "100";
@@ -339,6 +357,56 @@ fn both_bytes_into() {
     assert_eq!(String::from_utf8(b[1..27].to_vec()).unwrap(), x);
     assert_eq!(&b[1..27], x.as_bytes());
     assert_eq!(CROCKFORD.decode_bytes(&b[1..27]).unwrap(), n);
+
+    let mut b2 = Vec::<u8>::with_capacity(17);
+    b2.push(201);
+    CROCKFORD.decode_bytes_into(&b[1..27], &mut b2).unwrap();
+    b2.push(202);
+    assert_eq!(&b2[1..17], n);
+}
+
+#[test]
+#[should_panic(expected = "Missing capacity for encoding")]
+fn panic_bytes_into() {
+    let n = &[0x00, 0x12];
+    let mut b = Vec::<u8>::with_capacity(5);
+    CROCKFORD.encode_bytes_into(n, &mut b);
+    assert_eq!(&b, b"0090");
+    let mut b = Vec::<u8>::with_capacity(3);
+    CROCKFORD.encode_bytes_into(n, &mut b);
+}
+
+#[test]
+#[should_panic(expected = "Missing capacity for padding")]
+fn panic_pad() {
+    let n = &[0x00, 0x12];
+    let mut b = Vec::<u8>::with_capacity(8);
+    RFC4648.encode_bytes_into(n, &mut b);
+    assert_eq!(&b, b"AAJA====");
+    let mut b = Vec::<u8>::with_capacity(7);
+    RFC4648.encode_bytes_into(n, &mut b);
+}
+
+#[test]
+#[should_panic(expected = "Missing capacity for encoding")]
+fn panic_encode_u64_into() {
+    let n = 111;
+    let mut b = Vec::<u8>::with_capacity(2);
+    CROCKFORD.encode_u64_into(n, &mut b);
+    assert_eq!(&b, b"3F");
+    let mut b = Vec::<u8>::with_capacity(1);
+    CROCKFORD.encode_u64_into(n, &mut b);
+}
+
+#[test]
+#[should_panic(expected = "Missing capacity for encoding")]
+fn panic_encode_u128_into() {
+    let n = 111;
+    let mut b = Vec::<u8>::with_capacity(2);
+    CROCKFORD.encode_u128_into(n, &mut b);
+    assert_eq!(&b, b"3F");
+    let mut b = Vec::<u8>::with_capacity(1);
+    CROCKFORD.encode_u128_into(n, &mut b);
 }
 
 // cargo test tests::compare_bytes_u128 -- --exact
