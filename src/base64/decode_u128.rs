@@ -6,8 +6,8 @@ use super::alphabet::{
     WIDTH_8, WIDTH_9,
 };
 
+#[rustfmt::skip]
 pub fn decode_u128(dec: &'static [u8; 256], a: &[u8]) -> Result<u128, DecodeError> {
-    #[rustfmt::skip]
     let n = match a.len() {
         22 => {
             bits_or_err_u128(dec, a,  0)? << WIDTH_21 |

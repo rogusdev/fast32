@@ -19,19 +19,23 @@ pub const fn capacity_u128(n: u128) -> usize {
 }
 
 pub fn encode_u128(enc: &'static [u8; BITS], n: u128) -> String {
-    let mut b = Vec::<u8>::with_capacity(26);
-    encode_u128_into(enc, n, &mut b);
+    let cap = capacity_u128(n);
+    let mut b = Vec::<u8>::with_capacity(cap);
+    encode_u128_inner(enc, n, &mut b, cap, 0, cap);
     unsafe { String::from_utf8_unchecked(b) }
 }
 
-#[rustfmt::skip]
 pub fn encode_u128_into(enc: &'static [u8; BITS], n: u128, b: &mut Vec<u8>) {
     let cap = capacity_u128(n);
-
     let len = b.len();
     let new_len = len + cap;
     assert!(b.capacity() >= new_len, "Missing capacity for encoding");
+    encode_u128_inner(enc, n, b, cap, len, new_len);
+}
 
+#[rustfmt::skip]
+#[inline(always)]
+fn encode_u128_inner(enc: &'static [u8; BITS], n: u128, b: &mut Vec<u8>, cap: usize, len: usize, new_len: usize) {
     match cap {
         26 => unsafe {
             let end = b.as_mut_ptr().add(len);

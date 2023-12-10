@@ -21,13 +21,20 @@ const fn rem_enc(rem: usize) -> usize {
 }
 
 pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
-    let cap = capacity_encode(a);
-    let mut b = Vec::<u8>::with_capacity(cap);
-    encode_bytes_into(enc, a, &mut b);
+    let len_dec = a.len();
+    let rem = len_dec % WIDTH_DEC;
+    let max = len_dec / WIDTH_DEC;
+
+    let p_max = max * WIDTH_ENC;
+    let rem_enc = rem_enc(rem);
+
+    let mut b = Vec::<u8>::with_capacity(p_max + rem_enc);
+
+    encode_bytes_inner(enc, a, &mut b, max, 0, p_max, rem, rem_enc);
+
     unsafe { String::from_utf8_unchecked(b) }
 }
 
-#[rustfmt::skip]
 pub fn encode_bytes_into(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>) {
     let len_dec = a.len();
     let rem = len_dec % WIDTH_DEC;
@@ -37,8 +44,17 @@ pub fn encode_bytes_into(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>) {
     let p_max = len_enc + max * WIDTH_ENC;
     let rem_enc = rem_enc(rem);
 
-    assert!(b.capacity() >= p_max + rem_enc, "Missing capacity for encoding");
+    assert!(
+        b.capacity() >= p_max + rem_enc,
+        "Missing capacity for encoding"
+    );
 
+    encode_bytes_inner(enc, a, b, max, len_enc, p_max, rem, rem_enc);
+}
+
+#[rustfmt::skip]
+#[inline(always)]
+fn encode_bytes_inner(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>, max: usize, len_enc: usize, p_max: usize, rem: usize, rem_enc: usize) {
     for i in 0..max {
         unsafe {
             let c = i * WIDTH_DEC;

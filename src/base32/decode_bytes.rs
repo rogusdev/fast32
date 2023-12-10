@@ -21,14 +21,25 @@ const fn rem_dec(rem: usize) -> usize {
 }
 
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-    let cap = capacity_decode(a);
-    let mut b = Vec::<u8>::with_capacity(cap);
-    decode_bytes_into(dec, a, &mut b)?;
+    let len_enc = a.len();
+    let rem = len_enc % WIDTH_ENC;
+    let max = len_enc / WIDTH_ENC;
+
+    let c_max = max * WIDTH_DEC;
+    let rem_dec = rem_dec(rem);
+
+    let mut b = Vec::<u8>::with_capacity(c_max + rem_dec);
+
+    decode_bytes_inner(dec, a, &mut b, max, 0, c_max, rem, rem_dec, len_enc)?;
+
     Ok(b)
 }
 
-#[rustfmt::skip]
-pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
+pub fn decode_bytes_into(
+    dec: &'static [u8; 256],
+    a: &[u8],
+    b: &mut Vec<u8>,
+) -> Result<(), DecodeError> {
     let len_enc = a.len();
     let rem = len_enc % WIDTH_ENC;
     let max = len_enc / WIDTH_ENC;
@@ -37,8 +48,17 @@ pub fn decode_bytes_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> 
     let c_max = len_dec + max * WIDTH_DEC;
     let rem_dec = rem_dec(rem);
 
-    assert!(b.capacity() >= c_max + rem_dec, "Missing capacity for decoding");
+    assert!(
+        b.capacity() >= c_max + rem_dec,
+        "Missing capacity for decoding"
+    );
 
+    decode_bytes_inner(dec, a, b, max, len_dec, c_max, rem, rem_dec, len_enc)
+}
+
+#[rustfmt::skip]
+#[inline(always)]
+fn decode_bytes_inner(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>, max: usize, len_dec: usize, c_max: usize, rem: usize, rem_dec: usize, len_enc: usize) -> Result<(), DecodeError> {
     for i in 0..max {
         let c = len_dec + i * WIDTH_DEC;
         let p = i * WIDTH_ENC;

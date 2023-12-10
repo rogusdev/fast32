@@ -4,8 +4,8 @@ use super::alphabet::{
     WIDTH_1, WIDTH_10, WIDTH_2, WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9,
 };
 
+#[rustfmt::skip]
 pub fn decode_u64(dec: &'static [u8; 256], a: &[u8]) -> Result<u64, DecodeError> {
-    #[rustfmt::skip]
     let n = match a.len() {
         11 => {
             bits_or_err_u64(dec, a,  0)? << WIDTH_10 |
