@@ -5,6 +5,7 @@ use crate::shared::*;
 
 use super::alphabet::{BITS, WIDTH_DEC, WIDTH_ENC};
 
+/// Capacity needed in dest `Vec<u8>` to encode this byte array
 #[inline]
 pub const fn capacity_encode(a: &[u8]) -> usize {
     // https://stackoverflow.com/questions/23636240/how-do-i-predict-the-required-size-of-a-base32-decode-output
@@ -20,6 +21,13 @@ const fn rem_enc(rem: usize) -> usize {
     }
 }
 
+/// Encode byte array with given encoding, into a `String`
+///
+/// Example:
+/// ```
+/// use fast32::base64::RFC4648;
+/// assert_eq!(RFC4648.encode_bytes(&[0x00, 0x12]), "ABI=");
+/// ```
 pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
     let len_dec = a.len();
     let rem = len_dec % WIDTH_DEC;
@@ -35,6 +43,17 @@ pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
     unsafe { String::from_utf8_unchecked(b) }
 }
 
+/// Encode byte array with given encoding, into an existing `Vec<u8>`
+///
+/// Example:
+/// ```
+/// use fast32::base64::RFC4648;
+/// let mut b = Vec::<u8>::with_capacity(4);
+/// RFC4648.encode_bytes_into(&[0x00, 0x12], &mut b);
+/// assert_eq!(&b, b"ABI=");
+/// ```
+///
+/// Panics if not enough capacity in `b` for encoding -- see [`capacity_encode`](self::capacity_encode())
 pub fn encode_bytes_into(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>) {
     let len_dec = a.len();
     let rem = len_dec % WIDTH_DEC;

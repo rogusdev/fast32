@@ -23,4 +23,4 @@ pub use self::alphabet::RFC4648_URL;
 pub use self::alphabet::RFC4648_URL_NOPAD;
 
 #[cfg(feature = "uuid")]
-pub use self::uuid::{decode_uuid, decode_uuid_str, encode_uuid};
+pub use self::uuid::{decode_uuid, encode_uuid};

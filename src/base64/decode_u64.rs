@@ -4,6 +4,15 @@ use super::alphabet::{
     WIDTH_1, WIDTH_10, WIDTH_2, WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9,
 };
 
+/// Decode byte array with given encoding, into a u64
+///
+/// Examples:
+/// ```
+/// use fast32::base64::RFC4648_NOPAD;
+/// assert_eq!(RFC4648_NOPAD.decode_u64(b"f").unwrap(), 31);
+/// ```
+///
+/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
 #[rustfmt::skip]
 pub fn decode_u64(dec: &'static [u8; 256], a: &[u8]) -> Result<u64, DecodeError> {
     let n = match a.len() {

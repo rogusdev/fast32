@@ -4,6 +4,7 @@ use crate::shared::{bits_or_err_u8, DecodeError};
 
 use super::alphabet::{WIDTH_DEC, WIDTH_ENC};
 
+/// Capacity needed in dest `Vec<u8>` to decode this byte array
 #[inline]
 pub const fn capacity_decode(a: &[u8]) -> usize {
     a.len() * WIDTH_DEC / WIDTH_ENC
@@ -20,6 +21,15 @@ const fn rem_dec(rem: usize) -> usize {
     }
 }
 
+/// Decode byte array with given decoding, into a `String`
+///
+/// Example:
+/// ```
+/// use fast32::base32::RFC4648;
+/// assert_eq!(RFC4648.decode_bytes(b"AAJA====").unwrap(), &[0x00, 0x12]);
+/// ```
+///
+/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
 pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let len_enc = a.len();
     let rem = len_enc % WIDTH_ENC;
@@ -35,6 +45,19 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
     Ok(b)
 }
 
+/// Decode byte array with given decoding, into an existing `Vec<u8>`
+///
+/// Example:
+/// ```
+/// use fast32::base32::RFC4648;
+/// let mut b = Vec::<u8>::with_capacity(2);
+/// RFC4648.decode_bytes_into(b"AAJA====", &mut b);
+/// assert_eq!(&b, &[0x00, 0x12]);
+/// ```
+///
+/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
+///
+/// Panics if not enough capacity in `b` for decoding -- see [`capacity_decode`](self::capacity_decode())
 pub fn decode_bytes_into(
     dec: &'static [u8; 256],
     a: &[u8],

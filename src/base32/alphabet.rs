@@ -14,7 +14,7 @@ use super::encode_u128::{encode_u128, encode_u128_into};
 use super::encode_u64::{encode_u64, encode_u64_into};
 
 #[cfg(feature = "uuid")]
-use super::uuid::{decode_uuid, decode_uuid_str, encode_uuid};
+use super::uuid::{decode_uuid, encode_uuid};
 
 const ENC_CROCKFORD: &'static [u8; 32] = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const DEC_CROCKFORD: [u8; 256] = decoder_map(
@@ -22,16 +22,39 @@ const DEC_CROCKFORD: [u8; 256] = decoder_map(
     b"ILOabcdefghijklmnopqrstvwxyz",
     b"110ABCDEFGH1JK1MN0PQRSTVWXYZ",
 );
+/// Crockford Base32 (no padding)
+///
+/// [https://www.crockford.com/base32.html](https://www.crockford.com/base32.html)
 pub const CROCKFORD: Alphabet = Alphabet::new(ENC_CROCKFORD, &DEC_CROCKFORD, None);
 
 const ENC_RFC4648: &'static [u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const DEC_RFC4648: [u8; 256] = decoder_map_simple(ENC_RFC4648);
+/// RFC 4648 Base32 normal, with padding
+///
+/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
 pub const RFC4648: Alphabet = Alphabet::new(ENC_RFC4648, &DEC_RFC4648, Some('='));
+/// RFC 4648 Base32 normal, no padding
+///
+/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
 pub const RFC4648_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648, &DEC_RFC4648, None);
 
 const ENC_RFC4648_HEX: &'static [u8; 32] = b"0123456789ABCDEFGHIJKLMNOPQRSTUV";
 const DEC_RFC4648_HEX: [u8; 256] = decoder_map_simple(ENC_RFC4648_HEX);
+/// RFC 4648 Base32 "hex" form, with padding
+///
+/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
 pub const RFC4648_HEX: Alphabet = Alphabet::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX, Some('='));
+/// RFC 4648 Base32 "hex" form, no padding
+///
+/// `"0123456789ABCDEFGHIJKLMNOPQRSTUV"`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
 pub const RFC4648_HEX_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX, None);
 
 pub const BITS: usize = 32;
@@ -132,6 +155,7 @@ fn rem_pad(a: &[u8], pad: char) -> &[u8] {
     }
 }
 
+/// Hold a specific base32 encoding and decoding map pair, with functions to do encoding + decoding
 pub struct Alphabet {
     enc: &'static [u8; BITS],
     dec: &'static [u8; 256],
@@ -143,26 +167,31 @@ impl Alphabet {
         Self { enc, dec, pad }
     }
 
+    /// Pass encoder array to [`encode_u64`](super::encode_u64())
     #[inline]
     pub fn encode_u64(&self, n: u64) -> String {
         encode_u64(self.enc, n)
     }
 
+    /// Pass encoder array to [`encode_u128`](super::encode_u128())
     #[inline]
     pub fn encode_u128(&self, n: u128) -> String {
         encode_u128(self.enc, n)
     }
 
+    /// Pass encoder array to [`encode_u64_into`](super::encode_u64_into())
     #[inline]
     pub fn encode_u64_into(&self, n: u64, b: &mut Vec<u8>) {
         encode_u64_into(self.enc, n, b)
     }
 
+    /// Pass encoder array to [`encode_u128_into`](super::encode_u128_into())
     #[inline]
     pub fn encode_u128_into(&self, n: u128, b: &mut Vec<u8>) {
         encode_u128_into(self.enc, n, b)
     }
 
+    /// Pass encoder array to [`encode_bytes`](super::encode_bytes()), and add padding as needed
     #[inline]
     pub fn encode_bytes(&self, a: &[u8]) -> String {
         if let Some(pad) = self.pad {
@@ -179,6 +208,7 @@ impl Alphabet {
         }
     }
 
+    /// Pass encoder array to [`encode_bytes_into`](super::encode_bytes_into()), and add padding as needed
     #[inline]
     pub fn encode_bytes_into(&self, a: &[u8], b: &mut Vec<u8>) {
         if let Some(pad) = self.pad {
@@ -189,6 +219,7 @@ impl Alphabet {
         }
     }
 
+    /// Pass string as bytes and encoder array to [`encode_bytes`](super::encode_bytes()), and add padding as needed
     #[inline]
     pub fn encode_bytes_str(&self, a: impl AsRef<str>) -> String {
         let a = a.as_ref().as_bytes();
@@ -206,16 +237,19 @@ impl Alphabet {
         }
     }
 
+    /// Pass decoder array to [`decode_u64`](super::decode_u64())
     #[inline]
     pub fn decode_u64(&self, a: &[u8]) -> Result<u64, DecodeError> {
         decode_u64(self.dec, a)
     }
 
+    /// Pass decoder array to [`decode_u128`](super::decode_u128())
     #[inline]
     pub fn decode_u128(&self, a: &[u8]) -> Result<u128, DecodeError> {
         decode_u128(self.dec, a)
     }
 
+    /// Pass decoder array to [`decode_bytes`](super::decode_bytes()), and remove padding as needed
     #[inline]
     pub fn decode_bytes(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
         if let Some(pad) = self.pad {
@@ -225,6 +259,7 @@ impl Alphabet {
         }
     }
 
+    /// Pass decoder array to [`decode_bytes_into`](super::decode_bytes_into()), and remove padding as needed
     #[inline]
     pub fn decode_bytes_into(&self, a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
         if let Some(pad) = self.pad {
@@ -234,18 +269,21 @@ impl Alphabet {
         }
     }
 
+    /// Pass string as bytes and decoder array to [`decode_u64`](super::decode_u64())
     #[inline]
     pub fn decode_u64_str(&self, a: impl AsRef<str>) -> Result<u64, DecodeError> {
         let a = a.as_ref().as_bytes();
         decode_u64(self.dec, a)
     }
 
+    /// Pass string as bytes and decoder array to [`decode_u128`](super::decode_u128())
     #[inline]
     pub fn decode_u128_str(&self, a: impl AsRef<str>) -> Result<u128, DecodeError> {
         let a = a.as_ref().as_bytes();
         decode_u128(self.dec, a)
     }
 
+    /// Pass string as bytes and decoder array to [`decode_bytes`](super::decode_bytes()), and remove padding as needed
     #[inline]
     pub fn decode_bytes_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
         let a = a.as_ref().as_bytes();
@@ -256,18 +294,22 @@ impl Alphabet {
         }
     }
 
+    /// Pass string as bytes and decoder array to [`decode_uuid`](super::decode_uuid())
     #[cfg(feature = "uuid")]
     #[inline]
     pub fn decode_uuid_str(&self, a: impl AsRef<str>) -> Result<Uuid, DecodeError> {
-        decode_uuid_str(self.dec, a)
+        let a = a.as_ref().as_bytes();
+        decode_uuid(self.dec, a)
     }
 
+    /// Pass decoder array to [`decode_uuid`](super::decode_uuid())
     #[cfg(feature = "uuid")]
     #[inline]
     pub fn decode_uuid(&self, a: &[u8]) -> Result<Uuid, DecodeError> {
         decode_uuid(self.dec, a)
     }
 
+    /// Pass encoder array to [`encode_uuid`](super::encode_uuid())
     #[cfg(feature = "uuid")]
     #[inline]
     pub fn encode_uuid(&self, n: Uuid) -> String {

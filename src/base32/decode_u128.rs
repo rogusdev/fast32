@@ -6,6 +6,15 @@ use super::alphabet::{
     WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9,
 };
 
+/// Decode byte array with given encoding, into a u128
+///
+/// Examples:
+/// ```
+/// use fast32::base32::CROCKFORD;
+/// assert_eq!(CROCKFORD.decode_u128(b"3F").unwrap(), 111);
+/// ```
+///
+/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
 #[rustfmt::skip]
 pub fn decode_u128(dec: &'static [u8; 256], a: &[u8]) -> Result<u128, DecodeError> {
     let n = match a.len() {

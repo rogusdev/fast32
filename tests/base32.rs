@@ -342,8 +342,7 @@ fn both_bytes_into() {
         0xCD,
     ];
     let x = "00938NKRJ2NWVVRJ6HB7H45BSM";
-    let s = CROCKFORD.encode_bytes(n);
-    assert_eq!(s, x);
+    assert_eq!(CROCKFORD.encode_bytes(n), x);
 
     let mut b = Vec::<u8>::with_capacity(26);
     CROCKFORD.encode_bytes_into(n, &mut b);
@@ -358,11 +357,11 @@ fn both_bytes_into() {
     assert_eq!(&b[1..27], x.as_bytes());
     assert_eq!(CROCKFORD.decode_bytes(&b[1..27]).unwrap(), n);
 
-    let mut b2 = Vec::<u8>::with_capacity(17);
-    b2.push(201);
-    CROCKFORD.decode_bytes_into(&b[1..27], &mut b2).unwrap();
-    b2.push(202);
-    assert_eq!(&b2[1..17], n);
+    let mut b = Vec::<u8>::with_capacity(17);
+    b.push(201);
+    CROCKFORD.decode_bytes_into(x.as_bytes(), &mut b).unwrap();
+    b.push(202);
+    assert_eq!(&b[1..17], n);
 }
 
 #[test]

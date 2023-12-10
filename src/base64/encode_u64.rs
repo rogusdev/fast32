@@ -7,6 +7,7 @@ use super::alphabet::{
     BITS, WIDTH_1, WIDTH_10, WIDTH_2, WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9,
 };
 
+/// Capacity required in a `Vec<u8>` to encode this u64
 #[inline]
 pub const fn capacity_u64(n: u64) -> usize {
     if let Some(log) = n.checked_ilog2() {
@@ -16,6 +17,13 @@ pub const fn capacity_u64(n: u64) -> usize {
     }
 }
 
+/// Encode u64 with given encoding, into a `String`
+///
+/// Examples:
+/// ```
+/// use fast32::base64::RFC4648_NOPAD;
+/// assert_eq!(RFC4648_NOPAD.encode_u64(31), "f");
+/// ```
 pub fn encode_u64(enc: &'static [u8; BITS], n: u64) -> String {
     let cap = capacity_u64(n);
     let mut b = Vec::<u8>::with_capacity(cap);
@@ -23,6 +31,17 @@ pub fn encode_u64(enc: &'static [u8; BITS], n: u64) -> String {
     unsafe { String::from_utf8_unchecked(b) }
 }
 
+/// Encode u64 with given encoding, into an existing `Vec<u8>`
+///
+/// Example:
+/// ```
+/// use fast32::base64::RFC4648_NOPAD;
+/// let mut b = Vec::<u8>::with_capacity(1);
+/// RFC4648_NOPAD.encode_u64_into(31, &mut b);
+/// assert_eq!(&b, b"f");
+/// ```
+///
+/// Panics if not enough capacity in `b` for encoding -- see [`capacity_u64`](self::capacity_u64())
 pub fn encode_u64_into(enc: &'static [u8; BITS], n: u64, b: &mut Vec<u8>) {
     let cap = capacity_u64(n);
     let len = b.len();

@@ -1,3 +1,7 @@
+/// Used for marking indices in decoder arrays that are invalid characters
+///
+/// Only useful externally when testing alphabets like in
+/// [tests/alphabet.rs](https://github.com/rogusdev/fast32/blob/main/tests/alphabets.rs)
 pub const INVALID_BYTE: u8 = u8::MAX;
 
 pub const U8_MASK_BOT_5: u8 = 0b00011111;
@@ -52,6 +56,17 @@ pub fn bits_or_err_u128(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u128, Dec
     }
 }
 
+/// Error generated when decoding invalid data
+///
+/// InvalidChar: a character to be decoded is either:
+///     1. not in the encoding list of characters at all or
+///     2. positioned at the end of a sequence such that this char is impossible
+///        (contains bits in positions, at the end, that make this not actually properly encoded data)
+///
+/// InvalidLength: The remainder of the length of the sequence to be decoded
+/// is an impossible length for valid decodable sequences
+/// (e.g base64 can *never* generate unpadded encoded sequences of strings
+/// with a length remainder of 1, when divided by 4 -- only 2, 3, or 4)
 #[derive(Debug, Clone, PartialEq)]
 pub enum DecodeError {
     InvalidChar { char: char, index: usize },
@@ -75,6 +90,22 @@ impl std::fmt::Display for DecodeError {
     }
 }
 
+/// Build a new decoder array for the given bits (encoder array size), exactly of the encoder array
+///
+/// Example:
+/// ```
+/// use fast32::decoder_map_simple;
+/// use fast32::base32::Alphabet;
+///
+/// const ENC_RFC4648_LOWER: &'static [u8; 32] = b"abcdefghijklmnopqrstuvwxyz234567";
+/// const DEC_RFC4648_LOWER: [u8; 256] = decoder_map_simple(ENC_RFC4648_LOWER);
+/// pub const RFC4648_LOWER_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648_LOWER, &DEC_RFC4648_LOWER, None);
+///
+/// assert_eq!(RFC4648_LOWER_NOPAD.encode_u64(31), "7");
+/// assert_eq!(RFC4648_LOWER_NOPAD.decode_u64_str("7").unwrap(), 31);
+/// ```
+///
+/// See more in [tests/alphabet.rs](https://github.com/rogusdev/fast32/blob/main/tests/alphabets.rs)
 pub const fn decoder_map_simple<const B: usize>(enc: &[u8; B]) -> [u8; 256] {
     let mut dec = [INVALID_BYTE; 256];
     let mut i = 0;
@@ -96,6 +127,26 @@ const fn enc_index<const B: usize>(enc: &[u8; B], c: u8) -> u8 {
     INVALID_BYTE
 }
 
+/// Build a new decoder array for the given bits (encoder array size), with additional character translations
+///
+/// Example:
+/// ```
+/// use fast32::decoder_map;
+/// use fast32::base32::Alphabet;
+///
+/// const ENC_CROCKFORD_LOWER: &'static [u8; 32] = b"0123456789abcdefghjkmnpqrstvwxyz";
+/// const DEC_CROCKFORD_LOWER: [u8; 256] = decoder_map(
+///     ENC_CROCKFORD_LOWER,
+///     b"iloABCDEFGHIJKLMNOPQRSTVWXYZ",
+///     b"110abcdefgh1jk1mn0pqrstvwxyz",
+/// );
+/// pub const CROCKFORD_LOWER: Alphabet = Alphabet::new(ENC_CROCKFORD_LOWER, &DEC_CROCKFORD_LOWER, None);
+///
+/// assert_eq!(CROCKFORD_LOWER.encode_u64(31), "z");
+/// assert_eq!(CROCKFORD_LOWER.decode_u64_str("z").unwrap(), 31);
+/// ```
+///
+/// See more in [tests/alphabet.rs](https://github.com/rogusdev/fast32/blob/main/tests/alphabets.rs)
 pub const fn decoder_map<const B: usize, const N: usize>(
     enc: &[u8; B],
     from: &[u8; N],

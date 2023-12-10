@@ -4,10 +4,6 @@ use crate::DecodeError;
 
 use super::alphabet::BITS;
 
-pub fn decode_uuid_str(dec: &'static [u8; 256], a: impl AsRef<str>) -> Result<Uuid, DecodeError> {
-    decode_uuid(dec, a.as_ref().as_bytes())
-}
-
 pub fn decode_uuid(dec: &'static [u8; 256], a: &[u8]) -> Result<Uuid, DecodeError> {
     Ok(Uuid::from_u128(super::decode_u128(dec, a)?))
 }

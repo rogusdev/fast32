@@ -6,6 +6,15 @@ use super::alphabet::{
     WIDTH_8, WIDTH_9,
 };
 
+/// Decode byte array with given encoding, into a u128
+///
+/// Examples:
+/// ```
+/// use fast32::base64::RFC4648_NOPAD;
+/// assert_eq!(RFC4648_NOPAD.decode_u128(b"Bv").unwrap(), 111);
+/// ```
+///
+/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
 #[rustfmt::skip]
 pub fn decode_u128(dec: &'static [u8; 256], a: &[u8]) -> Result<u128, DecodeError> {
     let n = match a.len() {

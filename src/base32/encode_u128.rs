@@ -9,6 +9,7 @@ use super::alphabet::{
     WIDTH_3, WIDTH_4, WIDTH_5, WIDTH_6, WIDTH_7, WIDTH_8, WIDTH_9,
 };
 
+/// Capacity required in a `Vec<u8>` to encode this u128
 #[inline]
 pub const fn capacity_u128(n: u128) -> usize {
     if let Some(log) = n.checked_ilog2() {
@@ -18,6 +19,13 @@ pub const fn capacity_u128(n: u128) -> usize {
     }
 }
 
+/// Encode u128 with given encoding, into a `String`
+///
+/// Examples:
+/// ```
+/// use fast32::base32::CROCKFORD;
+/// assert_eq!(CROCKFORD.encode_u128(111), "3F");
+/// ```
 pub fn encode_u128(enc: &'static [u8; BITS], n: u128) -> String {
     let cap = capacity_u128(n);
     let mut b = Vec::<u8>::with_capacity(cap);
@@ -25,6 +33,17 @@ pub fn encode_u128(enc: &'static [u8; BITS], n: u128) -> String {
     unsafe { String::from_utf8_unchecked(b) }
 }
 
+/// Encode u128 with given encoding, into an existing `Vec<u8>`
+///
+/// Example:
+/// ```
+/// use fast32::base32::CROCKFORD;
+/// let mut b = Vec::<u8>::with_capacity(2);
+/// CROCKFORD.encode_u128_into(111, &mut b);
+/// assert_eq!(&b, b"3F");
+/// ```
+///
+/// Panics if not enough capacity in `b` for encoding -- see [`capacity_u128`](self::capacity_u128())
 pub fn encode_u128_into(enc: &'static [u8; BITS], n: u128, b: &mut Vec<u8>) {
     let cap = capacity_u128(n);
     let len = b.len();

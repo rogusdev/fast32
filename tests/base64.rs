@@ -283,8 +283,7 @@ fn both_bytes_into() {
         0xCD,
     ];
     let x = "ABI0VniQq83vEjRWeJCrzQ";
-    let s = RFC4648_NOPAD.encode_bytes(n);
-    assert_eq!(s, x);
+    assert_eq!(RFC4648_NOPAD.encode_bytes(n), x);
 
     let mut b = Vec::<u8>::with_capacity(22);
     RFC4648_NOPAD.encode_bytes_into(n, &mut b);
@@ -299,11 +298,11 @@ fn both_bytes_into() {
     assert_eq!(&b[1..23], x.as_bytes());
     assert_eq!(RFC4648_NOPAD.decode_bytes(&b[1..23]).unwrap(), n);
 
-    let mut b2 = Vec::<u8>::with_capacity(17);
-    b2.push(201);
-    RFC4648_NOPAD.decode_bytes_into(&b[1..23], &mut b2).unwrap();
-    b2.push(202);
-    assert_eq!(&b2[1..17], n);
+    let mut b = Vec::<u8>::with_capacity(17);
+    b.push(201);
+    RFC4648_NOPAD.decode_bytes_into(x.as_bytes(), &mut b).unwrap();
+    b.push(202);
+    assert_eq!(&b[1..17], n);
 }
 
 #[test]
