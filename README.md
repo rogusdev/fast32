@@ -2,6 +2,8 @@
 
 Base32 and base64 encoding in Rust. Primarily for integer (u64, u128) and UUID identifiers (behind feature `uuid`), as well as arbitrary byte arrays. And do it all very quickly (more on this [below](#speed)).
 
+The [crate](https://crates.io/crates/fast32) has installation instructions, and the [documentation](https://docs.rs/fast32/1.0.0/fast32/) has extensive examples.
+
 ### Encoding integers
 
 Note that by default, encoding an integer into base32 or base64 via normal algorithms does not "look like" a number -- notably the rightmost character usually looks off, and there are sometimes more characters than there needs to be. This might be a plus for obfuscation, barely, but it makes them hard to reason about quickly, and it's also more efficient to process them as integers rather than arbitrary arrays of bytes (because we know upfront that integers are always a small size).
@@ -10,7 +12,11 @@ For example, the normal/base10 integer `31` processed normally, as bytes, into o
 
 ### Speed
 
-This is intended to be as fast as basically possible, while still keeping an intuitive interface. It is, per the bench comparisons in this repo, on my machine, about 65-100%+ faster than the closest [alternative](https://github.com/archer884/crockford) for decoding u64s, and ~15-50%+ faster for encoding u64s (bigger percent improvement for larger numbers). (That repo does not offer u128 or uuid support to compare against.) It is also ~35% faster on decoding raw bytes and ~35-40% faster on encoding raw bytes than the closest [other alternative](https://github.com/ia0/data-encoding) (that is significantly more mature but does not offer this crate's integer encoding/decoding, on top of the slower performance). There is an earlier and [seemingly long abandoned](https://github.com/andreasots/base32) alternative that is generally about 3x slower than this crate (and thus ~2x slower than the other alternative as well), but still somewhat popular.
+This is intended to be as fast as basically possible, while still keeping an intuitive interface.
+
+It is, per the [bench comparisons](https://github.com/rogusdev/fast32/blob/main/cmp/benches/comparisons.rs) in this repo, on my machine, about 65-100%+ faster than the closest [alternative](https://github.com/archer884/crockford) for decoding u64s, and ~15-50%+ faster for encoding u64s, with bigger percent improvements for larger numbers. (That repo does not offer u128 or uuid support to compare against.)
+
+It is also ~35-40% faster on decoding and encoding raw bytes vs the closest [other alternative](https://github.com/ia0/data-encoding) that is more mature but does not offer this crate's integer encoding/decoding, on top of the slower performance. There is an earlier and [seemingly long abandoned](https://github.com/andreasots/base32) alternative that is generally about 3x slower than this crate (and thus ~2x slower than the other alternative as well), but still somewhat popular.
 
 ### Summary
 
