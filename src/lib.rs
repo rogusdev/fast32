@@ -14,8 +14,8 @@
 //! assert_eq!(CROCKFORD.decode_u64_str("Z").unwrap(), 31);
 //!
 //! // &[0x1F] is 31
-//! assert_eq!(CROCKFORD.encode_bytes(&[0x1F]), "3W");
-//! assert_eq!(CROCKFORD.decode_bytes(b"3W").unwrap(), &[0x1F]);
+//! assert_eq!(CROCKFORD.encode(&[0x1F]), "3W");
+//! assert_eq!(CROCKFORD.decode(b"3W").unwrap(), &[0x1F]);
 //!
 //! let u = Uuid::nil();
 //! assert_eq!(CROCKFORD.encode_uuid(u), "0");
@@ -28,8 +28,8 @@
 //! With padding:
 //! ```
 //! use fast32::base32::RFC4648;
-//! assert_eq!(RFC4648.encode_bytes(&[0x1F]), "D4======");
-//! assert_eq!(RFC4648.decode_bytes(b"D4======").unwrap(), &[0x1F]);
+//! assert_eq!(RFC4648.encode(&[0x1F]), "D4======");
+//! assert_eq!(RFC4648.decode(b"D4======").unwrap(), &[0x1F]);
 //! ```
 //!
 //! Base64, without padding (needed for u64 + u128 encode/decode) and with padding:
@@ -38,8 +38,8 @@
 //! assert_eq!(RFC4648_NOPAD.encode_u64(31), "f");
 //! assert_eq!(RFC4648_NOPAD.decode_u64(b"f").unwrap(), 31);
 //!
-//! assert_eq!(RFC4648.encode_bytes(&[0x1F]), "Hw==");
-//! assert_eq!(RFC4648.decode_bytes(b"Hw==").unwrap(), &[0x1F]);
+//! assert_eq!(RFC4648.encode(&[0x1F]), "Hw==");
+//! assert_eq!(RFC4648.decode(b"Hw==").unwrap(), &[0x1F]);
 //! ```
 //!
 //! Also directly writing bytes into existing arrays:
@@ -53,21 +53,21 @@
 //! let x = "00938NKRJ2NWVVRJ6HB7H45BSM";
 //!
 //! let mut b = Vec::<u8>::with_capacity(26);
-//! CROCKFORD.encode_bytes_into(n, &mut b);
+//! CROCKFORD.encode_into(n, &mut b);
 //! assert_eq!(&b[0..26], x.as_bytes());
-//! assert_eq!(CROCKFORD.decode_bytes(&b[0..26]).unwrap(), n);
+//! assert_eq!(CROCKFORD.decode(&b[0..26]).unwrap(), n);
 //!
 //! let mut b = Vec::<u8>::with_capacity(27);
 //! b.push(201);
-//! CROCKFORD.encode_bytes_into(n, &mut b);
+//! CROCKFORD.encode_into(n, &mut b);
 //! b.push(202);
 //! assert_eq!(String::from_utf8(b[1..27].to_vec()).unwrap(), x);
 //! assert_eq!(&b[1..27], x.as_bytes());
-//! assert_eq!(CROCKFORD.decode_bytes(&b[1..27]).unwrap(), n);
+//! assert_eq!(CROCKFORD.decode(&b[1..27]).unwrap(), n);
 //!
 //! let mut b = Vec::<u8>::with_capacity(17);
 //! b.push(201);
-//! CROCKFORD.decode_bytes_into(x.as_bytes(), &mut b).unwrap();
+//! CROCKFORD.decode_into(x.as_bytes(), &mut b).unwrap();
 //! b.push(202);
 //! assert_eq!(&b[1..17], n);
 //! ```

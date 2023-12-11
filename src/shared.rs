@@ -95,11 +95,11 @@ impl std::fmt::Display for DecodeError {
 /// Example:
 /// ```
 /// use fast32::decoder_map_simple;
-/// use fast32::base32::Alphabet;
+/// use fast32::base32::Alphabet32;
 ///
 /// const ENC_RFC4648_LOWER: &'static [u8; 32] = b"abcdefghijklmnopqrstuvwxyz234567";
 /// const DEC_RFC4648_LOWER: [u8; 256] = decoder_map_simple(ENC_RFC4648_LOWER);
-/// pub const RFC4648_LOWER_NOPAD: Alphabet = Alphabet::new(ENC_RFC4648_LOWER, &DEC_RFC4648_LOWER, None);
+/// pub const RFC4648_LOWER_NOPAD: Alphabet32 = Alphabet32::new(ENC_RFC4648_LOWER, &DEC_RFC4648_LOWER, None);
 ///
 /// assert_eq!(RFC4648_LOWER_NOPAD.encode_u64(31), "7");
 /// assert_eq!(RFC4648_LOWER_NOPAD.decode_u64_str("7").unwrap(), 31);
@@ -132,7 +132,7 @@ const fn enc_index<const B: usize>(enc: &[u8; B], c: u8) -> u8 {
 /// Example:
 /// ```
 /// use fast32::decoder_map;
-/// use fast32::base32::Alphabet;
+/// use fast32::base32::Alphabet32;
 ///
 /// const ENC_CROCKFORD_LOWER: &'static [u8; 32] = b"0123456789abcdefghjkmnpqrstvwxyz";
 /// const DEC_CROCKFORD_LOWER: [u8; 256] = decoder_map(
@@ -140,7 +140,7 @@ const fn enc_index<const B: usize>(enc: &[u8; B], c: u8) -> u8 {
 ///     b"iloABCDEFGHIJKLMNOPQRSTVWXYZ",
 ///     b"110abcdefgh1jk1mn0pqrstvwxyz",
 /// );
-/// pub const CROCKFORD_LOWER: Alphabet = Alphabet::new(ENC_CROCKFORD_LOWER, &DEC_CROCKFORD_LOWER, None);
+/// pub const CROCKFORD_LOWER: Alphabet32 = Alphabet32::new(ENC_CROCKFORD_LOWER, &DEC_CROCKFORD_LOWER, None);
 ///
 /// assert_eq!(CROCKFORD_LOWER.encode_u64(31), "z");
 /// assert_eq!(CROCKFORD_LOWER.decode_u64_str("z").unwrap(), 31);

@@ -11,7 +11,7 @@ use super::alphabet::{
 
 /// Capacity required in a `Vec<u8>` to encode this u128
 #[inline]
-pub const fn capacity_u128(n: u128) -> usize {
+pub const fn capacity_encode_u128(n: u128) -> usize {
     if let Some(log) = n.checked_ilog2() {
         1 + (log / 5) as usize
     } else {
@@ -27,7 +27,7 @@ pub const fn capacity_u128(n: u128) -> usize {
 /// assert_eq!(CROCKFORD.encode_u128(111), "3F");
 /// ```
 pub fn encode_u128(enc: &'static [u8; BITS], n: u128) -> String {
-    let cap = capacity_u128(n);
+    let cap = capacity_encode_u128(n);
     let mut b = Vec::<u8>::with_capacity(cap);
     encode_u128_inner(enc, n, &mut b, cap, 0, cap);
     unsafe { String::from_utf8_unchecked(b) }
@@ -43,9 +43,9 @@ pub fn encode_u128(enc: &'static [u8; BITS], n: u128) -> String {
 /// assert_eq!(&b, b"3F");
 /// ```
 ///
-/// Panics if not enough capacity in `b` for encoding -- see [`capacity_u128`](self::capacity_u128())
+/// Panics if not enough capacity in `b` for encoding -- see [`capacity_encode_u128`](self::capacity_encode_u128())
 pub fn encode_u128_into(enc: &'static [u8; BITS], n: u128, b: &mut Vec<u8>) {
-    let cap = capacity_u128(n);
+    let cap = capacity_encode_u128(n);
     let len = b.len();
     let new_len = len + cap;
     assert!(b.capacity() >= new_len, "Missing capacity for encoding");

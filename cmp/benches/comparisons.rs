@@ -95,7 +95,7 @@ fn bench_dataenc_encode_fox_4(c: &mut Criterion) {
 fn bench_crate_encode_fox_4(c: &mut Criterion) {
     let a = b"The quick brown fox jumps over the lazy dog.";
     c.bench_function("crate encode fox 4", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.encode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.encode(black_box(a)))
     });
 }
 
@@ -116,7 +116,7 @@ fn bench_dataenc_encode_fox_3(c: &mut Criterion) {
 fn bench_crate_encode_fox_3(c: &mut Criterion) {
     let a = b"The quick brown fox jumps over the lazy dog";
     c.bench_function("crate encode fox 3", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.encode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.encode(black_box(a)))
     });
 }
 
@@ -137,7 +137,7 @@ fn bench_dataenc_encode_fox_2(c: &mut Criterion) {
 fn bench_crate_encode_fox_2(c: &mut Criterion) {
     let a = b"The quick brown fox jumps over the lazy do";
     c.bench_function("crate encode fox 2", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.encode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.encode(black_box(a)))
     });
 }
 
@@ -158,7 +158,7 @@ fn bench_dataenc_encode_fox_1(c: &mut Criterion) {
 fn bench_crate_encode_fox_1(c: &mut Criterion) {
     let a = b"The quick brown fox jumps over the lazy d";
     c.bench_function("crate encode fox 1", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.encode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.encode(black_box(a)))
     });
 }
 
@@ -270,7 +270,7 @@ fn bench_dataenc_decode_fox_4(c: &mut Criterion) {
 fn bench_crate_decode_fox_4(c: &mut Criterion) {
     let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
     c.bench_function("crate decode fox 4", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.decode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.decode(black_box(a)))
     });
 }
 
@@ -291,7 +291,7 @@ fn bench_dataenc_decode_fox_3(c: &mut Criterion) {
 fn bench_crate_decode_fox_3(c: &mut Criterion) {
     let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPE";
     c.bench_function("crate decode fox 3", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.decode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.decode(black_box(a)))
     });
 }
 
@@ -312,7 +312,7 @@ fn bench_dataenc_decode_fox_2(c: &mut Criterion) {
 fn bench_crate_decode_fox_2(c: &mut Criterion) {
     let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQG";
     c.bench_function("crate decode fox 2", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.decode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.decode(black_box(a)))
     });
 }
 
@@ -333,7 +333,7 @@ fn bench_dataenc_decode_fox_1(c: &mut Criterion) {
 fn bench_crate_decode_fox_1(c: &mut Criterion) {
     let a = b"AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CG";
     c.bench_function("crate decode fox 1", |b| {
-        b.iter(|| fast32::base32::CROCKFORD.decode_bytes(black_box(a)))
+        b.iter(|| fast32::base32::CROCKFORD.decode(black_box(a)))
     });
 }
 

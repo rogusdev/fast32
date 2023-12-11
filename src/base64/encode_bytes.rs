@@ -26,9 +26,9 @@ const fn rem_enc(rem: usize) -> usize {
 /// Example:
 /// ```
 /// use fast32::base64::RFC4648;
-/// assert_eq!(RFC4648.encode_bytes(&[0x00, 0x12]), "ABI=");
+/// assert_eq!(RFC4648.encode(&[0x00, 0x12]), "ABI=");
 /// ```
-pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
+pub fn encode(enc: &'static [u8; BITS], a: &[u8]) -> String {
     let len_dec = a.len();
     let rem = len_dec % WIDTH_DEC;
     let max = len_dec / WIDTH_DEC;
@@ -38,7 +38,7 @@ pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
 
     let mut b = Vec::<u8>::with_capacity(p_max + rem_enc);
 
-    encode_bytes_inner(enc, a, &mut b, max, 0, p_max, rem, rem_enc);
+    encode_inner(enc, a, &mut b, max, 0, p_max, rem, rem_enc);
 
     unsafe { String::from_utf8_unchecked(b) }
 }
@@ -49,12 +49,12 @@ pub fn encode_bytes(enc: &'static [u8; BITS], a: &[u8]) -> String {
 /// ```
 /// use fast32::base64::RFC4648;
 /// let mut b = Vec::<u8>::with_capacity(4);
-/// RFC4648.encode_bytes_into(&[0x00, 0x12], &mut b);
+/// RFC4648.encode_into(&[0x00, 0x12], &mut b);
 /// assert_eq!(&b, b"ABI=");
 /// ```
 ///
 /// Panics if not enough capacity in `b` for encoding -- see [`capacity_encode`](self::capacity_encode())
-pub fn encode_bytes_into(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>) {
+pub fn encode_into(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>) {
     let len_dec = a.len();
     let rem = len_dec % WIDTH_DEC;
     let max = len_dec / WIDTH_DEC;
@@ -68,12 +68,12 @@ pub fn encode_bytes_into(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>) {
         "Missing capacity for encoding"
     );
 
-    encode_bytes_inner(enc, a, b, max, len_enc, p_max, rem, rem_enc);
+    encode_inner(enc, a, b, max, len_enc, p_max, rem, rem_enc);
 }
 
 #[rustfmt::skip]
 #[inline(always)]
-fn encode_bytes_inner(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>, max: usize, len_enc: usize, p_max: usize, rem: usize, rem_enc: usize) {
+fn encode_inner(enc: &'static [u8; BITS], a: &[u8], b: &mut Vec<u8>, max: usize, len_enc: usize, p_max: usize, rem: usize, rem_enc: usize) {
     for i in 0..max {
         unsafe {
             let c = i * WIDTH_DEC;

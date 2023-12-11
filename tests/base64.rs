@@ -14,9 +14,9 @@ fn both_u64_0() {
 fn both_bytes_0() {
     let n = &[0x00];
     let x = "AA";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -44,9 +44,9 @@ fn both_u64_31_into() {
 fn both_bytes_31() {
     let n = &[0x1F];
     let x = "Hw";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -62,9 +62,9 @@ fn both_u64_63() {
 fn both_bytes_63() {
     let n = &[0x3F];
     let x = "Pw";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -80,9 +80,9 @@ fn both_u64_64() {
 fn both_bytes_64() {
     let n = &[0x40];
     let x = "QA";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -98,9 +98,9 @@ fn both_u64_65() {
 fn both_bytes_65() {
     let n = &[0x41];
     let x = "QQ";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -143,16 +143,16 @@ fn both_u64_10238() {
 fn both_bytes_10238() {
     let n = &[0x27, 0xFE];
     let x = "J/4";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
 fn both_bytes_fox() {
     let n = "The quick brown fox jumps over the lazy dog.";
     let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4";
-    let s = RFC4648_NOPAD.encode_bytes(n.as_bytes());
+    let s = RFC4648_NOPAD.encode(n.as_bytes());
     assert_eq!(s, x);
 }
 
@@ -169,9 +169,9 @@ fn both_u64_5111() {
 fn both_bytes_5111() {
     let n = &[0x13, 0xF7];
     let x = "E/c";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -187,9 +187,9 @@ fn both_u64_1066193093600() {
 fn both_bytes_1066193093600() {
     let n = &[0xF8, 0x3E, 0x0F, 0x83, 0xE0];
     let x = "+D4Pg+A";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -205,9 +205,9 @@ fn both_u64_big() {
 fn both_bytes_u64_big() {
     let n = &[0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF];
     let x = "EjRWeJCrze8";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -223,9 +223,9 @@ fn both_u64_max() {
 fn both_bytes_max() {
     let n = &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
     let x = "//////////8";
-    let s = RFC4648_NOPAD.encode_bytes(n);
+    let s = RFC4648_NOPAD.encode(n);
     assert_eq!(s, x);
-    assert_eq!(RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 }
 
 #[test]
@@ -283,24 +283,24 @@ fn both_bytes_into() {
         0xCD,
     ];
     let x = "ABI0VniQq83vEjRWeJCrzQ";
-    assert_eq!(RFC4648_NOPAD.encode_bytes(n), x);
+    assert_eq!(RFC4648_NOPAD.encode(n), x);
 
     let mut b = Vec::<u8>::with_capacity(22);
-    RFC4648_NOPAD.encode_bytes_into(n, &mut b);
+    RFC4648_NOPAD.encode_into(n, &mut b);
     assert_eq!(&b[0..22], x.as_bytes());
-    assert_eq!(RFC4648_NOPAD.decode_bytes(&b[0..22]).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(&b[0..22]).unwrap(), n);
 
     let mut b = Vec::<u8>::with_capacity(23);
     b.push(201);
-    RFC4648_NOPAD.encode_bytes_into(n, &mut b);
+    RFC4648_NOPAD.encode_into(n, &mut b);
     b.push(202);
     assert_eq!(String::from_utf8(b[1..23].to_vec()).unwrap(), x);
     assert_eq!(&b[1..23], x.as_bytes());
-    assert_eq!(RFC4648_NOPAD.decode_bytes(&b[1..23]).unwrap(), n);
+    assert_eq!(RFC4648_NOPAD.decode(&b[1..23]).unwrap(), n);
 
     let mut b = Vec::<u8>::with_capacity(17);
     b.push(201);
-    RFC4648_NOPAD.decode_bytes_into(x.as_bytes(), &mut b).unwrap();
+    RFC4648_NOPAD.decode_into(x.as_bytes(), &mut b).unwrap();
     b.push(202);
     assert_eq!(&b[1..17], n);
 }
@@ -310,10 +310,10 @@ fn both_bytes_into() {
 fn panic_bytes_into() {
     let n = &[0x00, 0x12];
     let mut b = Vec::<u8>::with_capacity(3);
-    RFC4648_NOPAD.encode_bytes_into(n, &mut b);
+    RFC4648_NOPAD.encode_into(n, &mut b);
     assert_eq!(&b, b"ABI");
     let mut b = Vec::<u8>::with_capacity(2);
-    RFC4648_NOPAD.encode_bytes_into(n, &mut b);
+    RFC4648_NOPAD.encode_into(n, &mut b);
 }
 
 #[test]
@@ -321,10 +321,10 @@ fn panic_bytes_into() {
 fn panic_pad() {
     let n = &[0x00, 0x12];
     let mut b = Vec::<u8>::with_capacity(4);
-    RFC4648.encode_bytes_into(n, &mut b);
+    RFC4648.encode_into(n, &mut b);
     assert_eq!(&b, b"ABI=");
     let mut b = Vec::<u8>::with_capacity(3);
-    RFC4648.encode_bytes_into(n, &mut b);
+    RFC4648.encode_into(n, &mut b);
 }
 
 #[test]
@@ -361,11 +361,11 @@ fn compare_bytes_u128() {
     assert_eq!(e, x);
     let d = RFC4648_NOPAD.decode_u128(e.as_bytes()).unwrap();
     assert_eq!(d, n);
-    let eb = RFC4648_NOPAD.encode_bytes(&[
+    let eb = RFC4648_NOPAD.encode(&[
         0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD,
     ]);
     assert_eq!(eb, e);
-    let db = RFC4648_NOPAD.decode_bytes(eb.as_bytes()).unwrap();
+    let db = RFC4648_NOPAD.decode(eb.as_bytes()).unwrap();
     assert_eq!(db, d.to_be_bytes()[1..]);
     // TODO: find a way to convert a not 12 bit matchup such that both will give the same outcomes
 }
@@ -403,9 +403,9 @@ fn decode_bad() {
     );
     let res = RFC4648_NOPAD.decode_u128(b"0123456789ABCD012345678");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 23 });
-    let res = RFC4648_NOPAD.decode_bytes(b"1");
+    let res = RFC4648_NOPAD.decode(b"1");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 1 });
-    let res = RFC4648_NOPAD.decode_bytes(b"11");
+    let res = RFC4648_NOPAD.decode(b"11");
     assert_eq!(
         res.unwrap_err(),
         DecodeError::InvalidChar {
@@ -419,53 +419,53 @@ fn decode_bad() {
 #[test]
 fn rfc4648() {
     // https://datatracker.ietf.org/doc/html/rfc4648#section-10
-    assert_eq!(RFC4648_NOPAD.encode_bytes_str(""), "");
-    assert_eq!(RFC4648_NOPAD.encode_bytes_str("f"), "Zg");
-    assert_eq!(RFC4648_NOPAD.encode_bytes_str("fo"), "Zm8");
-    assert_eq!(RFC4648_NOPAD.encode_bytes_str("foo"), "Zm9v");
-    assert_eq!(RFC4648_NOPAD.encode_bytes_str("foob"), "Zm9vYg");
-    assert_eq!(RFC4648_NOPAD.encode_bytes_str("fooba"), "Zm9vYmE");
-    assert_eq!(RFC4648_NOPAD.encode_bytes_str("foobar"), "Zm9vYmFy");
+    assert_eq!(RFC4648_NOPAD.encode_str(""), "");
+    assert_eq!(RFC4648_NOPAD.encode_str("f"), "Zg");
+    assert_eq!(RFC4648_NOPAD.encode_str("fo"), "Zm8");
+    assert_eq!(RFC4648_NOPAD.encode_str("foo"), "Zm9v");
+    assert_eq!(RFC4648_NOPAD.encode_str("foob"), "Zm9vYg");
+    assert_eq!(RFC4648_NOPAD.encode_str("fooba"), "Zm9vYmE");
+    assert_eq!(RFC4648_NOPAD.encode_str("foobar"), "Zm9vYmFy");
 
-    assert_eq!(RFC4648_NOPAD.decode_bytes_str(""), Ok(b"".to_vec()));
-    assert_eq!(RFC4648_NOPAD.decode_bytes_str("Zg"), Ok(b"f".to_vec()));
-    assert_eq!(RFC4648_NOPAD.decode_bytes_str("Zm8"), Ok(b"fo".to_vec()));
-    assert_eq!(RFC4648_NOPAD.decode_bytes_str("Zm9v"), Ok(b"foo".to_vec()));
-    assert_eq!(RFC4648_NOPAD.decode_bytes_str("Zm9vYg"), Ok(b"foob".to_vec()));
-    assert_eq!(RFC4648_NOPAD.decode_bytes_str("Zm9vYmE"), Ok(b"fooba".to_vec()));
-    assert_eq!(RFC4648_NOPAD.decode_bytes_str("Zm9vYmFy"), Ok(b"foobar".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode_str(""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode_str("Zg"), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode_str("Zm8"), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode_str("Zm9v"), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode_str("Zm9vYg"), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode_str("Zm9vYmE"), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode_str("Zm9vYmFy"), Ok(b"foobar".to_vec()));
 
-    assert_eq!(RFC4648.encode_bytes_str(""), "");
-    assert_eq!(RFC4648.encode_bytes_str("f"), "Zg==");
-    assert_eq!(RFC4648.encode_bytes_str("fo"), "Zm8=");
-    assert_eq!(RFC4648.encode_bytes_str("foo"), "Zm9v");
-    assert_eq!(RFC4648.encode_bytes_str("foob"), "Zm9vYg==");
-    assert_eq!(RFC4648.encode_bytes_str("fooba"), "Zm9vYmE=");
-    assert_eq!(RFC4648.encode_bytes_str("foobar"), "Zm9vYmFy");
+    assert_eq!(RFC4648.encode_str(""), "");
+    assert_eq!(RFC4648.encode_str("f"), "Zg==");
+    assert_eq!(RFC4648.encode_str("fo"), "Zm8=");
+    assert_eq!(RFC4648.encode_str("foo"), "Zm9v");
+    assert_eq!(RFC4648.encode_str("foob"), "Zm9vYg==");
+    assert_eq!(RFC4648.encode_str("fooba"), "Zm9vYmE=");
+    assert_eq!(RFC4648.encode_str("foobar"), "Zm9vYmFy");
 
-    assert_eq!(RFC4648.decode_bytes_str(""), Ok(b"".to_vec()));
-    assert_eq!(RFC4648.decode_bytes_str("Zg=="), Ok(b"f".to_vec()));
-    assert_eq!(RFC4648.decode_bytes_str("Zm8="), Ok(b"fo".to_vec()));
-    assert_eq!(RFC4648.decode_bytes_str("Zm9v"), Ok(b"foo".to_vec()));
-    assert_eq!(RFC4648.decode_bytes_str("Zm9vYg=="), Ok(b"foob".to_vec()));
-    assert_eq!(RFC4648.decode_bytes_str("Zm9vYmE="), Ok(b"fooba".to_vec()));
-    assert_eq!(RFC4648.decode_bytes_str("Zm9vYmFy"), Ok(b"foobar".to_vec()));
+    assert_eq!(RFC4648.decode_str(""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zg=="), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm8="), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9v"), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9vYg=="), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9vYmE="), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9vYmFy"), Ok(b"foobar".to_vec()));
 
-    assert_eq!(RFC4648.encode_bytes(b""), "");
-    assert_eq!(RFC4648.encode_bytes(b"f"), "Zg==");
-    assert_eq!(RFC4648.encode_bytes(b"fo"), "Zm8=");
-    assert_eq!(RFC4648.encode_bytes(b"foo"), "Zm9v");
-    assert_eq!(RFC4648.encode_bytes(b"foob"), "Zm9vYg==");
-    assert_eq!(RFC4648.encode_bytes(b"fooba"), "Zm9vYmE=");
-    assert_eq!(RFC4648.encode_bytes(b"foobar"), "Zm9vYmFy");
+    assert_eq!(RFC4648.encode(b""), "");
+    assert_eq!(RFC4648.encode(b"f"), "Zg==");
+    assert_eq!(RFC4648.encode(b"fo"), "Zm8=");
+    assert_eq!(RFC4648.encode(b"foo"), "Zm9v");
+    assert_eq!(RFC4648.encode(b"foob"), "Zm9vYg==");
+    assert_eq!(RFC4648.encode(b"fooba"), "Zm9vYmE=");
+    assert_eq!(RFC4648.encode(b"foobar"), "Zm9vYmFy");
 
-    assert_eq!(RFC4648.decode_bytes(b""), Ok(b"".to_vec()));
-    assert_eq!(RFC4648.decode_bytes(b"Zg=="), Ok(b"f".to_vec()));
-    assert_eq!(RFC4648.decode_bytes(b"Zm8="), Ok(b"fo".to_vec()));
-    assert_eq!(RFC4648.decode_bytes(b"Zm9v"), Ok(b"foo".to_vec()));
-    assert_eq!(RFC4648.decode_bytes(b"Zm9vYg=="), Ok(b"foob".to_vec()));
-    assert_eq!(RFC4648.decode_bytes(b"Zm9vYmE="), Ok(b"fooba".to_vec()));
-    assert_eq!(RFC4648.decode_bytes(b"Zm9vYmFy"), Ok(b"foobar".to_vec()));
+    assert_eq!(RFC4648.decode(b""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648.decode(b"Zg=="), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648.decode(b"Zm8="), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648.decode(b"Zm9v"), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648.decode(b"Zm9vYg=="), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648.decode(b"Zm9vYmE="), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648.decode(b"Zm9vYmFy"), Ok(b"foobar".to_vec()));
 }
 
 #[test]

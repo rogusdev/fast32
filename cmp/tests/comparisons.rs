@@ -43,9 +43,9 @@ fn compare_base32_bytes_crockford() {
         let s = base32::encode(base32::Alphabet::Crockford, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::CROCKFORD.encode_bytes(n);
+        let s = fast32::base32::CROCKFORD.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::CROCKFORD.decode(s.as_bytes()).unwrap(), n);
 
         let s = CROCKFORD32.encode(n);
         assert_eq!(s, x);
@@ -60,9 +60,9 @@ fn compare_base32_bytes_crockford() {
         let s = base32::encode(base32::Alphabet::Crockford, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::CROCKFORD.encode_bytes(n);
+        let s = fast32::base32::CROCKFORD.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::CROCKFORD.decode(s.as_bytes()).unwrap(), n);
 
         let s = CROCKFORD32.encode(n);
         assert_eq!(s, x);
@@ -77,9 +77,9 @@ fn compare_base32_bytes_crockford() {
         let s = base32::encode(base32::Alphabet::Crockford, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::CROCKFORD.encode_bytes(n);
+        let s = fast32::base32::CROCKFORD.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::CROCKFORD.decode(s.as_bytes()).unwrap(), n);
 
         let s = CROCKFORD32.encode(n);
         assert_eq!(s, x);
@@ -94,9 +94,9 @@ fn compare_base32_bytes_crockford() {
         let s = base32::encode(base32::Alphabet::Crockford, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::CROCKFORD.encode_bytes(n);
+        let s = fast32::base32::CROCKFORD.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::CROCKFORD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::CROCKFORD.decode(s.as_bytes()).unwrap(), n);
 
         let s = CROCKFORD32.encode(n);
         assert_eq!(s, x);
@@ -121,11 +121,11 @@ fn compare_base32_bytes_crockford() {
         for n in r {
             let b = &n.to_be_bytes();
             let c = base32::encode(base32::Alphabet::Crockford, b);
-            let e = fast32::base32::CROCKFORD.encode_bytes(b);
+            let e = fast32::base32::CROCKFORD.encode(b);
             assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
             let c = CROCKFORD32.encode(b);
             assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
-            let d = fast32::base32::CROCKFORD.decode_bytes(e.as_bytes()).unwrap();
+            let d = fast32::base32::CROCKFORD.decode(e.as_bytes()).unwrap();
             assert_eq!(b.to_vec(), d, "mismatch decode for {n}: {b:?} vs {d:?}");
         }
     }
@@ -141,9 +141,9 @@ fn compare_base32_bytes_rfc4648pad() {
         let s = base32::encode(base32::Alphabet::RFC4648 { padding: true }, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::RFC4648.encode_bytes(n);
+        let s = fast32::base32::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE32.encode(n);
         assert_eq!(s, x);
@@ -158,9 +158,9 @@ fn compare_base32_bytes_rfc4648pad() {
         let s = base32::encode(base32::Alphabet::RFC4648 { padding: true }, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::RFC4648.encode_bytes(n);
+        let s = fast32::base32::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE32.encode(n);
         assert_eq!(s, x);
@@ -175,9 +175,9 @@ fn compare_base32_bytes_rfc4648pad() {
         let s = base32::encode(base32::Alphabet::RFC4648 { padding: true }, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::RFC4648.encode_bytes(n);
+        let s = fast32::base32::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE32.encode(n);
         assert_eq!(s, x);
@@ -192,9 +192,9 @@ fn compare_base32_bytes_rfc4648pad() {
         let s = base32::encode(base32::Alphabet::RFC4648 { padding: true }, n);
         assert_eq!(s, x);
 
-        let s = fast32::base32::RFC4648.encode_bytes(n);
+        let s = fast32::base32::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base32::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base32::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE32.encode(n);
         assert_eq!(s, x);
@@ -219,11 +219,11 @@ fn compare_base32_bytes_rfc4648pad() {
         for n in r {
             let b = &n.to_be_bytes();
             let c = base32::encode(base32::Alphabet::RFC4648 { padding: true }, b);
-            let e = fast32::base32::RFC4648.encode_bytes(b);
+            let e = fast32::base32::RFC4648.encode(b);
             assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
             let c = data_encoding::BASE32.encode(b);
             assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
-            let d = fast32::base32::RFC4648.decode_bytes(e.as_bytes()).unwrap();
+            let d = fast32::base32::RFC4648.decode(e.as_bytes()).unwrap();
             assert_eq!(b.to_vec(), d, "mismatch decode for {n}: {b:?} vs {d:?}");
         }
     }
@@ -236,17 +236,17 @@ fn compare_base64_bytes() {
         let n = b"The quick brown fox jumps over the lazy dog.";
         let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4=";
 
-        let s = fast32::base64::RFC4648.encode_bytes(n);
+        let s = fast32::base64::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base64::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
 
-        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        let s = fast32::base64::RFC4648_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
-        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
@@ -258,17 +258,17 @@ fn compare_base64_bytes() {
         let n = b"The quick brown fox jumps over the lazy dog";
         let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZw==";
 
-        let s = fast32::base64::RFC4648.encode_bytes(n);
+        let s = fast32::base64::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base64::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
 
-        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        let s = fast32::base64::RFC4648_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
-        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
@@ -280,17 +280,17 @@ fn compare_base64_bytes() {
         let n = b"The quick brown fox jumps over the lazy do";
         let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRv";
 
-        let s = fast32::base64::RFC4648.encode_bytes(n);
+        let s = fast32::base64::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base64::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
 
-        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        let s = fast32::base64::RFC4648_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
-        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
@@ -302,17 +302,17 @@ fn compare_base64_bytes() {
         let n = b"The quick brown fox jumps over the lazy d";
         let x = "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGQ=";
 
-        let s = fast32::base64::RFC4648.encode_bytes(n);
+        let s = fast32::base64::RFC4648.encode(n);
         assert_eq!(s, x);
-        assert_eq!(fast32::base64::RFC4648.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64.encode(n);
         assert_eq!(s, x);
         assert_eq!(data_encoding::BASE64.decode(s.as_bytes()).unwrap(), n);
 
-        let s = fast32::base64::RFC4648_NOPAD.encode_bytes(n);
+        let s = fast32::base64::RFC4648_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
-        assert_eq!(fast32::base64::RFC4648_NOPAD.decode_bytes(s.as_bytes()).unwrap(), n);
+        assert_eq!(fast32::base64::RFC4648_NOPAD.decode(s.as_bytes()).unwrap(), n);
 
         let s = data_encoding::BASE64_NOPAD.encode(n);
         assert_eq!(s, x.trim_end_matches('='));
@@ -335,10 +335,10 @@ fn compare_base64_bytes() {
     for r in rs {
         for n in r {
             let b = &n.to_be_bytes();
-            let e = fast32::base64::RFC4648.encode_bytes(b);
+            let e = fast32::base64::RFC4648.encode(b);
             let c = data_encoding::BASE64.encode(b);
             assert_eq!(c, e, "mismatch encode for {n}: {c} vs {e}");
-            let d = fast32::base64::RFC4648.decode_bytes(e.as_bytes()).unwrap();
+            let d = fast32::base64::RFC4648.decode(e.as_bytes()).unwrap();
             assert_eq!(b.to_vec(), d, "mismatch decode for {n}: {b:?} vs {d:?}");
         }
     }

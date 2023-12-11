@@ -24,11 +24,11 @@ const fn rem_dec(rem: usize) -> usize {
 /// Example:
 /// ```
 /// use fast32::base64::RFC4648;
-/// assert_eq!(RFC4648.decode_bytes(b"ABI=").unwrap(), &[0x00, 0x12]);
+/// assert_eq!(RFC4648.decode(b"ABI=").unwrap(), &[0x00, 0x12]);
 /// ```
 ///
 /// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
-pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
+pub fn decode(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let len_enc = a.len();
     let rem = len_enc % WIDTH_ENC;
     let max = len_enc / WIDTH_ENC;
@@ -38,7 +38,7 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
 
     let mut b = Vec::<u8>::with_capacity(c_max + rem_dec);
 
-    decode_bytes_inner(dec, a, &mut b, max, 0, c_max, rem, rem_dec, len_enc)?;
+    decode_inner(dec, a, &mut b, max, 0, c_max, rem, rem_dec, len_enc)?;
 
     Ok(b)
 }
@@ -49,14 +49,14 @@ pub fn decode_bytes(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, Decode
 /// ```
 /// use fast32::base64::RFC4648;
 /// let mut b = Vec::<u8>::with_capacity(2);
-/// RFC4648.decode_bytes_into(b"ABI=", &mut b);
+/// RFC4648.decode_into(b"ABI=", &mut b);
 /// assert_eq!(&b, &[0x00, 0x12]);
 /// ```
 ///
 /// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
 ///
 /// Panics if not enough capacity in `b` for decoding -- see [`capacity_decode`](self::capacity_decode())
-pub fn decode_bytes_into(
+pub fn decode_into(
     dec: &'static [u8; 256],
     a: &[u8],
     b: &mut Vec<u8>,
@@ -74,12 +74,12 @@ pub fn decode_bytes_into(
         "Missing capacity for decoding"
     );
 
-    decode_bytes_inner(dec, a, b, max, len_dec, c_max, rem, rem_dec, len_enc)
+    decode_inner(dec, a, b, max, len_dec, c_max, rem, rem_dec, len_enc)
 }
 
 #[rustfmt::skip]
 #[inline(always)]
-fn decode_bytes_inner(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>, max: usize, len_dec: usize, c_max: usize, rem: usize, rem_dec: usize, len_enc: usize) -> Result<(), DecodeError> {
+fn decode_inner(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>, max: usize, len_dec: usize, c_max: usize, rem: usize, rem_dec: usize, len_enc: usize) -> Result<(), DecodeError> {
     for i in 0..max {
         let c = len_dec + i * WIDTH_DEC;
         let p = i * WIDTH_ENC;

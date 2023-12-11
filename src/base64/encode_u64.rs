@@ -9,7 +9,7 @@ use super::alphabet::{
 
 /// Capacity required in a `Vec<u8>` to encode this u64
 #[inline]
-pub const fn capacity_u64(n: u64) -> usize {
+pub const fn capacity_encode_u64(n: u64) -> usize {
     if let Some(log) = n.checked_ilog2() {
         1 + (log / 6) as usize
     } else {
@@ -25,7 +25,7 @@ pub const fn capacity_u64(n: u64) -> usize {
 /// assert_eq!(RFC4648_NOPAD.encode_u64(31), "f");
 /// ```
 pub fn encode_u64(enc: &'static [u8; BITS], n: u64) -> String {
-    let cap = capacity_u64(n);
+    let cap = capacity_encode_u64(n);
     let mut b = Vec::<u8>::with_capacity(cap);
     encode_u64_inner(enc, n, &mut b, cap, 0, cap);
     unsafe { String::from_utf8_unchecked(b) }
@@ -41,9 +41,9 @@ pub fn encode_u64(enc: &'static [u8; BITS], n: u64) -> String {
 /// assert_eq!(&b, b"f");
 /// ```
 ///
-/// Panics if not enough capacity in `b` for encoding -- see [`capacity_u64`](self::capacity_u64())
+/// Panics if not enough capacity in `b` for encoding -- see [`capacity_encode_u64`](self::capacity_encode_u64())
 pub fn encode_u64_into(enc: &'static [u8; BITS], n: u64, b: &mut Vec<u8>) {
-    let cap = capacity_u64(n);
+    let cap = capacity_encode_u64(n);
     let len = b.len();
     let new_len = len + cap;
     assert!(b.capacity() >= new_len, "Missing capacity for encoding");
