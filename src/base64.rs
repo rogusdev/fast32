@@ -16,11 +16,11 @@ pub use self::encode_bytes::{capacity_encode, encode, encode_into};
 pub use self::encode_u128::{capacity_encode_u128, encode_u128, encode_u128_into};
 pub use self::encode_u64::{capacity_encode_u64, encode_u64, encode_u64_into};
 
-pub use self::alphabet::Alphabet64;
+pub use self::alphabet::{Alphabet64Nopad, Alphabet64Padded};
 pub use self::alphabet::RFC4648;
 pub use self::alphabet::RFC4648_NOPAD;
 pub use self::alphabet::RFC4648_URL;
 pub use self::alphabet::RFC4648_URL_NOPAD;
 
 #[cfg(feature = "uuid")]
-pub use self::uuid::{decode_uuid, encode_uuid};
+pub use self::uuid::{decode_uuid, encode_uuid, encode_uuid_into};

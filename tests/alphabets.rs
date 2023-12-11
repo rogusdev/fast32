@@ -1,7 +1,7 @@
 use fast32::INVALID_BYTE;
 
 mod base32 {
-    use fast32::base32::Alphabet32;
+    use fast32::base32::Alphabet32Nopad;
     use fast32::{decoder_map, decoder_map_simple};
 
     // only pub for the test below
@@ -11,28 +11,28 @@ mod base32 {
         b"iloABCDEFGHIJKLMNOPQRSTVWXYZ",
         b"110abcdefgh1jk1mn0pqrstvwxyz",
     );
-    pub const CROCKFORD_LOWER: Alphabet32 = Alphabet32::new(ENC_CROCKFORD_LOWER, &DEC_CROCKFORD_LOWER, None);
+    pub const CROCKFORD_LOWER: Alphabet32Nopad = Alphabet32Nopad::new(ENC_CROCKFORD_LOWER, &DEC_CROCKFORD_LOWER);
 
     const ENC_RFC4648_LOWER: &'static [u8; 32] = b"abcdefghijklmnopqrstuvwxyz234567";
     const DEC_RFC4648_LOWER: [u8; 256] = decoder_map_simple(ENC_RFC4648_LOWER);
-    pub const RFC4648_LOWER_NOPAD: Alphabet32 = Alphabet32::new(ENC_RFC4648_LOWER, &DEC_RFC4648_LOWER, None);
+    pub const RFC4648_LOWER_NOPAD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_RFC4648_LOWER, &DEC_RFC4648_LOWER);
 }
 
 mod base64 {
-    use fast32::base64::Alphabet64;
+    use fast32::base64::Alphabet64Nopad;
     use fast32::{decoder_map, decoder_map_simple};
 
     // only pub for the test below
     pub const ENC_BASE64_WEIRD: &'static [u8; 64] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
     const DEC_BASE64_WEIRD: [u8; 256] = decoder_map_simple(ENC_BASE64_WEIRD);
-    pub const BASE64_WEIRD: Alphabet64 = Alphabet64::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD, None);
+    pub const BASE64_WEIRD: Alphabet64Nopad = Alphabet64Nopad::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD);
 
     pub const DEC_BASE64_WEIRD_FLEX: [u8; 256] = decoder_map(
         ENC_BASE64_WEIRD,
         b"!&+,-/|?",
         b"_A_._.2v",
     );
-    pub const BASE64_WEIRD_FLEX: Alphabet64 = Alphabet64::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD_FLEX, None);
+    pub const BASE64_WEIRD_FLEX: Alphabet64Nopad = Alphabet64Nopad::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD_FLEX);
 }
 
 use self::base32::{CROCKFORD_LOWER, DEC_CROCKFORD_LOWER, ENC_CROCKFORD_LOWER, RFC4648_LOWER_NOPAD};

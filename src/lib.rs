@@ -1,5 +1,5 @@
 //! Base32 and base64 encoding in Rust. Primarily for integer (u64, u128)
-//! and UUID identifiers (behind feature `uuid`), as well as arbitrary bytes.
+//! and [`UUID`] identifiers (behind feature `uuid`), as well as arbitrary bytes.
 //!
 //! And do it all very quickly
 //! (more on this in the [README](https://github.com/rogusdev/fast32#speed)).
@@ -97,6 +97,8 @@
 //! In short, this crate should do everything you want for base32 and base64 encoding
 //! (please [raise an issue](https://github.com/rogusdev/fast32/issues) if it doesn't!)
 //! while doing all of it very quickly and conveniently.
+//!
+//! [`Uuid`]: https://docs.rs/uuid/latest/uuid/
 
 /// Base32 functions and constants for specific encodings
 pub mod base32;

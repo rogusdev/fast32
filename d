@@ -1,3 +1,3 @@
 #!/bin/fish
-cargo doc
+cargo doc --all-features
 caddy file-server --root ./target/doc --listen :5000

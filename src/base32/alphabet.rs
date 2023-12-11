@@ -14,7 +14,7 @@ use super::encode_u128::{encode_u128, encode_u128_into};
 use super::encode_u64::{encode_u64, encode_u64_into};
 
 #[cfg(feature = "uuid")]
-use super::uuid::{decode_uuid, encode_uuid};
+use super::uuid::{decode_uuid, encode_uuid, encode_uuid_into};
 
 const ENC_CROCKFORD: &'static [u8; 32] = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const DEC_CROCKFORD: [u8; 256] = decoder_map(
@@ -25,7 +25,7 @@ const DEC_CROCKFORD: [u8; 256] = decoder_map(
 /// Crockford Base32 (no padding)
 ///
 /// [https://www.crockford.com/base32.html](https://www.crockford.com/base32.html)
-pub const CROCKFORD: Alphabet32 = Alphabet32::new(ENC_CROCKFORD, &DEC_CROCKFORD, None);
+pub const CROCKFORD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_CROCKFORD, &DEC_CROCKFORD);
 
 const ENC_RFC4648: &'static [u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const DEC_RFC4648: [u8; 256] = decoder_map_simple(ENC_RFC4648);
@@ -34,13 +34,13 @@ const DEC_RFC4648: [u8; 256] = decoder_map_simple(ENC_RFC4648);
 /// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
 ///
 /// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
-pub const RFC4648: Alphabet32 = Alphabet32::new(ENC_RFC4648, &DEC_RFC4648, Some('='));
+pub const RFC4648: Alphabet32Padded = Alphabet32Padded::new(ENC_RFC4648, &DEC_RFC4648, '=');
 /// RFC 4648 Base32 normal, no padding
 ///
 /// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"`
 ///
 /// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
-pub const RFC4648_NOPAD: Alphabet32 = Alphabet32::new(ENC_RFC4648, &DEC_RFC4648, None);
+pub const RFC4648_NOPAD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_RFC4648, &DEC_RFC4648);
 
 const ENC_RFC4648_HEX: &'static [u8; 32] = b"0123456789ABCDEFGHIJKLMNOPQRSTUV";
 const DEC_RFC4648_HEX: [u8; 256] = decoder_map_simple(ENC_RFC4648_HEX);
@@ -49,13 +49,13 @@ const DEC_RFC4648_HEX: [u8; 256] = decoder_map_simple(ENC_RFC4648_HEX);
 /// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
 ///
 /// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
-pub const RFC4648_HEX: Alphabet32 = Alphabet32::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX, Some('='));
+pub const RFC4648_HEX: Alphabet32Padded = Alphabet32Padded::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX, '=');
 /// RFC 4648 Base32 "hex" form, no padding
 ///
 /// `"0123456789ABCDEFGHIJKLMNOPQRSTUV"`
 ///
 /// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
-pub const RFC4648_HEX_NOPAD: Alphabet32 = Alphabet32::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX, None);
+pub const RFC4648_HEX_NOPAD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX);
 
 pub const BITS: usize = 32;
 
@@ -155,16 +155,73 @@ fn rem_pad(a: &[u8], pad: char) -> &[u8] {
     }
 }
 
-/// Hold a specific base32 encoding and decoding map pair, with functions to do encoding + decoding
-pub struct Alphabet32 {
+/// Hold a specific padded base32 encoding and decoding map pair, with functions to do encoding + decoding
+///
+/// Padded alphabets cannot encode or decode integers (u64, u128, uuid)
+pub struct Alphabet32Padded {
     enc: &'static [u8; BITS],
     dec: &'static [u8; 256],
-    pad: Option<char>,
+    pad: char,
 }
 
-impl Alphabet32 {
-    pub const fn new(enc: &'static [u8; BITS], dec: &'static [u8; 256], pad: Option<char>) -> Self {
+/// Hold a specific no padding base32 encoding and decoding map pair, with functions to do encoding + decoding
+///
+/// Non-padded alphabets can encode and decode integers (u64, u128, uuid)
+pub struct Alphabet32Nopad {
+    enc: &'static [u8; BITS],
+    dec: &'static [u8; 256],
+}
+
+impl Alphabet32Padded {
+    /// Instantiate with encoder and decoder maps, plus padding char
+    pub const fn new(enc: &'static [u8; BITS], dec: &'static [u8; 256], pad: char) -> Self {
         Self { enc, dec, pad }
+    }
+
+    /// Pass encoder array to [`encode`](super::encode()), and add padding as needed
+    #[inline]
+    pub fn encode(&self, a: &[u8]) -> String {
+        let mut s = encode(self.enc, a);
+        unsafe {
+            let b = s.as_mut_vec();
+            // make space for max possible padding
+            b.reserve(6);
+            add_pad(b, self.pad);
+        }
+        s
+    }
+
+    /// Pass encoder array to [`encode_into`](super::encode_into()), and add padding as needed
+    #[inline]
+    pub fn encode_into(&self, a: &[u8], b: &mut Vec<u8>) {
+        encode_into(self.enc, a, b);
+        unsafe { add_pad(b, self.pad) }
+    }
+
+    /// Pass decoder array to [`decode`](super::decode()), and remove padding as needed
+    #[inline]
+    pub fn decode(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
+        decode(self.dec, rem_pad(a, self.pad))
+    }
+
+    /// Pass decoder array to [`decode_into`](super::decode_into()), and remove padding as needed
+    #[inline]
+    pub fn decode_into(&self, a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
+        decode_into(self.dec, rem_pad(a, self.pad), b)
+    }
+
+    /// Pass string as bytes and decoder array to [`decode`](super::decode()), and remove padding as needed
+    #[inline]
+    pub fn decode_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
+        let a = a.as_ref().as_bytes();
+        decode(self.dec, rem_pad(a, self.pad))
+    }
+}
+
+impl Alphabet32Nopad {
+    /// Instantiate with encoder and decoder maps (no padding)
+    pub const fn new(enc: &'static [u8; BITS], dec: &'static [u8; 256]) -> Self {
+        Self { enc, dec }
     }
 
     /// Pass encoder array to [`encode_u64`](super::encode_u64())
@@ -191,32 +248,16 @@ impl Alphabet32 {
         encode_u128_into(self.enc, n, b)
     }
 
-    /// Pass encoder array to [`encode`](super::encode()), and add padding as needed
+    /// Pass encoder array to [`encode`](super::encode())
     #[inline]
     pub fn encode(&self, a: &[u8]) -> String {
-        if let Some(pad) = self.pad {
-            let mut s = encode(self.enc, a);
-            unsafe {
-                let b = s.as_mut_vec();
-                // make space for max possible padding
-                b.reserve(6);
-                add_pad(b, pad);
-            }
-            s
-        } else {
-            encode(self.enc, a)
-        }
+        encode(self.enc, a)
     }
 
-    /// Pass encoder array to [`encode_into`](super::encode_into()), and add padding as needed
+    /// Pass encoder array to [`encode_into`](super::encode_into())
     #[inline]
     pub fn encode_into(&self, a: &[u8], b: &mut Vec<u8>) {
-        if let Some(pad) = self.pad {
-            encode_into(self.enc, a, b);
-            unsafe { add_pad(b, pad) }
-        } else {
-            encode_into(self.enc, a, b)
-        }
+        encode_into(self.enc, a, b)
     }
 
     /// Pass decoder array to [`decode_u64`](super::decode_u64())
@@ -231,24 +272,16 @@ impl Alphabet32 {
         decode_u128(self.dec, a)
     }
 
-    /// Pass decoder array to [`decode`](super::decode()), and remove padding as needed
+    /// Pass decoder array to [`decode`](super::decode())
     #[inline]
     pub fn decode(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-        if let Some(pad) = self.pad {
-            decode(self.dec, rem_pad(a, pad))
-        } else {
-            decode(self.dec, a)
-        }
+        decode(self.dec, a)
     }
 
-    /// Pass decoder array to [`decode_into`](super::decode_into()), and remove padding as needed
+    /// Pass decoder array to [`decode_into`](super::decode_into())
     #[inline]
     pub fn decode_into(&self, a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
-        if let Some(pad) = self.pad {
-            decode_into(self.dec, rem_pad(a, pad), b)
-        } else {
-            decode_into(self.dec, a, b)
-        }
+        decode_into(self.dec, a, b)
     }
 
     /// Pass string as bytes and decoder array to [`decode_u64`](super::decode_u64())
@@ -265,15 +298,11 @@ impl Alphabet32 {
         decode_u128(self.dec, a)
     }
 
-    /// Pass string as bytes and decoder array to [`decode`](super::decode()), and remove padding as needed
+    /// Pass string as bytes and decoder array to [`decode`](super::decode())
     #[inline]
     pub fn decode_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
         let a = a.as_ref().as_bytes();
-        if let Some(pad) = self.pad {
-            decode(self.dec, rem_pad(a, pad))
-        } else {
-            decode(self.dec, a)
-        }
+        decode(self.dec, a)
     }
 
     /// Pass string as bytes and decoder array to [`decode_uuid`](super::decode_uuid())
@@ -296,6 +325,13 @@ impl Alphabet32 {
     #[inline]
     pub fn encode_uuid(&self, n: Uuid) -> String {
         encode_uuid(self.enc, n)
+    }
+
+    /// Pass encoder array to [`encode_uuid_into`](super::encode_uuid_into())
+    #[cfg(feature = "uuid")]
+    #[inline]
+    pub fn encode_uuid_into(&self, n: Uuid, b: &mut Vec<u8>) {
+        encode_uuid_into(self.enc, n, b)
     }
 }
 

@@ -4,12 +4,47 @@ use crate::DecodeError;
 
 use super::alphabet::BITS;
 
+/// Decode byte array with given decoding, into a [`Uuid`]
+///
+/// Examples:
+/// ```
+/// use uuid::Uuid;
+/// use fast32::base32::CROCKFORD;
+/// assert_eq!(CROCKFORD.decode_uuid(b"7ZZZZZZZZZZZZZZZZZZZZZZZZZ").unwrap(), Uuid::max());
+/// ```
+///
+/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
 pub fn decode_uuid(dec: &'static [u8; 256], a: &[u8]) -> Result<Uuid, DecodeError> {
     Ok(Uuid::from_u128(super::decode_u128(dec, a)?))
 }
 
+/// Encode [`Uuid`] with given encoding, into a `String`
+///
+/// Examples:
+/// ```
+/// use uuid::Uuid;
+/// use fast32::base32::CROCKFORD;
+/// assert_eq!(CROCKFORD.encode_uuid(Uuid::max()), "7ZZZZZZZZZZZZZZZZZZZZZZZZZ");
+/// ```
 pub fn encode_uuid(enc: &'static [u8; BITS], n: Uuid) -> String {
     super::encode_u128(enc, n.as_u128())
+}
+
+
+/// Encode [`Uuid`] with given encoding, into an existing `Vec<u8>`
+///
+/// Example:
+/// ```
+/// use uuid::Uuid;
+/// use fast32::base32::CROCKFORD;
+/// let mut b = Vec::<u8>::with_capacity(26);
+/// CROCKFORD.encode_uuid_into(Uuid::max(), &mut b);
+/// assert_eq!(&b, b"7ZZZZZZZZZZZZZZZZZZZZZZZZZ");
+/// ```
+///
+/// Panics if not enough capacity in `b` for encoding -- see [`capacity_encode_u128`](super::capacity_encode_u128())
+pub fn encode_uuid_into(enc: &'static [u8; BITS], n: Uuid, b: &mut Vec<u8>) {
+    super::encode_u128_into(enc, n.as_u128(), b)
 }
 
 #[test]

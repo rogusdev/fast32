@@ -6,7 +6,7 @@ use super::alphabet::{
     WIDTH_8, WIDTH_9,
 };
 
-/// Decode byte array with given encoding, into a u128
+/// Decode byte array with given decoding, into a u128
 ///
 /// Examples:
 /// ```

@@ -5,7 +5,7 @@ use super::alphabet::{
     WIDTH_8, WIDTH_9,
 };
 
-/// Decode byte array with given encoding, into a u64
+/// Decode byte array with given decoding, into a u64
 ///
 /// Examples:
 /// ```

@@ -1,2 +1,2 @@
 #!/bin/fish
-cargo test -F uuid
+cargo test --all-features
