@@ -478,13 +478,21 @@ fn decode_bad() {
 #[test]
 fn rfc4648() {
     // https://datatracker.ietf.org/doc/html/rfc4648#section-10
-    assert_eq!(RFC4648_NOPAD.encode_str(""), "");
-    assert_eq!(RFC4648_NOPAD.encode_str("f"), "MY");
-    assert_eq!(RFC4648_NOPAD.encode_str("fo"), "MZXQ");
-    assert_eq!(RFC4648_NOPAD.encode_str("foo"), "MZXW6");
-    assert_eq!(RFC4648_NOPAD.encode_str("foob"), "MZXW6YQ");
-    assert_eq!(RFC4648_NOPAD.encode_str("fooba"), "MZXW6YTB");
-    assert_eq!(RFC4648_NOPAD.encode_str("foobar"), "MZXW6YTBOI");
+    assert_eq!(RFC4648_NOPAD.encode(b""), "");
+    assert_eq!(RFC4648_NOPAD.encode(b"f"), "MY");
+    assert_eq!(RFC4648_NOPAD.encode(b"fo"), "MZXQ");
+    assert_eq!(RFC4648_NOPAD.encode(b"foo"), "MZXW6");
+    assert_eq!(RFC4648_NOPAD.encode(b"foob"), "MZXW6YQ");
+    assert_eq!(RFC4648_NOPAD.encode(b"fooba"), "MZXW6YTB");
+    assert_eq!(RFC4648_NOPAD.encode(b"foobar"), "MZXW6YTBOI");
+
+    assert_eq!(RFC4648_NOPAD.decode(b""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"MY"), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"MZXQ"), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"MZXW6"), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"MZXW6YQ"), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"MZXW6YTB"), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"MZXW6YTBOI"), Ok(b"foobar".to_vec()));
 
     assert_eq!(RFC4648_NOPAD.decode_str(""), Ok(b"".to_vec()));
     assert_eq!(RFC4648_NOPAD.decode_str("MY"), Ok(b"f".to_vec()));
@@ -494,13 +502,21 @@ fn rfc4648() {
     assert_eq!(RFC4648_NOPAD.decode_str("MZXW6YTB"), Ok(b"fooba".to_vec()));
     assert_eq!(RFC4648_NOPAD.decode_str("MZXW6YTBOI"), Ok(b"foobar".to_vec()));
 
-    assert_eq!(RFC4648_HEX_NOPAD.encode_str(""), "");
-    assert_eq!(RFC4648_HEX_NOPAD.encode_str("f"), "CO");
-    assert_eq!(RFC4648_HEX_NOPAD.encode_str("fo"), "CPNG");
-    assert_eq!(RFC4648_HEX_NOPAD.encode_str("foo"), "CPNMU");
-    assert_eq!(RFC4648_HEX_NOPAD.encode_str("foob"), "CPNMUOG");
-    assert_eq!(RFC4648_HEX_NOPAD.encode_str("fooba"), "CPNMUOJ1");
-    assert_eq!(RFC4648_HEX_NOPAD.encode_str("foobar"), "CPNMUOJ1E8");
+    assert_eq!(RFC4648_HEX_NOPAD.encode(b""), "");
+    assert_eq!(RFC4648_HEX_NOPAD.encode(b"f"), "CO");
+    assert_eq!(RFC4648_HEX_NOPAD.encode(b"fo"), "CPNG");
+    assert_eq!(RFC4648_HEX_NOPAD.encode(b"foo"), "CPNMU");
+    assert_eq!(RFC4648_HEX_NOPAD.encode(b"foob"), "CPNMUOG");
+    assert_eq!(RFC4648_HEX_NOPAD.encode(b"fooba"), "CPNMUOJ1");
+    assert_eq!(RFC4648_HEX_NOPAD.encode(b"foobar"), "CPNMUOJ1E8");
+
+    assert_eq!(RFC4648_HEX_NOPAD.decode(b""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648_HEX_NOPAD.decode(b"CO"), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648_HEX_NOPAD.decode(b"CPNG"), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648_HEX_NOPAD.decode(b"CPNMU"), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648_HEX_NOPAD.decode(b"CPNMUOG"), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648_HEX_NOPAD.decode(b"CPNMUOJ1"), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648_HEX_NOPAD.decode(b"CPNMUOJ1E8"), Ok(b"foobar".to_vec()));
 
     assert_eq!(RFC4648_HEX_NOPAD.decode_str(""), Ok(b"".to_vec()));
     assert_eq!(RFC4648_HEX_NOPAD.decode_str("CO"), Ok(b"f".to_vec()));
@@ -509,22 +525,6 @@ fn rfc4648() {
     assert_eq!(RFC4648_HEX_NOPAD.decode_str("CPNMUOG"), Ok(b"foob".to_vec()));
     assert_eq!(RFC4648_HEX_NOPAD.decode_str("CPNMUOJ1"), Ok(b"fooba".to_vec()));
     assert_eq!(RFC4648_HEX_NOPAD.decode_str("CPNMUOJ1E8"), Ok(b"foobar".to_vec()));
-
-    assert_eq!(RFC4648.encode_str(""), "");
-    assert_eq!(RFC4648.encode_str("f"), "MY======");
-    assert_eq!(RFC4648.encode_str("fo"), "MZXQ====");
-    assert_eq!(RFC4648.encode_str("foo"), "MZXW6===");
-    assert_eq!(RFC4648.encode_str("foob"), "MZXW6YQ=");
-    assert_eq!(RFC4648.encode_str("fooba"), "MZXW6YTB");
-    assert_eq!(RFC4648.encode_str("foobar"), "MZXW6YTBOI======");
-
-    assert_eq!(RFC4648.decode_str(""), Ok(b"".to_vec()));
-    assert_eq!(RFC4648.decode_str("MY======"), Ok(b"f".to_vec()));
-    assert_eq!(RFC4648.decode_str("MZXQ===="), Ok(b"fo".to_vec()));
-    assert_eq!(RFC4648.decode_str("MZXW6==="), Ok(b"foo".to_vec()));
-    assert_eq!(RFC4648.decode_str("MZXW6YQ="), Ok(b"foob".to_vec()));
-    assert_eq!(RFC4648.decode_str("MZXW6YTB"), Ok(b"fooba".to_vec()));
-    assert_eq!(RFC4648.decode_str("MZXW6YTBOI======"), Ok(b"foobar".to_vec()));
 
     assert_eq!(RFC4648.encode(b""), "");
     assert_eq!(RFC4648.encode(b"f"), "MY======");
@@ -542,13 +542,29 @@ fn rfc4648() {
     assert_eq!(RFC4648.decode(b"MZXW6YTB"), Ok(b"fooba".to_vec()));
     assert_eq!(RFC4648.decode(b"MZXW6YTBOI======"), Ok(b"foobar".to_vec()));
 
-    assert_eq!(RFC4648_HEX.encode_str(""), "");
-    assert_eq!(RFC4648_HEX.encode_str("f"), "CO======");
-    assert_eq!(RFC4648_HEX.encode_str("fo"), "CPNG====");
-    assert_eq!(RFC4648_HEX.encode_str("foo"), "CPNMU===");
-    assert_eq!(RFC4648_HEX.encode_str("foob"), "CPNMUOG=");
-    assert_eq!(RFC4648_HEX.encode_str("fooba"), "CPNMUOJ1");
-    assert_eq!(RFC4648_HEX.encode_str("foobar"), "CPNMUOJ1E8======");
+    assert_eq!(RFC4648.decode_str(""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648.decode_str("MY======"), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648.decode_str("MZXQ===="), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648.decode_str("MZXW6==="), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648.decode_str("MZXW6YQ="), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648.decode_str("MZXW6YTB"), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648.decode_str("MZXW6YTBOI======"), Ok(b"foobar".to_vec()));
+
+    assert_eq!(RFC4648_HEX.encode(b""), "");
+    assert_eq!(RFC4648_HEX.encode(b"f"), "CO======");
+    assert_eq!(RFC4648_HEX.encode(b"fo"), "CPNG====");
+    assert_eq!(RFC4648_HEX.encode(b"foo"), "CPNMU===");
+    assert_eq!(RFC4648_HEX.encode(b"foob"), "CPNMUOG=");
+    assert_eq!(RFC4648_HEX.encode(b"fooba"), "CPNMUOJ1");
+    assert_eq!(RFC4648_HEX.encode(b"foobar"), "CPNMUOJ1E8======");
+
+    assert_eq!(RFC4648_HEX.decode(b""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648_HEX.decode(b"CO======"), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648_HEX.decode(b"CPNG===="), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648_HEX.decode(b"CPNMU==="), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648_HEX.decode(b"CPNMUOG="), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648_HEX.decode(b"CPNMUOJ1"), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648_HEX.decode(b"CPNMUOJ1E8======"), Ok(b"foobar".to_vec()));
 
     assert_eq!(RFC4648_HEX.decode_str(""), Ok(b"".to_vec()));
     assert_eq!(RFC4648_HEX.decode_str("CO======"), Ok(b"f".to_vec()));
@@ -558,13 +574,21 @@ fn rfc4648() {
     assert_eq!(RFC4648_HEX.decode_str("CPNMUOJ1"), Ok(b"fooba".to_vec()));
     assert_eq!(RFC4648_HEX.decode_str("CPNMUOJ1E8======"), Ok(b"foobar".to_vec()));
 
-    assert_eq!(CROCKFORD.encode_str(""), "");
-    assert_eq!(CROCKFORD.encode_str("f"), "CR");
-    assert_eq!(CROCKFORD.encode_str("fo"), "CSQG");
-    assert_eq!(CROCKFORD.encode_str("foo"), "CSQPY");
-    assert_eq!(CROCKFORD.encode_str("foob"), "CSQPYRG");
-    assert_eq!(CROCKFORD.encode_str("fooba"), "CSQPYRK1");
-    assert_eq!(CROCKFORD.encode_str("foobar"), "CSQPYRK1E8");
+    assert_eq!(CROCKFORD.encode(b""), "");
+    assert_eq!(CROCKFORD.encode(b"f"), "CR");
+    assert_eq!(CROCKFORD.encode(b"fo"), "CSQG");
+    assert_eq!(CROCKFORD.encode(b"foo"), "CSQPY");
+    assert_eq!(CROCKFORD.encode(b"foob"), "CSQPYRG");
+    assert_eq!(CROCKFORD.encode(b"fooba"), "CSQPYRK1");
+    assert_eq!(CROCKFORD.encode(b"foobar"), "CSQPYRK1E8");
+
+    assert_eq!(CROCKFORD.decode(b""), Ok(b"".to_vec()));
+    assert_eq!(CROCKFORD.decode(b"CR"), Ok(b"f".to_vec()));
+    assert_eq!(CROCKFORD.decode(b"CSQG"), Ok(b"fo".to_vec()));
+    assert_eq!(CROCKFORD.decode(b"CSQPY"), Ok(b"foo".to_vec()));
+    assert_eq!(CROCKFORD.decode(b"CSQPYRG"), Ok(b"foob".to_vec()));
+    assert_eq!(CROCKFORD.decode(b"CSQPYRK1"), Ok(b"fooba".to_vec()));
+    assert_eq!(CROCKFORD.decode(b"CSQPYRK1E8"), Ok(b"foobar".to_vec()));
 
     assert_eq!(CROCKFORD.decode_str(""), Ok(b"".to_vec()));
     assert_eq!(CROCKFORD.decode_str("CR"), Ok(b"f".to_vec()));

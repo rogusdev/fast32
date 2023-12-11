@@ -419,13 +419,21 @@ fn decode_bad() {
 #[test]
 fn rfc4648() {
     // https://datatracker.ietf.org/doc/html/rfc4648#section-10
-    assert_eq!(RFC4648_NOPAD.encode_str(""), "");
-    assert_eq!(RFC4648_NOPAD.encode_str("f"), "Zg");
-    assert_eq!(RFC4648_NOPAD.encode_str("fo"), "Zm8");
-    assert_eq!(RFC4648_NOPAD.encode_str("foo"), "Zm9v");
-    assert_eq!(RFC4648_NOPAD.encode_str("foob"), "Zm9vYg");
-    assert_eq!(RFC4648_NOPAD.encode_str("fooba"), "Zm9vYmE");
-    assert_eq!(RFC4648_NOPAD.encode_str("foobar"), "Zm9vYmFy");
+    assert_eq!(RFC4648_NOPAD.encode(b""), "");
+    assert_eq!(RFC4648_NOPAD.encode(b"f"), "Zg");
+    assert_eq!(RFC4648_NOPAD.encode(b"fo"), "Zm8");
+    assert_eq!(RFC4648_NOPAD.encode(b"foo"), "Zm9v");
+    assert_eq!(RFC4648_NOPAD.encode(b"foob"), "Zm9vYg");
+    assert_eq!(RFC4648_NOPAD.encode(b"fooba"), "Zm9vYmE");
+    assert_eq!(RFC4648_NOPAD.encode(b"foobar"), "Zm9vYmFy");
+
+    assert_eq!(RFC4648_NOPAD.decode(b""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"Zg"), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"Zm8"), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"Zm9v"), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"Zm9vYg"), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"Zm9vYmE"), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648_NOPAD.decode(b"Zm9vYmFy"), Ok(b"foobar".to_vec()));
 
     assert_eq!(RFC4648_NOPAD.decode_str(""), Ok(b"".to_vec()));
     assert_eq!(RFC4648_NOPAD.decode_str("Zg"), Ok(b"f".to_vec()));
@@ -434,22 +442,6 @@ fn rfc4648() {
     assert_eq!(RFC4648_NOPAD.decode_str("Zm9vYg"), Ok(b"foob".to_vec()));
     assert_eq!(RFC4648_NOPAD.decode_str("Zm9vYmE"), Ok(b"fooba".to_vec()));
     assert_eq!(RFC4648_NOPAD.decode_str("Zm9vYmFy"), Ok(b"foobar".to_vec()));
-
-    assert_eq!(RFC4648.encode_str(""), "");
-    assert_eq!(RFC4648.encode_str("f"), "Zg==");
-    assert_eq!(RFC4648.encode_str("fo"), "Zm8=");
-    assert_eq!(RFC4648.encode_str("foo"), "Zm9v");
-    assert_eq!(RFC4648.encode_str("foob"), "Zm9vYg==");
-    assert_eq!(RFC4648.encode_str("fooba"), "Zm9vYmE=");
-    assert_eq!(RFC4648.encode_str("foobar"), "Zm9vYmFy");
-
-    assert_eq!(RFC4648.decode_str(""), Ok(b"".to_vec()));
-    assert_eq!(RFC4648.decode_str("Zg=="), Ok(b"f".to_vec()));
-    assert_eq!(RFC4648.decode_str("Zm8="), Ok(b"fo".to_vec()));
-    assert_eq!(RFC4648.decode_str("Zm9v"), Ok(b"foo".to_vec()));
-    assert_eq!(RFC4648.decode_str("Zm9vYg=="), Ok(b"foob".to_vec()));
-    assert_eq!(RFC4648.decode_str("Zm9vYmE="), Ok(b"fooba".to_vec()));
-    assert_eq!(RFC4648.decode_str("Zm9vYmFy"), Ok(b"foobar".to_vec()));
 
     assert_eq!(RFC4648.encode(b""), "");
     assert_eq!(RFC4648.encode(b"f"), "Zg==");
@@ -466,6 +458,14 @@ fn rfc4648() {
     assert_eq!(RFC4648.decode(b"Zm9vYg=="), Ok(b"foob".to_vec()));
     assert_eq!(RFC4648.decode(b"Zm9vYmE="), Ok(b"fooba".to_vec()));
     assert_eq!(RFC4648.decode(b"Zm9vYmFy"), Ok(b"foobar".to_vec()));
+
+    assert_eq!(RFC4648.decode_str(""), Ok(b"".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zg=="), Ok(b"f".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm8="), Ok(b"fo".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9v"), Ok(b"foo".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9vYg=="), Ok(b"foob".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9vYmE="), Ok(b"fooba".to_vec()));
+    assert_eq!(RFC4648.decode_str("Zm9vYmFy"), Ok(b"foobar".to_vec()));
 }
 
 #[test]

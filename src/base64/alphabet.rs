@@ -177,24 +177,6 @@ impl Alphabet64 {
         }
     }
 
-    /// Pass string as bytes and encoder array to [`encode`](super::encode()), and add padding as needed
-    #[inline]
-    pub fn encode_str(&self, a: impl AsRef<str>) -> String {
-        let a = a.as_ref().as_bytes();
-        if let Some(pad) = self.pad {
-            let mut s = encode(self.enc, a);
-            unsafe {
-                let b = s.as_mut_vec();
-                // make space for max possible padding
-                b.reserve(2);
-                add_pad(b, pad);
-            }
-            s
-        } else {
-            encode(self.enc, a)
-        }
-    }
-
     /// Pass decoder array to [`decode_u64`](super::decode_u64())
     #[inline]
     pub fn decode_u64(&self, a: &[u8]) -> Result<u64, DecodeError> {
