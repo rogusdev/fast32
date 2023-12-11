@@ -96,6 +96,10 @@ impl std::fmt::Display for DecodeError {
 
 /// Build a new decoder array for the given bits (encoder array size), exactly of the encoder array
 ///
+/// **You should use [`fast32::make_base32_alpha`](crate::make_base32_alpha)
+/// or [`fast32::make_base64_alpha`](crate::make_base64_alpha) instead of this!**
+/// (Those macros invoke this function as appropriate.)
+///
 /// Example:
 /// ```
 /// use fast32::decoder_map_simple;
@@ -132,6 +136,10 @@ const fn enc_index<const B: usize>(enc: &[u8; B], c: u8) -> u8 {
 }
 
 /// Build a new decoder array for the given bits (encoder array size), with additional character translations
+///
+/// **You should use [`fast32::make_base32_alpha`](crate::make_base32_alpha)
+/// or [`fast32::make_base64_alpha`](crate::make_base64_alpha) instead of this!**
+/// (Those macros invoke this function as appropriate.)
 ///
 /// Example:
 /// ```

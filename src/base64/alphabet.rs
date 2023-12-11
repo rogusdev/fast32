@@ -3,7 +3,6 @@ use core::ptr::write;
 #[cfg(feature = "uuid")]
 use uuid::Uuid;
 
-use crate::shared::decoder_map_simple;
 use crate::DecodeError;
 
 use super::decode_bytes::{decode, decode_into};
@@ -16,37 +15,44 @@ use super::encode_u64::{encode_u64, encode_u64_into};
 #[cfg(feature = "uuid")]
 use super::uuid::{decode_uuid, encode_uuid, encode_uuid_into};
 
-const ENC_RFC4648: &'static [u8; 64] =
-    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-const DEC_RFC4648: [u8; 256] = decoder_map_simple(ENC_RFC4648);
-/// RFC 4648 Base64 normal, with padding
+/// Creates an appropriate base64 alphabet (nopad, padded, simple, or with from:to mapping)
 ///
-/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"` and `'='`
+/// Note that the second identifier is to make the decoder a constant static variable, for const fn usage.
 ///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-4](https://datatracker.ietf.org/doc/html/rfc4648#section-4)
-pub const RFC4648: Alphabet64Padded = Alphabet64Padded::new(ENC_RFC4648, &DEC_RFC4648, '=');
-/// RFC 4648 Base64 normal, no padding
-///
-/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"`
-///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-4](https://datatracker.ietf.org/doc/html/rfc4648#section-4)
-pub const RFC4648_NOPAD: Alphabet64Nopad = Alphabet64Nopad::new(ENC_RFC4648, &DEC_RFC4648);
+/// See examples in [tests/alphabet.rs](https://github.com/rogusdev/fast32/blob/main/tests/alphabets.rs)
+#[macro_export]
+macro_rules! make_base64_alpha {
+    ( $n:ident, $dec:ident, $enc:expr ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map_simple($enc);
+        pub const $n: $crate::base64::Alphabet64Nopad =
+            $crate::base64::Alphabet64Nopad::new($enc, &$dec);
+    };
+    ( $n:ident, $dec:ident, $enc:expr, $pad:literal ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map_simple($enc);
+        pub const $n: $crate::base64::Alphabet64Padded =
+            $crate::base64::Alphabet64Padded::new($enc, &$dec, $pad);
+    };
+    ( $n:ident, $dec:ident, $enc:expr, $fr:literal, $to:literal ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map($enc, $fr, $to);
+        pub const $n: $crate::base64::Alphabet64Nopad =
+            $crate::base64::Alphabet64Nopad::new($enc, &$dec);
+    };
+    ( $n:ident, $dec:ident, $enc:expr, $fr:literal, $to:literal, $pad:literal ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map($enc, $fr, $to);
+        pub const $n: $crate::base64::Alphabet64Padded =
+            $crate::base64::Alphabet64Padded::new($enc, &$dec, $pad);
+    };
+}
 
-const ENC_RFC4648_URL: &'static [u8; 64] =
+const ENC_RFC4648: &'static [u8; BITS] =
+    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+make_base64_alpha!(RFC4648, DEC_RFC4648, ENC_RFC4648, '=');
+make_base64_alpha!(RFC4648_NOPAD, DEC_RFC4648_2, ENC_RFC4648);
+
+const ENC_RFC4648_URL: &'static [u8; BITS] =
     b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-const DEC_RFC4648_URL: [u8; 256] = decoder_map_simple(ENC_RFC4648_URL);
-/// RFC 4648 Base64 "url safe" form, with padding
-///
-/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"` and `'='`
-///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-5](https://datatracker.ietf.org/doc/html/rfc4648#section-5)
-pub const RFC4648_URL: Alphabet64Padded = Alphabet64Padded::new(ENC_RFC4648_URL, &DEC_RFC4648_URL, '=');
-/// RFC 4648 Base64 "url safe" form, no padding
-///
-/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"`
-///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-5](https://datatracker.ietf.org/doc/html/rfc4648#section-5)
-pub const RFC4648_URL_NOPAD: Alphabet64Nopad = Alphabet64Nopad::new(ENC_RFC4648_URL, &DEC_RFC4648_URL);
+make_base64_alpha!(RFC4648_URL, DEC_RFC4648_URL, ENC_RFC4648_URL, '=');
+make_base64_alpha!(RFC4648_URL_NOPAD, DEC_RFC4648_URL_2, ENC_RFC4648_URL);
 
 pub const BITS: usize = 64;
 

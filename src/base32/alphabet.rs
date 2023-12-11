@@ -3,7 +3,6 @@ use core::ptr::write;
 #[cfg(feature = "uuid")]
 use uuid::Uuid;
 
-use crate::shared::{decoder_map, decoder_map_simple};
 use crate::DecodeError;
 
 use super::decode_bytes::{decode, decode_into};
@@ -16,46 +15,51 @@ use super::encode_u64::{encode_u64, encode_u64_into};
 #[cfg(feature = "uuid")]
 use super::uuid::{decode_uuid, encode_uuid, encode_uuid_into};
 
-const ENC_CROCKFORD: &'static [u8; 32] = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-const DEC_CROCKFORD: [u8; 256] = decoder_map(
+/// Creates an appropriate base32 alphabet (nopad, padded, simple, or with from:to mapping)
+///
+/// Note that the second identifier is to make the decoder a constant static variable, for const fn usage.
+///
+/// See examples in [tests/alphabet.rs](https://github.com/rogusdev/fast32/blob/main/tests/alphabets.rs)
+#[macro_export]
+macro_rules! make_base32_alpha {
+    ( $n:ident, $dec:ident, $enc:expr ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map_simple($enc);
+        pub const $n: $crate::base32::Alphabet32Nopad =
+            $crate::base32::Alphabet32Nopad::new($enc, &$dec);
+    };
+    ( $n:ident, $dec:ident, $enc:expr, $pad:literal ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map_simple($enc);
+        pub const $n: $crate::base32::Alphabet32Padded =
+            $crate::base32::Alphabet32Padded::new($enc, &$dec, $pad);
+    };
+    ( $n:ident, $dec:ident, $enc:expr, $fr:literal, $to:literal ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map($enc, $fr, $to);
+        pub const $n: $crate::base32::Alphabet32Nopad =
+            $crate::base32::Alphabet32Nopad::new($enc, &$dec);
+    };
+    ( $n:ident, $dec:ident, $enc:expr, $fr:literal, $to:literal, $pad:literal ) => {
+        pub const $dec: [u8; 256] = $crate::decoder_map($enc, $fr, $to);
+        pub const $n: $crate::base32::Alphabet32Padded =
+            $crate::base32::Alphabet32Padded::new($enc, &$dec, $pad);
+    };
+}
+
+const ENC_RFC4648: &'static [u8; BITS] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+make_base32_alpha!(RFC4648, DEC_RFC4648, ENC_RFC4648, '=');
+make_base32_alpha!(RFC4648_NOPAD, DEC_RFC4648_2, ENC_RFC4648);
+
+const ENC_RFC4648_HEX: &'static [u8; BITS] = b"0123456789ABCDEFGHIJKLMNOPQRSTUV";
+make_base32_alpha!(RFC4648_HEX, DEC_RFC4648_HEX, ENC_RFC4648_HEX, '=');
+make_base32_alpha!(RFC4648_HEX_NOPAD, DEC_RFC4648_HEX_2, ENC_RFC4648_HEX);
+
+const ENC_CROCKFORD: &'static [u8; BITS] = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+make_base32_alpha!(
+    CROCKFORD,
+    DEC_CROCKFORD,
     ENC_CROCKFORD,
     b"ILOabcdefghijklmnopqrstvwxyz",
-    b"110ABCDEFGH1JK1MN0PQRSTVWXYZ",
+    b"110ABCDEFGH1JK1MN0PQRSTVWXYZ"
 );
-/// Crockford Base32 (no padding)
-///
-/// [https://www.crockford.com/base32.html](https://www.crockford.com/base32.html)
-pub const CROCKFORD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_CROCKFORD, &DEC_CROCKFORD);
-
-const ENC_RFC4648: &'static [u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-const DEC_RFC4648: [u8; 256] = decoder_map_simple(ENC_RFC4648);
-/// RFC 4648 Base32 normal, with padding
-///
-/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
-///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
-pub const RFC4648: Alphabet32Padded = Alphabet32Padded::new(ENC_RFC4648, &DEC_RFC4648, '=');
-/// RFC 4648 Base32 normal, no padding
-///
-/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"`
-///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
-pub const RFC4648_NOPAD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_RFC4648, &DEC_RFC4648);
-
-const ENC_RFC4648_HEX: &'static [u8; 32] = b"0123456789ABCDEFGHIJKLMNOPQRSTUV";
-const DEC_RFC4648_HEX: [u8; 256] = decoder_map_simple(ENC_RFC4648_HEX);
-/// RFC 4648 Base32 "hex" form, with padding
-///
-/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
-///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
-pub const RFC4648_HEX: Alphabet32Padded = Alphabet32Padded::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX, '=');
-/// RFC 4648 Base32 "hex" form, no padding
-///
-/// `"0123456789ABCDEFGHIJKLMNOPQRSTUV"`
-///
-/// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
-pub const RFC4648_HEX_NOPAD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_RFC4648_HEX, &DEC_RFC4648_HEX);
 
 pub const BITS: usize = 32;
 

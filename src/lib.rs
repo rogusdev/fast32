@@ -72,6 +72,16 @@
 //! assert_eq!(&b[1..17], n);
 //! ```
 //!
+//! You can also define new alphabets of your own:
+//! ```
+//! use fast32::make_base32_alpha;
+//!
+//! make_base32_alpha!(RFC4648_LOWER_NOPAD, DEC_RFC4648_LOWER, b"abcdefghijklmnopqrstuvwxyz234567");
+//!
+//! assert_eq!(RFC4648_LOWER_NOPAD.encode_u64(31), "7");
+//! assert_eq!(RFC4648_LOWER_NOPAD.decode_u64_str("7").unwrap(), 31);
+//! ```
+//!
 //! The [tests](https://github.com/rogusdev/fast32/tree/main/tests)
 //! have numerous examples that might help further.
 //!

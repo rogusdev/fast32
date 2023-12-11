@@ -16,12 +16,40 @@ pub use self::encode_bytes::{capacity_encode, encode, encode_into};
 pub use self::encode_u128::{capacity_encode_u128, encode_u128, encode_u128_into};
 pub use self::encode_u64::{capacity_encode_u64, encode_u64, encode_u64_into};
 
-pub use self::alphabet::{Alphabet32Nopad, Alphabet32Padded};
-pub use self::alphabet::CROCKFORD;
-pub use self::alphabet::RFC4648;
-pub use self::alphabet::RFC4648_HEX;
-pub use self::alphabet::RFC4648_HEX_NOPAD;
-pub use self::alphabet::RFC4648_NOPAD;
-
 #[cfg(feature = "uuid")]
 pub use self::uuid::{decode_uuid, encode_uuid, encode_uuid_into};
+
+pub use self::alphabet::{Alphabet32Nopad, Alphabet32Padded};
+
+/// Crockford Base32 (no padding)
+///
+/// [https://www.crockford.com/base32.html](https://www.crockford.com/base32.html)
+pub use self::alphabet::CROCKFORD;
+
+/// RFC 4648 Base32 normal, with padding
+///
+/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
+pub use self::alphabet::RFC4648;
+
+/// RFC 4648 Base32 normal, no padding
+///
+/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-6](https://datatracker.ietf.org/doc/html/rfc4648#section-6)
+pub use self::alphabet::RFC4648_NOPAD;
+
+/// RFC 4648 Base32 "hex" form, with padding
+///
+/// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
+pub use self::alphabet::RFC4648_HEX;
+
+/// RFC 4648 Base32 "hex" form, no padding
+///
+/// `"0123456789ABCDEFGHIJKLMNOPQRSTUV"`
+///
+/// [https://datatracker.ietf.org/doc/html/rfc4648#section-7](https://datatracker.ietf.org/doc/html/rfc4648#section-7)
+pub use self::alphabet::RFC4648_HEX_NOPAD;

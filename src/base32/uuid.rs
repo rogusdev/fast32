@@ -30,7 +30,6 @@ pub fn encode_uuid(enc: &'static [u8; BITS], n: Uuid) -> String {
     super::encode_u128(enc, n.as_u128())
 }
 
-
 /// Encode [`Uuid`] with given encoding, into an existing `Vec<u8>`
 ///
 /// Example:

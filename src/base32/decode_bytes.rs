@@ -58,11 +58,7 @@ pub fn decode(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError>
 /// Returns [`DecodeError`] if input to decode is invalid
 ///
 /// Panics if not enough capacity in `b` for decoding -- see [`capacity_decode`](self::capacity_decode())
-pub fn decode_into(
-    dec: &'static [u8; 256],
-    a: &[u8],
-    b: &mut Vec<u8>,
-) -> Result<(), DecodeError> {
+pub fn decode_into(dec: &'static [u8; 256], a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
     let len_enc = a.len();
     let rem = len_enc % WIDTH_ENC;
     let max = len_enc / WIDTH_ENC;

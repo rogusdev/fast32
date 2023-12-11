@@ -1,41 +1,45 @@
 use fast32::INVALID_BYTE;
 
 mod base32 {
-    use fast32::base32::Alphabet32Nopad;
-    use fast32::{decoder_map, decoder_map_simple};
+    use fast32::make_base32_alpha;
 
     // only pub for the test below
     pub const ENC_CROCKFORD_LOWER: &'static [u8; 32] = b"0123456789abcdefghjkmnpqrstvwxyz";
-    pub const DEC_CROCKFORD_LOWER: [u8; 256] = decoder_map(
+    make_base32_alpha!(
+        CROCKFORD_LOWER,
+        DEC_CROCKFORD_LOWER,
         ENC_CROCKFORD_LOWER,
         b"iloABCDEFGHIJKLMNOPQRSTVWXYZ",
-        b"110abcdefgh1jk1mn0pqrstvwxyz",
+        b"110abcdefgh1jk1mn0pqrstvwxyz"
     );
-    pub const CROCKFORD_LOWER: Alphabet32Nopad = Alphabet32Nopad::new(ENC_CROCKFORD_LOWER, &DEC_CROCKFORD_LOWER);
 
-    const ENC_RFC4648_LOWER: &'static [u8; 32] = b"abcdefghijklmnopqrstuvwxyz234567";
-    const DEC_RFC4648_LOWER: [u8; 256] = decoder_map_simple(ENC_RFC4648_LOWER);
-    pub const RFC4648_LOWER_NOPAD: Alphabet32Nopad = Alphabet32Nopad::new(ENC_RFC4648_LOWER, &DEC_RFC4648_LOWER);
+    make_base32_alpha!(
+        RFC4648_LOWER_NOPAD,
+        DEC_RFC4648_LOWER,
+        b"abcdefghijklmnopqrstuvwxyz234567"
+    );
 }
 
 mod base64 {
-    use fast32::base64::Alphabet64Nopad;
-    use fast32::{decoder_map, decoder_map_simple};
+    use fast32::make_base64_alpha;
 
     // only pub for the test below
-    pub const ENC_BASE64_WEIRD: &'static [u8; 64] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
-    const DEC_BASE64_WEIRD: [u8; 256] = decoder_map_simple(ENC_BASE64_WEIRD);
-    pub const BASE64_WEIRD: Alphabet64Nopad = Alphabet64Nopad::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD);
+    pub const ENC_BASE64_WEIRD: &'static [u8; 64] =
+        b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
+    make_base64_alpha!(BASE64_WEIRD, DEC_BASE64_WEIRD, ENC_BASE64_WEIRD);
 
-    pub const DEC_BASE64_WEIRD_FLEX: [u8; 256] = decoder_map(
+    make_base64_alpha!(
+        BASE64_WEIRD_FLEX,
+        DEC_BASE64_WEIRD_FLEX,
         ENC_BASE64_WEIRD,
         b"!&+,-/|?",
-        b"_A_._.2v",
+        b"_A_._.2v"
     );
-    pub const BASE64_WEIRD_FLEX: Alphabet64Nopad = Alphabet64Nopad::new(ENC_BASE64_WEIRD, &DEC_BASE64_WEIRD_FLEX);
 }
 
-use self::base32::{CROCKFORD_LOWER, DEC_CROCKFORD_LOWER, ENC_CROCKFORD_LOWER, RFC4648_LOWER_NOPAD};
+use self::base32::{
+    CROCKFORD_LOWER, DEC_CROCKFORD_LOWER, ENC_CROCKFORD_LOWER, RFC4648_LOWER_NOPAD,
+};
 use self::base64::{BASE64_WEIRD, BASE64_WEIRD_FLEX, DEC_BASE64_WEIRD_FLEX, ENC_BASE64_WEIRD};
 
 #[test]
