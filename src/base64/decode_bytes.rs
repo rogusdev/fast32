@@ -27,7 +27,7 @@ const fn rem_dec(rem: usize) -> usize {
 /// assert_eq!(RFC4648.decode(b"ABI=").unwrap(), &[0x00, 0x12]);
 /// ```
 ///
-/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
+/// Returns [`DecodeError`] if input to decode is invalid
 pub fn decode(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let len_enc = a.len();
     let rem = len_enc % WIDTH_ENC;
@@ -53,7 +53,7 @@ pub fn decode(dec: &'static [u8; 256], a: &[u8]) -> Result<Vec<u8>, DecodeError>
 /// assert_eq!(&b, &[0x00, 0x12]);
 /// ```
 ///
-/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
+/// Returns [`DecodeError`] if input to decode is invalid
 ///
 /// Panics if not enough capacity in `b` for decoding -- see [`capacity_decode`](self::capacity_decode())
 pub fn decode_into(

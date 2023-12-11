@@ -1,6 +1,6 @@
 # fast32
 
-Base32 and base64 encoding in Rust. Primarily for integer (u64, u128) and UUID identifiers (behind feature `uuid`), as well as arbitrary bytes. And do it all very quickly (more on this below).
+Base32 and base64 encoding in Rust. Primarily for integer (u64, u128) and UUID identifiers (behind feature `uuid`), as well as arbitrary byte arrays. And do it all very quickly (more on this [below](#speed)).
 
 ### Encoding integers
 

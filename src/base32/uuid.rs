@@ -13,7 +13,7 @@ use super::alphabet::BITS;
 /// assert_eq!(CROCKFORD.decode_uuid(b"7ZZZZZZZZZZZZZZZZZZZZZZZZZ").unwrap(), Uuid::max());
 /// ```
 ///
-/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
+/// Returns [`DecodeError`] if input to decode is invalid
 pub fn decode_uuid(dec: &'static [u8; 256], a: &[u8]) -> Result<Uuid, DecodeError> {
     Ok(Uuid::from_u128(super::decode_u128(dec, a)?))
 }

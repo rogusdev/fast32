@@ -58,15 +58,19 @@ pub fn bits_or_err_u128(dec: &[u8; 256], a: &[u8], i: usize) -> Result<u128, Dec
 
 /// Error generated when decoding invalid data
 ///
-/// InvalidChar: a character to be decoded is either:
-///     1. not in the encoding list of characters at all or
-///     2. positioned at the end of a sequence such that this char is impossible
-///        (contains bits in positions, at the end, that make this not actually properly encoded data)
+/// `InvalidChar`: a character to be decoded is either:
 ///
-/// InvalidLength: The remainder of the length of the sequence to be decoded
+/// 1. not in the decoding list of characters at all or
+/// 1. positioned at the end of a sequence such that this char is impossible
+/// (contains bits in positions, at the end, that make this not actually properly encoded data)
+///
+/// `InvalidLength`: The remainder of the length of the sequence to be decoded
 /// is an impossible length for valid decodable sequences
-/// (e.g base64 can *never* generate unpadded encoded sequences of strings
+/// (e.g. official base64 can *never* generate unpadded encoded sequences of strings
 /// with a length remainder of 1, when divided by 4 -- only 2, 3, or 4)
+///
+/// Note that for decoding integers, invalid length is simply that
+/// the length is too long for that size of integer.
 #[derive(Debug, Clone, PartialEq)]
 pub enum DecodeError {
     InvalidChar { char: char, index: usize },

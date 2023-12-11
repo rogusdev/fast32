@@ -12,7 +12,7 @@ use super::alphabet::{
 /// assert_eq!(RFC4648_NOPAD.decode_u64(b"f").unwrap(), 31);
 /// ```
 ///
-/// Returns [`DecodeError`](crate::DecodeError) if input to decode is invalid
+/// Returns [`DecodeError`] if input to decode is invalid
 #[rustfmt::skip]
 pub fn decode_u64(dec: &'static [u8; 256], a: &[u8]) -> Result<u64, DecodeError> {
     let n = match a.len() {

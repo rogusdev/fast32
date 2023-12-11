@@ -1,7 +1,12 @@
 [package]
 name = "fast32"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+license = "MIT"
+description = "Base32 and base64 encoding in Rust. Primarily for integer (u64, u128) and UUID identifiers, as well as arbitrary byte arrays."
+repository = "https://github.com/rogusdev/fast32"
+keywords = ["base32", "base64", "ids", "identifiers", "uuid"]
+categories = ["algorithms", "encoding"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -13,3 +18,9 @@ uuid = ["dep:uuid"]
 
 # optional
 uuid = { version = "1.6.1", optional = true, default-features = false }
+
+# https://users.rust-lang.org/t/how-to-document-optional-features-in-api-docs/64577/3
+# https://stackoverflow.com/questions/61417452/how-to-get-a-feature-requirement-tag-in-the-documentation-generated-by-cargo-do
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
