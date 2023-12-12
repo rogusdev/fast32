@@ -1,6 +1,6 @@
 [package]
 name = "fast32"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 license = "MIT"
 description = "Base32 and base64 encoding in Rust. Primarily for integer (u64, u128) and UUID identifiers, as well as arbitrary byte arrays."
