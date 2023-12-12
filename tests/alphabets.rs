@@ -5,6 +5,7 @@ mod base32 {
 
     // only pub for the test below
     pub const ENC_CROCKFORD_LOWER: &'static [u8; 32] = b"0123456789abcdefghjkmnpqrstvwxyz";
+    // also see this defined in base32/alphabet.rs and available in the crate at fast32::base32::CROCKFORD_LOWER
     make_base32_alpha!(
         CROCKFORD_LOWER,
         DEC_CROCKFORD_LOWER,

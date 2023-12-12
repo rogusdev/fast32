@@ -26,6 +26,11 @@ pub use self::alphabet::{Alphabet32Nopad, Alphabet32Padded};
 /// [https://www.crockford.com/base32.html](https://www.crockford.com/base32.html)
 pub use self::alphabet::CROCKFORD;
 
+/// Crockford Base32, lowercase (no padding)
+///
+/// Same as [upper version](self::CROCKFORD), just lowercase
+pub use self::alphabet::CROCKFORD_LOWER;
+
 /// RFC 4648 Base32 normal, with padding
 ///
 /// `"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"` and `'='`

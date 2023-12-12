@@ -52,6 +52,7 @@ const ENC_RFC4648_HEX: &'static [u8; BITS] = b"0123456789ABCDEFGHIJKLMNOPQRSTUV"
 make_base32_alpha!(RFC4648_HEX, DEC_RFC4648_HEX, ENC_RFC4648_HEX, '=');
 make_base32_alpha!(RFC4648_HEX_NOPAD, DEC_RFC4648_HEX_2, ENC_RFC4648_HEX);
 
+// only a separate const to be used in the test below
 const ENC_CROCKFORD: &'static [u8; BITS] = b"0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 make_base32_alpha!(
     CROCKFORD,
@@ -60,6 +61,15 @@ make_base32_alpha!(
     b"ILOabcdefghijklmnopqrstvwxyz",
     b"110ABCDEFGH1JK1MN0PQRSTVWXYZ"
 );
+
+make_base32_alpha!(
+    CROCKFORD_LOWER,
+    DEC_CROCKFORD_LOWER,
+    b"0123456789abcdefghjkmnpqrstvwxyz",
+    b"iloABCDEFGHIJKLMNOPQRSTVWXYZ",
+    b"110abcdefgh1jk1mn0pqrstvwxyz"
+);
+
 
 pub const BITS: usize = 32;
 
