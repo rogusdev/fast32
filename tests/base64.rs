@@ -381,38 +381,38 @@ fn both_u64_low() {
     }
 }
 
+#[rustfmt::skip]
 #[test]
 fn decode_bad() {
     let res = RFC4648_NOPAD.decode_u64(b"1^_^");
-    assert_eq!(
-        res.unwrap_err(),
-        DecodeError::InvalidChar {
-            char: '^',
-            index: 1
-        }
-    );
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+
     let res = RFC4648_NOPAD.decode_u64(b"0123456789AB");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 12 });
+
     let res = RFC4648_NOPAD.decode_u128(b"1^_^");
-    assert_eq!(
-        res.unwrap_err(),
-        DecodeError::InvalidChar {
-            char: '^',
-            index: 1
-        }
-    );
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+
     let res = RFC4648_NOPAD.decode_u128(b"0123456789ABCD012345678");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 23 });
+
     let res = RFC4648_NOPAD.decode(b"1");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 1 });
+
     let res = RFC4648_NOPAD.decode(b"11");
-    assert_eq!(
-        res.unwrap_err(),
-        DecodeError::InvalidChar {
-            char: '1',
-            index: 1
-        }
-    );
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '1', index: 1 });
+
+    // padding incomplete/missing for decoding
+    let res = RFC4648.decode(b"1");
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 1 });
+
+    let res = RFC4648.decode_str("1");
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 1 });
+
+    let n = b"1";
+    let mut b = Vec::<u8>::with_capacity(1);
+    let res = RFC4648.decode_into(n, &mut b);
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 1 });
 }
 
 #[rustfmt::skip]

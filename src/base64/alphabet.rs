@@ -165,20 +165,32 @@ impl Alphabet64Padded {
     /// Pass decoder array to [`decode`](super::decode()), and remove padding as needed
     #[inline]
     pub fn decode(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-        decode(self.dec, rem_pad(a, self.pad))
+        if a.len() % WIDTH_ENC != 0 {
+            Err(DecodeError::InvalidLength { length: a.len() })
+        } else {
+            decode(self.dec, rem_pad(a, self.pad))
+        }
     }
 
     /// Pass decoder array to [`decode_into`](super::decode_into()), and remove padding as needed
     #[inline]
     pub fn decode_into(&self, a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
-        decode_into(self.dec, rem_pad(a, self.pad), b)
+        if a.len() % WIDTH_ENC != 0 {
+            Err(DecodeError::InvalidLength { length: a.len() })
+        } else {
+            decode_into(self.dec, rem_pad(a, self.pad), b)
+        }
     }
 
     /// Pass string as bytes and decoder array to [`decode`](super::decode()), and remove padding as needed
     #[inline]
     pub fn decode_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
         let a = a.as_ref().as_bytes();
-        decode(self.dec, rem_pad(a, self.pad))
+        if a.len() % WIDTH_ENC != 0 {
+            Err(DecodeError::InvalidLength { length: a.len() })
+        } else {
+            decode(self.dec, rem_pad(a, self.pad))
+        }
     }
 }
 
