@@ -229,6 +229,8 @@ impl Alphabet32Padded {
     }
 
     /// Pass decoder array to [`decode`](super::decode()), and remove padding as needed
+    ///
+    /// Also returns [`DecodeError`] if input is an invalid length for padding (i.e. not a multiple of 8)
     #[inline]
     pub fn decode(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
         if a.len() % WIDTH_ENC != 0 {
@@ -239,6 +241,8 @@ impl Alphabet32Padded {
     }
 
     /// Pass decoder array to [`decode_into`](super::decode_into()), and remove padding as needed
+    ///
+    /// Also returns [`DecodeError`] if input is an invalid length for padding (i.e. not a multiple of 8)
     #[inline]
     pub fn decode_into(&self, a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
         if a.len() % WIDTH_ENC != 0 {
@@ -249,6 +253,8 @@ impl Alphabet32Padded {
     }
 
     /// Pass string as bytes and decoder array to [`decode`](super::decode()), and remove padding as needed
+    ///
+    /// Also returns [`DecodeError`] if input is an invalid length for padding (i.e. not a multiple of 8)
     #[inline]
     pub fn decode_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
         let a = a.as_ref().as_bytes();

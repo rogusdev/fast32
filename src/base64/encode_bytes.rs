@@ -6,6 +6,8 @@ use crate::shared::*;
 use super::alphabet::{BITS, WIDTH_DEC, WIDTH_ENC};
 
 /// Capacity needed in dest `Vec<u8>` to encode this byte array -- without padding!
+///
+/// Also see padded [`capacity_encode`](super::Alphabet64Padded::capacity_encode())
 #[inline]
 pub const fn capacity_encode(a: &[u8]) -> usize {
     // https://stackoverflow.com/questions/23636240/how-do-i-predict-the-required-size-of-a-base32-decode-output
