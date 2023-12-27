@@ -151,21 +151,26 @@ unsafe fn add_pad(b: &mut Vec<u8>, pad: char) {
     }
 }
 
-fn rem_pad(a: &[u8], pad: char) -> &[u8] {
+fn rem_pad(a: &[u8], pad: char) -> Result<&[u8], DecodeError> {
     let len = a.len();
     let pad = pad as u8;
+
+    if len < 6 {
+        return Err(DecodeError::InvalidLength{length: len});
+    }
+
     if len == 0 {
-        a
+        Ok(a)
     } else if a[len - 6] == pad {
-        &a[..len - 6]
+        Ok(&a[..len - 6])
     } else if a[len - 4] == pad {
-        &a[..len - 4]
+        Ok(&a[..len - 4])
     } else if a[len - 3] == pad {
-        &a[..len - 3]
+        Ok(&a[..len - 3])
     } else if a[len - 1] == pad {
-        &a[..len - 1]
+        Ok(&a[..len - 1])
     } else {
-        a
+        Ok(a)
     }
 }
 
@@ -215,20 +220,20 @@ impl Alphabet32Padded {
     /// Pass decoder array to [`decode`](super::decode()), and remove padding as needed
     #[inline]
     pub fn decode(&self, a: &[u8]) -> Result<Vec<u8>, DecodeError> {
-        decode(self.dec, rem_pad(a, self.pad))
+        decode(self.dec, rem_pad(a, self.pad)?)
     }
 
     /// Pass decoder array to [`decode_into`](super::decode_into()), and remove padding as needed
     #[inline]
     pub fn decode_into(&self, a: &[u8], b: &mut Vec<u8>) -> Result<(), DecodeError> {
-        decode_into(self.dec, rem_pad(a, self.pad), b)
+        decode_into(self.dec, rem_pad(a, self.pad)?, b)
     }
 
     /// Pass string as bytes and decoder array to [`decode`](super::decode()), and remove padding as needed
     #[inline]
     pub fn decode_str(&self, a: impl AsRef<str>) -> Result<Vec<u8>, DecodeError> {
         let a = a.as_ref().as_bytes();
-        decode(self.dec, rem_pad(a, self.pad))
+        decode(self.dec, rem_pad(a, self.pad)?)
     }
 }
 
