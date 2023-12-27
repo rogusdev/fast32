@@ -365,6 +365,29 @@ fn both_bytes_into() {
 }
 
 #[test]
+fn check_capacity() {
+    let n = b"AAJA====";
+    assert_eq!(RFC4648.capacity_decode(n), 2);
+
+    let n = b"AAJA";
+    assert_eq!(CROCKFORD.capacity_decode(n), 2);
+
+    let n = &[0x00, 0x12];
+    assert_eq!(RFC4648.capacity_encode(n), 8);
+    assert_eq!(CROCKFORD.capacity_encode(n), 4);
+
+    let n = &[];
+    assert_eq!(RFC4648.capacity_encode(n), 0);
+    assert_eq!(CROCKFORD.capacity_encode(n), 0);
+
+    let n = 111;
+    assert_eq!(CROCKFORD.capacity_encode_u64(n), 2);
+
+    let n = 111;
+    assert_eq!(CROCKFORD.capacity_encode_u128(n), 2);
+}
+
+#[test]
 #[should_panic(expected = "Missing capacity for encoding")]
 fn panic_bytes_into() {
     let n = &[0x00, 0x12];
