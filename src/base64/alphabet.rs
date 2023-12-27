@@ -5,12 +5,12 @@ use uuid::Uuid;
 
 use crate::DecodeError;
 
-use super::decode_bytes::{decode, decode_into};
+use super::decode_bytes::{capacity_decode, decode, decode_into};
 use super::decode_u128::decode_u128;
 use super::decode_u64::decode_u64;
-use super::encode_bytes::{encode, encode_into};
-use super::encode_u128::{encode_u128, encode_u128_into};
-use super::encode_u64::{encode_u64, encode_u64_into};
+use super::encode_bytes::{capacity_encode, encode, encode_into};
+use super::encode_u128::{capacity_encode_u128, encode_u128, encode_u128_into};
+use super::encode_u64::{capacity_encode_u64, encode_u64, encode_u64_into};
 
 #[cfg(feature = "uuid")]
 use super::uuid::{decode_uuid, encode_uuid, encode_uuid_into};
@@ -81,6 +81,12 @@ pub const WIDTH_19: usize = 114;
 pub const WIDTH_20: usize = 120;
 pub const WIDTH_21: usize = 126;
 
+#[inline]
+const fn pad_len(len: usize) -> usize {
+    // 0 len needs to go to 0 padding, not WIDTH_ENC
+    (WIDTH_ENC - (len % WIDTH_ENC)) % WIDTH_ENC
+}
+
 unsafe fn add_pad(b: &mut Vec<u8>, pad: char) {
     let len = b.len();
     match len % WIDTH_ENC {
@@ -142,14 +148,25 @@ impl Alphabet64Padded {
         Self { enc, dec, pad }
     }
 
+    /// Capacity needed in dest `Vec<u8>` to encode this byte array -- with padding!
+    #[inline]
+    pub const fn capacity_encode(&self, a: &[u8]) -> usize {
+        let len = capacity_encode(a);
+        len + pad_len(len)
+    }
+
+    /// Capacity needed in dest `Vec<u8>` to decode this byte array -- with padding!
+    pub fn capacity_decode(&self, a: &[u8]) -> usize {
+        capacity_decode(rem_pad(a, self.pad))
+    }
+
     /// Pass encoder array to [`encode`](super::encode()), and add padding as needed
     #[inline]
     pub fn encode(&self, a: &[u8]) -> String {
         let mut s = encode(self.enc, a);
         unsafe {
             let b = s.as_mut_vec();
-            // make space for max possible padding
-            b.reserve(2);
+            b.reserve(pad_len(b.len()));
             add_pad(b, self.pad);
         }
         s
@@ -198,6 +215,30 @@ impl Alphabet64Nopad {
     /// Instantiate with encoder and decoder maps (no padding)
     pub const fn new(enc: &'static [u8; BITS], dec: &'static [u8; 256]) -> Self {
         Self { enc, dec }
+    }
+
+    /// Pass input bytes to [`capacity_encode`](super::capacity_encode())
+    #[inline]
+    pub const fn capacity_encode(&self, a: &[u8]) -> usize {
+        capacity_encode(a)
+    }
+
+    /// Pass input u64 to [`capacity_encode_u64`](super::capacity_encode_u64())
+    #[inline]
+    pub const fn capacity_encode_u64(&self, n: u64) -> usize {
+        capacity_encode_u64(n)
+    }
+
+    /// Pass input u128 to [`capacity_encode_u128`](super::capacity_encode_u128())
+    #[inline]
+    pub const fn capacity_encode_u128(&self, n: u128) -> usize {
+        capacity_encode_u128(n)
+    }
+
+    /// Pass input bytes to [`capacity_decode`](super::capacity_decode())
+    #[inline]
+    pub const fn capacity_decode(&self, a: &[u8]) -> usize {
+        capacity_decode(a)
     }
 
     /// Pass encoder array to [`encode_u64`](super::encode_u64())

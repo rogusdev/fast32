@@ -8,7 +8,7 @@ use super::alphabet::{BITS, WIDTH_DEC, WIDTH_ENC};
 const U8_MASK_MID_2: u8 = 0b01111100;
 const U8_MASK_MID_1: u8 = 0b00111110;
 
-/// Capacity needed in dest `Vec<u8>` to encode this byte array
+/// Capacity needed in dest `Vec<u8>` to encode this byte array -- without padding!
 #[inline]
 pub const fn capacity_encode(a: &[u8]) -> usize {
     // https://stackoverflow.com/questions/23636240/how-do-i-predict-the-required-size-of-a-base32-decode-output

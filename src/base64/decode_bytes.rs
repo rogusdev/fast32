@@ -4,7 +4,7 @@ use crate::shared::{bits_or_err_u8, DecodeError};
 
 use super::alphabet::{WIDTH_DEC, WIDTH_ENC};
 
-/// Capacity needed in dest `Vec<u8>` to decode this byte array
+/// Capacity needed in dest `Vec<u8>` to decode this byte array -- without padding!
 #[inline]
 pub const fn capacity_decode(a: &[u8]) -> usize {
     a.len() * WIDTH_DEC / WIDTH_ENC
