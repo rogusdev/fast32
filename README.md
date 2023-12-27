@@ -2,7 +2,7 @@
 
 Base32 and base64 encoding in Rust. Primarily for integer (u64, u128) and UUID identifiers (behind feature `uuid`), as well as arbitrary byte arrays. And do it all very quickly (more on this [below](#speed)).
 
-The [crate](https://crates.io/crates/fast32) has installation instructions, and the [documentation](https://docs.rs/fast32/1.0.0/fast32/) has extensive examples.
+The [crate](https://crates.io/crates/fast32) has installation instructions, and the [documentation](https://docs.rs/fast32/latest/fast32/) has extensive examples.
 
 ### Encoding integers
 
