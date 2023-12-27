@@ -1,6 +1,7 @@
-
 mod base32 {
-    use fast32::base32::{capacity_decode, capacity_encode, capacity_encode_u128, capacity_encode_u64};
+    use fast32::base32::{
+        capacity_decode, capacity_encode, capacity_encode_u128, capacity_encode_u64,
+    };
 
     #[test]
     fn test_capacity_encode() {
@@ -100,7 +101,9 @@ mod base32 {
 }
 
 mod base64 {
-    use fast32::base64::{capacity_decode, capacity_encode, capacity_encode_u128, capacity_encode_u64};
+    use fast32::base64::{
+        capacity_decode, capacity_encode, capacity_encode_u128, capacity_encode_u64,
+    };
 
     #[test]
     fn test_capacity_encode() {

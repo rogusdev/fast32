@@ -440,38 +440,38 @@ fn both_u64_low() {
     }
 }
 
+#[rustfmt::skip]
 #[test]
 fn decode_bad() {
     let res = CROCKFORD.decode_u64(b"1^_^");
-    assert_eq!(
-        res.unwrap_err(),
-        DecodeError::InvalidChar {
-            char: '^',
-            index: 1
-        }
-    );
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+
     let res = CROCKFORD.decode_u64(b"0123456789ABCD");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 14 });
+
     let res = CROCKFORD.decode_u128(b"1^_^");
-    assert_eq!(
-        res.unwrap_err(),
-        DecodeError::InvalidChar {
-            char: '^',
-            index: 1
-        }
-    );
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '^', index: 1 });
+
     let res = CROCKFORD.decode_u128(b"0123456789ABCD0123456789ABC");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 27 });
+
     let res = CROCKFORD.decode(b"111");
     assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 3 });
+
     let res = CROCKFORD.decode(b"11");
-    assert_eq!(
-        res.unwrap_err(),
-        DecodeError::InvalidChar {
-            char: '1',
-            index: 1
-        }
-    );
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidChar { char: '1', index: 1 });
+
+    // padding incomplete/missing for decoding
+    let res = RFC4648.decode(b"1=");
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 2 });
+
+    let res = RFC4648.decode_str("1=");
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 2 });
+
+    let n = b"1=";
+    let mut b = Vec::<u8>::with_capacity(2);
+    let res = RFC4648.decode_into(n, &mut b);
+    assert_eq!(res.unwrap_err(), DecodeError::InvalidLength { length: 2 });
 }
 
 #[rustfmt::skip]
