@@ -94,6 +94,8 @@ impl std::fmt::Display for DecodeError {
     }
 }
 
+impl std::error::Error for DecodeError {}
+
 /// Build a new decoder array for the given bits (encoder array size), exactly of the encoder array
 ///
 /// **You should use [`fast32::make_base32_alpha`](crate::make_base32_alpha)
