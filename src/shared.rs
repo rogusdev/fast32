@@ -82,12 +82,12 @@ pub enum DecodeError {
 impl std::fmt::Display for DecodeError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            DecodeError::InvalidChar { char, index } => {
+            Self::InvalidChar { char, index } => {
                 write!(f, "Invalid char of '{char}' at position {index}")
             }
-            DecodeError::InvalidLength { length } => {
+            Self::InvalidLength { length } => {
                 write!(f, "Invalid length of {length}")
-            } // DecodeError::InvalidBits { byte, index } => {
+            } // Self::InvalidBits { byte, index } => {
               //     write!(f, "Invalid bits in {byte} at position {index}")
               // }
         }
