@@ -6,7 +6,6 @@
 //!
 //! Examples:
 //! ```
-//! use uuid::Uuid;
 //! use fast32::base32::CROCKFORD;
 //!
 //! assert_eq!(CROCKFORD.encode_u64(31), "Z");
@@ -16,6 +15,13 @@
 //! // &[0x1F] is 31
 //! assert_eq!(CROCKFORD.encode(&[0x1F]), "3W");
 //! assert_eq!(CROCKFORD.decode(b"3W").unwrap(), &[0x1F]);
+//! ```
+//!
+//! With UUID support (requires the `uuid` feature):
+//! ```
+//! # #[cfg(feature = "uuid")]
+//! # {
+//! use uuid::Uuid;
 //!
 //! let u = Uuid::nil();
 //! assert_eq!(CROCKFORD.encode_uuid(u), "0");
@@ -23,6 +29,7 @@
 //! let u = Uuid::max();
 //! assert_eq!(CROCKFORD.encode_uuid(u), "7ZZZZZZZZZZZZZZZZZZZZZZZZZ");
 //! assert_eq!(CROCKFORD.decode_uuid_str("7ZZZZZZZZZZZZZZZZZZZZZZZZZ").unwrap(), u);
+//! # }
 //! ```
 //!
 //! With padding:
