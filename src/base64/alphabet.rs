@@ -1,5 +1,3 @@
-use core::ptr::write;
-
 #[cfg(feature = "uuid")]
 use uuid::Uuid;
 
@@ -87,30 +85,6 @@ const fn pad_len(len: usize) -> usize {
     (WIDTH_ENC - (len % WIDTH_ENC)) % WIDTH_ENC
 }
 
-unsafe fn add_pad(b: &mut Vec<u8>, pad: char) {
-    let len = b.len();
-    match len % WIDTH_ENC {
-        2 => {
-            assert!(b.capacity() >= len + 2, "Missing capacity for padding");
-            let end = b.as_mut_ptr().add(len);
-
-            write(end, pad as u8);
-            write(end.add(1), pad as u8);
-
-            b.set_len(len + 2);
-        }
-        3 => {
-            assert!(b.capacity() >= len + 1, "Missing capacity for padding");
-            let end = b.as_mut_ptr().add(len);
-
-            write(end, pad as u8);
-
-            b.set_len(len + 1);
-        }
-        _ => {}
-    }
-}
-
 fn rem_pad(a: &[u8], pad: char) -> &[u8] {
     let len = a.len();
     let pad = pad as u8;
@@ -145,6 +119,8 @@ pub struct Alphabet64Nopad {
 impl Alphabet64Padded {
     /// Instantiate with encoder and decoder maps, plus padding char
     pub const fn new(enc: &'static [u8; BITS], dec: &'static [u8; 256], pad: char) -> Self {
+        // SAFETY: it is assumed that the padding char is a single byte utf-8 char
+        assert!(pad.len_utf8() == 1, "Padding char must be a single byte");
         Self { enc, dec, pad }
     }
 
@@ -166,8 +142,10 @@ impl Alphabet64Padded {
         let mut s = encode(self.enc, a);
         unsafe {
             let b = s.as_mut_vec();
-            b.reserve(pad_len(b.len()));
-            add_pad(b, self.pad);
+
+            let len = b.len();
+            let pad_count = pad_len(len);
+            b.resize(len + pad_count, self.pad as u8);
         }
         s
     }
@@ -176,7 +154,15 @@ impl Alphabet64Padded {
     #[inline]
     pub fn encode_into(&self, a: &[u8], b: &mut Vec<u8>) {
         encode_into(self.enc, a, b);
-        unsafe { add_pad(b, self.pad) }
+
+        let len = b.len();
+        let pad_count = pad_len(len);
+        // panic instead of resize if not enough capacity
+        assert!(
+            len + pad_count <= b.capacity(),
+            "Missing capacity for padding"
+        );
+        b.resize(len + pad_count, self.pad as u8);
     }
 
     /// Pass decoder array to [`decode`](super::decode()), and remove padding as needed
